@@ -454,6 +454,7 @@ button.chip{cursor:pointer;font-family:inherit}
 .piano .pk.on{background:#FFE6A8;transform:translateY(2px)}
 .piano .bk{position:absolute;top:6px;width:10.4%;flex:none;height:62%;background:linear-gradient(#3b2a22,#150d09);border-radius:0 0 6px 6px;box-shadow:none;z-index:2}
 .piano .bk.on{background:#6b4a3a}
+.pzcard.set{min-width:104px}.pzcard.set .seti{font-size:34px;line-height:46px;display:block}.pzcard.set[disabled]{opacity:.45}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3321,7 +3322,7 @@ function showPiano(){const keys=PIANO_W.map((s,i)=>`<button class="pk" data-n="$
  const m=APP.mods.lastElementChild;m.querySelectorAll('.pk').forEach(k=>k.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pianoNote(+k.dataset.n);k.classList.add('on');setTimeout(()=>k.classList.remove('on'),160);vib(8)}));
  p.then(v=>{if(v===2){pianoSong();setTimeout(showPiano,4300)}});return p}
 /* ===== free placement (Sims-like) ===== */
-const PZC=[{id:'wall',n:'Стены',ic:'🖼'},{id:'ceil',n:'Потолок',ic:'💡'},{id:'floor',n:'Пол',ic:'🪴'},{id:'top',n:'Мелочи',ic:'🕯'}];
+const PZC=[{id:'sets',n:'Уголки',ic:'✨'},{id:'wall',n:'Стены',ic:'🖼'},{id:'ceil',n:'Потолок',ic:'💡'},{id:'floor',n:'Пол',ic:'🪴'},{id:'top',n:'Мелочи',ic:'🕯'}];
 const PZ={
  p_frame:{n:'Картина',s:'wall',w:46,h:36,p:220,u:6,cols:['#A8743F','#F4F0E8','#E2B23A','#F2A7C3'],act:'art'},
  p_photo:{n:'Наше фото',s:'wall',w:34,h:40,p:200,u:8,cols:['#FFFFFF','#C98A44','#F2A7C3','#8CC8F5'],act:'love'},
@@ -3487,11 +3488,12 @@ function showPlace(){APP.scr='decor';APP.move.on=false;APP.pz={on:true,sel:null,
  APP.scrEl.innerHTML=`<div class="layer" id="decor"><div class="dtop"><button class="btn small green" data-a="pzoff">Готово ✓</button><button class="btn small ghost" data-a="mvreset">↺ Мебель как было</button><span class="sp"></span><span class="pzuy">🏡 уют +${placedUyut(DS.room)}</span></div><div class="pzbar" id="pzbar"></div></div>`;pzBar()}
 function pzBar(){const b=$('#pzbar');if(!b)return;const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);
  const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);const tool=APP.pz.fsel?`<div class="pztool"><b>${esc(MOVN[APP.pz.fsel]||'Мебель')}</b><small>Тащи пальцем. Другая мебель — в разделе «Уют»</small></div>`:xs?`<div class="pztool"><b>${esc(EXI[xs.id].n)}</b><div class="irow"><button class="btn small ghost2" data-a="pzxdel">📦 Убрать в запас</button></div></div>`:sel?`<div class="pztool"><b>${esc(PZ[sel.id].n)}</b><div class="irow"><button class="btn small blue" data-a="pzflip">↔ Отразить</button><button class="btn small pink" data-a="pzcol">🎨 Цвет</button><button class="btn small ghost2" data-a="pzdel">📦 Убрать</button></div></div>`:`<div class="pzhint">Любую вещь и мебель в комнате можно взять пальцем и перенести. Пока держишь вещь, зелёным показано, куда её можно поставить. Новые вещи — в каталоге ниже.</div>`;
- const inv=S.pinv||{};const items=Object.keys(PZ).filter(id=>PZ[id].s===APP.pz.cat);
- b.innerHTML=tool+`<div class="pztabs">${PZC.map(c=>`<button class="pztab ${c.id===APP.pz.cat?'on':''}" data-a="pzcat" data-id="${c.id}">${c.ic} ${c.n}</button>`).join('')}</div><div class="pzrow">${items.map(id=>{const d=PZ[id],n=inv[id]||0;return`<button class="pzcard" data-a="pzbuy" data-id="${id}"><img src="${pzIcon(id)}" alt=""><small>${esc(d.n)}</small><i>${n?'в запасе: '+n:d.p+' 🦴'}</i></button>`}).join('')}</div>`;const u=$('.pzuy');if(u)u.textContent='🏡 уют +'+placedUyut(DS.room)}
+ const inv=S.pinv||{};const items=Object.keys(PZ).filter(id=>PZ[id].s===APP.pz.cat);const setsHtml=APP.pz.cat==='sets'?`<div class="pzrow">${PZSETS.map(st=>{const ok=!st.need||deco[st.need];const c=pzSetCost(st);return`<button class="pzcard set" data-a="pzset" data-id="${st.id}" ${ok?'':'disabled'}><span class="seti">${st.ic}</span><small>${esc(st.n)}</small><i>${ok?(c?c+' 🦴':'из запаса'):'нужен '+st.needn}</i></button>`}).join('')}</div>`:'';
+ b.innerHTML=tool+`<div class="pztabs">${PZC.map(c=>`<button class="pztab ${c.id===APP.pz.cat?'on':''}" data-a="pzcat" data-id="${c.id}">${c.ic} ${c.n}</button>`).join('')}</div>${setsHtml}<div class="pzrow" ${APP.pz.cat==='sets'?'hidden':''}>${items.map(id=>{const d=PZ[id],n=inv[id]||0;return`<button class="pzcard" data-a="pzbuy" data-id="${id}"><img src="${pzIcon(id)}" alt=""><small>${esc(d.n)}</small><i>${n?'в запасе: '+n:d.p+' 🦴'}</i></button>`}).join('')}</div>`;const u=$('.pzuy');if(u)u.textContent='🏡 уют +'+placedUyut(DS.room)}
 function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&APP.pz.sel&&list.find(i=>i.u===APP.pz.sel);
  switch(a){
  case'pzon':SFX.tap();showPlace();return true;
+ case'pzset':SFX.tap();pzSetBuild(b.dataset.id);return true;
  case'pzoff':SFX.tap();APP.pz.on=false;APP.pz.sel=null;save();showDecor(true);return true;
  case'pzcat':SFX.tap();APP.pz.cat=b.dataset.id;pzBar();return true;
  case'pzbuy':{const id=b.dataset.id,d=PZ[id];S.pinv=S.pinv||{};if(!(S.pinv[id]>0)){if(S.bones<d.p){toast('Нужно '+d.p+' 🦴 — пройди ещё пару уровней!');SFX.nope&&SFX.nope();return true}S.bones-=d.p;SFX.buy?SFX.buy():SFX.chime&&SFX.chime(2)}else S.pinv[id]--;
@@ -3536,6 +3538,24 @@ function drawPzMarks(c,L,now){if(APP.pz.fsel&&typeof boxOf==='function'&&L[APP.p
  c.restore()}
 
 function pzFurnDown(p,PDo){const k=moveHit(p.x,p.y);if(!k||k[0]==='x'&&k[1]===':'){APP.pz.fsel=null;pzBar();return}const d=curDeco();d.pos=d.pos||{};const o=d.pos[k]||{dx:0,dy:0};PDo.drag={k,ox:o.dx,oy:o.dy};APP.pz.fsel=k;SFX.tap();vib(10);pzBar()}
+
+const PZSETS=[
+ {id:'s_fire',n:'У камина',ic:'🔥',need:'fire',needn:'камин',desc:'Свечи, ваза и пуфик у огня',it:[{id:'t_candle',p:'mantel',dx:-18},{id:'t_vase',p:'mantel',dx:16},{id:'f_pouf',rel:'fire',dx:78,dy:72}]},
+ {id:'s_read',n:'Читальный',ic:'📚',need:'sofa',needn:'диван',desc:'Столик с книгами и какао',it:[{id:'f_table',rel:'sofa',dx:0,dy:80,key:'tb'},{id:'t_books',on:'tb',dx:-10},{id:'t_mug',on:'tb',dx:12}]},
+ {id:'s_sill',n:'Подоконник',ic:'🌱',desc:'Кактус, ночник и свечи',it:[{id:'t_cactus',p:'sill',dx:-38},{id:'t_moon',p:'sill',dx:0},{id:'t_candle',p:'sill',dx:38}]},
+ {id:'s_dogs',n:'Для собак',ic:'🐾',desc:'Игрушки и мягкий пуфик',it:[{id:'f_toys',rel:'rug',dx:-96,dy:40},{id:'f_pouf',rel:'rug',dx:100,dy:46}]}];
+function pzSetCost(st){const inv=Object.assign({},S.pinv||{});let c=0;for(const x of st.it){if(inv[x.id]>0)inv[x.id]--;else c+=Math.round(PZ[x.id].p*.8)}return c}
+async function pzSetBuild(id){const st=PZSETS.find(q=>q.id===id);if(!st)return;const deco=curDeco(),L=APP.L,list=pzList(deco);const cost=pzSetCost(st);
+ if(S.bones<cost){toast('Нужно '+cost+' 🦴 — пройди ещё пару уровней!');return}
+ const ok=await ask(`<div class="center"><h2 class="lob">${st.ic} ${st.n}</h2><p>${st.desc}</p><p><b>${st.it.length}</b> вещи · ${cost?cost+' 🦴 (скидка 20%)':'из твоего запаса'}</p></div>`,[{t:'Собрать уголок',c:'green',v:1},{t:'Не сейчас',v:0}]);if(!ok)return;
+ S.pinv=S.pinv||{};const keys={};let placed=0,paid=0;
+ for(const x of st.it){const d=PZ[x.id];let it={u:'z'+Date.now().toString(36)+Math.floor(Math.random()*9999),id:x.id,c:0,f:0};
+  if(x.p){const s=pzSurfaces(deco,L).find(q=>q.p===x.p);if(!s)continue;const c0=(s.x0+s.x1)/2,xx=freeX(c0+x.dx,d.w,s.x0,s.x1,onSurf(deco,L,x.p,null));if(xx==null)continue;it.p=x.p;it.dx=Math.round(xx-c0)}
+  else if(x.on){const par=keys[x.on];if(!par)continue;const s=pzSurfaces(deco,L).find(q=>q.p===par.u);if(!s)continue;const c0=(s.x0+s.x1)/2,xx=freeX(c0+x.dx,d.w,s.x0,s.x1,onSurf(deco,L,par.u,null));if(xx==null)continue;it.p=par.u;it.dx=Math.round(xx-c0)}
+  else if(x.rel){const b=L[x.rel];if(!b)continue;const tg=pzTarget('floor',d.w,d.h,b.x+x.dx,b.y+x.dy,null,deco,L);if(!tg.ok)continue;it.x=Math.round(tg.x);it.y=Math.round(tg.y)}
+  if(S.pinv[x.id]>0)S.pinv[x.id]--;else{const c=Math.round(d.p*.8);S.bones-=c;paid+=c}
+  list.push(it);if(x.key)keys[x.key]=it;placed++;const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',8);if(it.p)it._land=performance.now();else it._fall={y0:(it.y||0)-40,t0:performance.now()}}
+ famXP(8);save();APP.roomDirty=true;SFX.chime&&SFX.chime(3);vib(20);toast(placed?`Уголок «${st.n}» собран ✨`:'Здесь не хватило места для уголка');pzBar();refreshChips&&refreshChips()}
 /* ===== Sims-like: pie menu, wants & mood ===== */
 const WANTL={carry:['взять собачку на ручки','🥰'],pzwater:['полить цветы','💧'],pzmusic:['послушать пластинку','🎶'],pzlook:['полюбоваться домом','🖼'],dance:['потанцевать','💃'],selfie:['сделать селфи','📸'],pet:['погладить собачку','🐶'],window:['посмотреть в окно','🪟'],hug:['обнимашки','🤗'],fire:['погреться у камина','🔥'],read:['почитать','📖'],kiss:['поцелуй','💋'],
  pzpouf:['поспать на пуфике','💤'],pzaqua:['посмотреть на рыбок','🐟'],pztoys:['поиграть игрушками','🧸'],pzplant:['понюхать листики','🌿'],zoom:['побегать','💨'],roll:['чтобы почесали пузико','🐾'],beg:['вкусняшку','🍪'],sofa:['на диван','🛋'],lap:['на ручки','💕'],fetch:['поиграть в апорт','🎾'],snack:['покушать','🥣'],paw:['дать лапу','🐾'],guard:['охранять дом','🛡']};
@@ -4028,7 +4048,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:13';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:18';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
