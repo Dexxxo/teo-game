@@ -486,6 +486,7 @@ button.chip{cursor:pointer;font-family:inherit}
 .rarr b{font:900 26px/22px 'Nunito',sans-serif}.rarr small{font:800 9px/1.1 'Nunito',sans-serif;margin-top:2px;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;opacity:.95}
 .rwhere{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 138px);border:0;border-radius:16px;padding:8px 14px;background:rgba(255,248,230,.95);color:#5A3A1A;font:800 12px 'Nunito',sans-serif;box-shadow:0 2px 0 #C9A26A;pointer-events:auto;white-space:nowrap;max-width:94%}
 .hnews{margin:6px 0 0;font:700 13px 'Nunito',sans-serif;color:#5A3A1A;background:#FFF3D6;border-radius:12px;padding:6px 10px}.hnews.ev{background:#E9F7E0;color:#2F5A2A}
+.stylebtn{display:block;margin:2px auto 6px;font-size:13px}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -4026,6 +4027,17 @@ function starter2Fill(rid){S.starter2=S.starter2||{};if(S.starter2[rid])return;c
  const keys={};let n=0;for(const sp of list){const it=pzSpecPlace(deco,L,sp,keys);if(it){n++;it._land=performance.now()}}
  save();APP.roomDirty=true}
 function starter2Tick(){if(!APP.L||APP.scr==='game')return;const rid=S.rooms&&S.rooms.cur;if(!rid||roomId()!==rid)return;S.starter2=S.starter2||{};if(S.starter2[rid])return;if(!S.deco[rid])return;if(!(S.starter&&S.starter[rid])&&STARTER[rid])return;if(APP.W&&APP.view)starter2Fill(rid)}
+
+/* ===== room style in one tap ===== */
+const STYLE_IC={rustic:'🪵',scandi:'🤍',fairy:'🧚',night:'🌙',retro:'📻',boho:'🌾',loft:'🏙️',candy:'🍬',ocean:'🌊',forest:'🌲'};
+const STYLE_SLOTS=['wall','floor','sofa','fire','lamp','bed','rug','plant','pic','ceil','garland'];
+function styleItems(rid,st){const d=S.deco[rid]||{},no=roomNo(rid);return STYLE_SLOTS.filter(s=>!no.includes(s)&&ITEMS[s+'_'+st]&&(SLOT[s].opt||d[s]!==null)).map(s=>ITEMS[s+'_'+st])}
+function styleCost(rid,st){let c=0;for(const it of styleItems(rid,st))if(!S.owned[it.id])c+=price(it);return Math.round(c*.75/10)*10}
+async function showStyles(){const rid=S.rooms.cur;ensureDeco(rid);const cur=setInfo(rid).st,sts=Object.keys(STY).filter(s=>s!=='legend'&&s!=='basic'&&styleItems(rid,s).length>3);
+ const btns=sts.map(st=>{const n=styleItems(rid,st).length,c=styleCost(rid,st);return{t:`${STYLE_IC[st]||'🎨'} ${STY[st].n} · ${n} вещей · ${c?c+' 🦴':'всё уже есть'}`,c:st===cur?'green':'',v:st,dis:S.bones<c}}).concat([{t:'Не сейчас',c:'ghost',v:0}]);
+ const v=await ask(`<div class="center"><h2 class="lob">🎨 Стиль комнаты</h2><p class="soft small">Обои, пол, мебель и свет в одном стиле одним нажатием. Скидка 25%, уже купленное не платится. Пять вещей одного стиля дают бонус к ходам.</p></div>`,btns);
+ if(!v)return;const cost=styleCost(rid,v),its=styleItems(rid,v);if(S.bones<cost)return;S.bones-=cost;const d=S.deco[rid];for(const it of its){S.owned[it.id]=S.owned[it.id]||{s:1};d[it.slot]={id:it.id,c:-1}}
+ save();APP.roomDirty=true;SFX.coin&&SFX.coin();SFX.chime&&SFX.chime(4);confetti&&confetti(40);const si=setInfo(rid);toast(`Стиль «${STY[v].n}» ✨${si.moves?` +${si.moves} ход${si.moves>1?'а':''} на уровнях`:''}`);if(APP.scr==='decor')showDecor(true)}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4185,6 +4197,7 @@ function showDecor(keep){APP.scr='decor';DS.room=S.rooms.cur;ensureDeco(DS.room)
  APP.scrEl.innerHTML=`<div class="layer" id="decor"><div class="dtop"><button class="btn small" data-a="dback">← Готово</button><button class="btn small green" data-a="pzon">🛋 Расставить вещи</button><span class="sp"></span>${chips()}</div>
  <div class="sheet panel"><div class="shead"><b class="lob">${room.n}</b><span>🏡 ${u} · ${bonus}</span></div>
  <div class="sethint">${si.st?`Стиль «${STY[si.st].n}»: ${si.n}/${SLOTS.length}. ${si.n<5?'Собери 5 вещей одного стиля — +1 ход на уровнях':si.n<10?'10 вещей одного стиля — +2 хода':'Полный набор! +2 хода 🎉'}`:'Собирай вещи одного стиля — получишь бонус к ходам'}</div>
+ <button class="btn small pink stylebtn" data-a="stylepick">🎨 Стиль комнаты одним нажатием</button>
  <div class="tabs">${[['daily','🛍️','Лавка дня'],['chest','🧰','Сундуки'],['extra','🧸','Мелочи'],['special','⭐','Особое'],['season','🎄','Новый год'],...SLOTS.filter(s=>!roomNo(DS.room).includes(s.id)).map(s=>[s.id,s.ic,s.n])].map(([id,ic,n])=>`<button class="tab ${id===DS.slot?'on':''}" data-a="dslot" data-id="${id}">${ic}<small>${n}</small></button>`).join('')}</div><div class="ilist" id="ilist"></div></div></div>`;
  renderItems();if(keep){$('.ilist').scrollTop=sc;$('.tabs').scrollLeft=tabsc}else{const on=$('.tab.on');if(on)$('.tabs').scrollLeft=on.offsetLeft-60}}
 function renderItems(){const sl=DS.slot,deco=S.deco[DS.room];if(['chest','extra','special','season'].includes(sl)){renderSpecialTab(sl);return}const daily=dailyIds();const its=sl==='daily'?daily.map(id=>ITEMS[id]).filter(Boolean):ITEMS_BY_SLOT[sl];let h='';
@@ -4344,6 +4357,7 @@ function act(a,b){
  case'mvphoto':{const e=selExtra();if(e)pickPhoto(pid=>{e.ph=pid;save();gcPhotos();APP.roomDirty=true;toast('Фото на стене 💛')});break}
  case'mvcolor':{const e=selExtra();if(e){e.c=((e.c??EXI[e.id].col)+1)%COLORS.length;save();APP.roomDirty=true;SFX.tap()}break}
  case'mvoff':SFX.chime(2);APP.move.on=false;APP.move.sel=null;save();showDecor(true);break;
+ case'stylepick':SFX.tap();showStyles();break;
  case'mvreset':{const d=curDeco();delete d.pos;save();APP.roomDirty=true;SFX.whoosh();toast('Всё на своих местах');break}
  case'ibuy':buyItem(b.dataset.id);break;case'iequip':equipItem(b.dataset.id);break;case'iup':upItem(b.dataset.id);break;case'icolor':colorItem(b.dataset.id);break;case'iremove':removeItem();break;
  case'rsel':houseTap(b.dataset.id);break;case'rbuy':buyRoom(b.dataset.id);break;
@@ -4376,7 +4390,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:08';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 14:11';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
