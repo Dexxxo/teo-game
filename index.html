@@ -499,6 +499,7 @@ button.chip{cursor:pointer;font-family:inherit}
 .shutter{pointer-events:auto}
 .phflash,.phview{pointer-events:none!important}
 .moodpill{display:block;margin:6px auto 0;max-width:330px;font:700 12.5px 'Nunito',sans-serif;color:#2F5A2A;background:#E9F7E0;border:2px solid #9ACB86;border-radius:14px;padding:6px 10px;text-align:center;cursor:pointer;box-shadow:0 2px 0 #7FAE6C}.moodpill.done,.moodpill.low{background:rgba(255,243,214,.9);color:#6B4A2A;border-color:#E2C48A;box-shadow:none;cursor:default}
+.maprp{display:block;flex:none;margin:8px auto 0}.rpyr{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:6px}.rpyr .btn{padding:6px 16px}.rpg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.rpb{border:2px solid #C9A877;background:#FFF6E4;border-radius:12px;padding:6px 0;font:800 16px 'Nunito',sans-serif;color:#5b3519;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;box-shadow:0 2px 0 #B8925A}.rpb i{font-style:normal;font-size:11px;color:#E8A91E;letter-spacing:1px;min-height:14px}.rpb.cur{background:#DDF4CF;border-color:#7FB85F;box-shadow:0 2px 0 #5E9A44}.rpb:disabled{opacity:.45;box-shadow:none;cursor:default}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -560,7 +561,7 @@ function defSave(){return{v:1,t:0,bones:200,hearts:0,her:'Саша',him:'Дим�
  stats:{dogs:[0,0,0,0,0,0],sp:0},inv:{},home:[],advent:null,forceSeason:false,dates:{start:'2023-04-26',bday:'2005-07-06',prop:'2025-11-02'},couple:{her:'#F3E6D3',him:'#3B3F4A'},voices:[],wear:{},accOwn:{},morning:null,lastDaily:null,evDone:{},curt:0,lampOn:true,stars:3,tasks:{},cloth:{her:{top:'h_turtle'},him:{top:'m_sweater'}},clothOwn:{h_turtle:1,m_sweater:1}}}
 let S=defSave();
 function loadSave(){let d=null;try{const j=localStorage.getItem(KEY);if(j)d=JSON.parse(j)}catch(e){}S=Object.assign(defSave(),d||{});fixSave()}
-function fixSave(){const D=defSave();for(const k in D)if(S[k]==null)S[k]=D[k];if(S.lvl==null)S.lvl=1;if(S.run&&!S.run.v2)S.run=null;if(S.her==='Любимая')S.her='Саша';if(!S.rooms.un)S.rooms=D.rooms;
+function fixSave(){const D=defSave();try{lvlGuard()}catch(e){}for(const k in D)if(S[k]==null)S[k]=D[k];if(S.lvl==null)S.lvl=1;if(S.run&&!S.run.v2)S.run=null;if(S.her==='Любимая')S.her='Саша';if(!S.rooms.un)S.rooms=D.rooms;
  for(const id in ITEMS){const it=ITEMS[id];if(it.st==='basic'&&!S.owned[id])S.owned[id]={s:1}}
  if(!S.owned.rug_rustic)S.owned.rug_rustic={s:1};if(!S.owned.garland_rustic)S.owned.garland_rustic={s:1};
  for(const r of S.rooms.un)ensureDeco(r)}
@@ -3183,9 +3184,9 @@ function drawMap(cv,now){const D=APP.DPR,w=cv.clientWidth,h=cv.clientHeight;if(!
  const bw=w-24,bx=12,by=10;rr(c,bx,by+3,bw,46,14);c.fillStyle='rgba(30,18,8,.25)';c.fill();rr(c,bx,by,bw,46,14);c.fillStyle=lingrad(c,by,by+46,'#B57A48','#8A5532');c.fill();c.strokeStyle=OL;c.lineWidth=2.5;c.stroke();rr(c,bx+4,by+4,bw-8,38,11);c.strokeStyle='rgba(255,230,190,.35)';c.lineWidth=1.5;c.stroke();
  c.fillStyle='#FFF4DC';c.font='900 15px Nunito, sans-serif';c.textAlign='left';c.textBaseline='middle';c.fillText(`${se.ic} ${se.n}`,bx+12,by+15);c.textAlign='right';c.font='800 12.5px Nunito, sans-serif';c.fillStyle='rgba(255,244,220,.85)';c.fillText(`дальше ${nx.ic} ${nx.n}`,bx+bw-12,by+15);
  const segW=(bw-24)/SEASON_LEN;for(let i=0;i<SEASON_LEN;i++){const x=bx+12+i*segW,cur=i===ci;rr(c,x+1,by+27,segW-2,9,4.5);c.fillStyle=i<ci?'#7EE07F':cur?`rgba(255,210,63,${.6+.4*Math.sin(now*.008)})`:i===9?'rgba(224,86,91,.55)':i===SEASON_LEN-1?'rgba(168,132,240,.6)':'rgba(40,20,8,.35)';c.fill()}}
-function showMap(){const lv=S.lvl||1;openPage('map',`Карта сезона`,`<canvas id="mapcv" class="mapcv"></canvas><button class="btn green big mapgo" data-a="mapplay">Играть: уровень ${lv} ▶</button>`);const cv=$('#mapcv');if(!cv)return;
+function showMap(){const lv=S.lvl||1;openPage('map',lvlLabel(lv),`<canvas id="mapcv" class="mapcv"></canvas><button class="btn green big mapgo" data-a="mapplay">Играть: уровень ${lv} ▶</button><button class="btn ghost maprp" data-a="replaylist">🔄 Переиграть пройденные уровни</button>`);const cv=$('#mapcv');if(!cv)return;
  const loop=()=>{if(!cv.isConnected)return;drawMap(cv,performance.now());requestAnimationFrame(loop)};loop();
- cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),N=mapNodes(cv.clientWidth,cv.clientHeight),i=(lv-1)%SEASON_LEN,p=N[i],mx=e.clientX-r.left,my=e.clientY-r.top;if(Math.hypot(mx-p.x,my-p.y)<34||Math.hypot(mx-p.x,my-(p.y-50))<24)mapPlay();else{const j=N.findIndex(q=>Math.hypot(mx-q.x,my-q.y)<24);if(j>i)toast(j===9?'Здесь живёт босс 🐾 За победу — купон!':j===SEASON_LEN-1?'Финал сезона 🏆':'Сначала пройди предыдущие уровни 🔒');else if(j>=0&&j<i)toast('Уже пройдено ⭐')}})}
+ cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),N=mapNodes(cv.clientWidth,cv.clientHeight),i=(lv-1)%SEASON_LEN,p=N[i],mx=e.clientX-r.left,my=e.clientY-r.top;if(Math.hypot(mx-p.x,my-p.y)<34||Math.hypot(mx-p.x,my-(p.y-50))<24)mapPlay();else{const j=N.findIndex(q=>Math.hypot(mx-q.x,my-q.y)<24);if(j>i)toast(j===9?'Здесь живёт босс 🐾 За победу — купон!':j===SEASON_LEN-1?'Финал сезона 🏆':'Сначала пройди предыдущие уровни 🔒');else if(j>=0&&j<i)askReplay(Math.floor((lv-1)/SEASON_LEN)*SEASON_LEN+1+j)}})}
 function mapPlay(){$$('.modal.page',APP.mods).forEach(m=>m.remove());SFX.tap();if(!S.seen){S.seen=true;save();howTo().then(()=>iris(startRun))}else iris(startRun)}
 /* ===== gem-like dog badges ===== */
 function badgePath(c,i){c.beginPath();
@@ -4185,6 +4186,23 @@ function moodClaim(){const m=homeMood(),tr=moodTier(m);if(!tr||S.moodDay===today
 function life2Tick(dt){if(APP.scr!=='menu'||!APP.L)return;const rid=S.rooms&&S.rooms.cur,deco=S.deco&&S.deco[rid];if(!deco)return;
  if(rid==='living'&&!S.sproutPlaced&&roomId()===rid&&APP.view){S.sproutPlaced=1;deco.pl=deco.pl||[];const q=pzSpecPlace(deco,APP.L,['t_sprout','sill',-50]);if(q){APP.roomDirty=true;save();setTimeout(()=>toast('На подоконнике новый росток 🌱 Поливай его каждый день'),1500)}else{S.pinv=S.pinv||{};S.pinv.t_sprout=(S.pinv.t_sprout||0)+1;save()}}
  if(S.giftDay!==todayKey()){RS.gT=(RS.gT||0)+dt;if(RS.gT>40000+(RS.gR||(RS.gR=Math.random()*40000))){RS.gT=0;RS.gR=0;heroGift()}}}
+/* ===== endless levels: years/seasons counter, replaying any passed level, progress guard ===== */
+const YEAR_LEN=SEASON_LEN*4;
+const yearOf=n=>Math.floor((n-1)/YEAR_LEN)+1;
+function lvlLabel(n){const se=seasonOf(n);return`Год ${yearOf(n)} · ${se.ic} ${se.n}`}
+/* progress can never go back */
+function lvlGuard(){try{const bk=+localStorage.getItem('teo-lvmax')||0;const mx=Math.max(bk,(S.best||0)+1,S.lvl||1);if((S.lvl||1)<mx)S.lvl=mx;if(mx>bk)localStorage.setItem('teo-lvmax',String(mx))}catch(e){}}
+function startReplay(n){S.run={n,v2:1,perks:{},bones:0,lifeUsed:false,freePaw:0,replay:1};save();$$('.modal.page',APP.mods).forEach(m=>m.remove());iris(startLevel)}
+async function askReplay(n){const st=(S.lvStars||{})[n]||0;const v=await ask(`<div class="center"><h2 class="lob">Уровень ${n}</h2><p class="soft">${lvlLabel(n)}</p><p style="font-size:26px;letter-spacing:4px;margin:4px 0">${[1,2,3].map(i=>i<=st?'★':'☆').join('')}</p><p class="soft small">Можно играть сколько хочется. Прогресс не изменится, а за повтор дают половину 🦴</p></div>`,[{t:'Переиграть 🔄',c:'green',v:1},{t:'Не надо',c:'ghost',v:0}]);if(v)startReplay(n)}
+function showReplay(yr){const lv=S.lvl||1,maxY=yearOf(Math.max(1,lv));yr=Math.max(1,Math.min(maxY,yr||yearOf(lv)));APP.rpY=yr;
+ const sec=[0,1,2,3].map(si=>{const first=(yr-1)*YEAR_LEN+si*SEASON_LEN+1,se=seasonOf(first);if(first>lv)return'';return`<h3>${se.ic} ${se.n}</h3><div class="rpg">${Array.from({length:SEASON_LEN},(_,i)=>{const n=first+i,done=n<lv,cur=n===lv,st=(S.lvStars||{})[n]||0;return`<button class="rpb${done?' done':''}${cur?' cur':''}" ${done||cur?`data-a="rpplay" data-n="${n}"`:'disabled'}><b>${n}</b><i>${done?[1,2,3].map(k=>k<=st?'★':'☆').join(''):cur?'▶':'🔒'}</i></button>`}).join('')}</div>`}).join('');
+ openPage('replay','Пройденные уровни',`<div class="rpyr"><button class="btn ghost" data-a="rpyr" data-d="-1" ${yr<=1?'disabled':''}>◀</button><b class="lob">Год ${yr}</b><button class="btn ghost" data-a="rpyr" data-d="1" ${yr>=maxY?'disabled':''}>▶</button></div><p class="soft small center">Уровни идут без конца: сезон за сезоном, год за годом. Твой уровень сейчас: <b>${lv}</b></p>${sec}`)}
+function levelsAct(a,b){if(a==='rpyr'){SFX.tap();showReplay((APP.rpY||1)+(+b.dataset.d));return true}if(a==='rpplay'){SFX.tap();askReplay(+b.dataset.n);return true}if(a==='replaylist'){SFX.tap();showReplay();return true}if(a==='restart'){return true}return false}
+
+async function replayDone(bonus){const n=S.run.n,L=G.lv;const prev=(S.lvStars||{})[n]||0,left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;
+ const bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult()/2)+Math.round((bonus||0)/2),stars=Math.max(0,rate-prev);S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(prev,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.run=null;S.mercy=0;save();famXP(8);
+ const v=await ask(`<div class="center"><div class="ribbon lob">Уровень ${n} переигран!</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div><img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span>${stars?` +${stars} <span>⭐</span>`:''}</div><p class="soft small">Твой уровень по-прежнему ${S.lvl}. Прогресс на месте 💛</p></div>`,[{t:'Ещё раз 🔄',c:'green',v:'again'},{t:'К уровням',v:'list'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
+ if(v==='again')startReplay(n);else if(v==='list')iris(()=>{showMenu(true);showReplay(yearOf(n))});else iris(()=>showMenu())}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4243,7 +4261,7 @@ function howTo(){return ask(`<h2 class="lob center">Как играть</h2><ul 
  <li>В доме всё живое: нажми на <b>окно</b> — задёрнуть шторы, на <b>лампу</b> — свет, на <b>камин</b> — искры, на <b>собачек</b> — погладить, на <b>Сашу и Диму</b> — обнимашки 🐾</li></ul><p class="center" style="opacity:.55;font-size:12px;margin-top:6px">Версия: ${window.APPV||"—"}</p>`,[{t:'Понятно!',c:'green',v:1}])}
 
 /* ===== run flow ===== */
-function startRun(){S.run={n:S.lvl||1,v2:1,perks:{},bones:0,lifeUsed:false,freePaw:0};save();startLevel()}
+function startRun(){lvlGuard();S.run={n:S.lvl||1,v2:1,perks:{},bones:0,lifeUsed:false,freePaw:0};save();startLevel()}
 async function startLevel(){if(window.__applyUpd&&window.__applyUpd())return;const run=S.run;if(!run){showMenu();return}
  G.room=S.rooms.rnd?pick(S.rooms.un):S.rooms.cur;ensureDeco(G.room);
  const L=genLevel(run.n);G.lv=L;G.se=L.se;G.cols=L.colList;G.moves=L.moves;G.goals=L.goals.map(g=>({type:g.type,d:g.d,need:g.need,have:0}));
@@ -4264,8 +4282,8 @@ function updHUD(){const m=$('#moves');if(!m)return;m.textContent=G.moves;m.paren
 function updBoosters(){for(const b of BOOST){const e=document.querySelector(`.boost[data-id="${b.id}"]`);if(!e)continue;const free=b.id==='paw'&&S.run&&S.run.freePaw>0;e.querySelector('.bp').textContent=free?`бесплатно ×${S.run.freePaw}`:`${b.b} 🦴`;e.classList.toggle('on',G.target===b.id)}}
 async function winLevel(){if(G.over)return;G.over=true;G.busy=true;clearIdle();SFX.win();bigText('Ура!',undefined,undefined,68);confetti(45);dogBark(0,true);await wait(900);
  const left=await bonusMoves();await wait(350);await levelDone(left*2)}
-async function levelDone(bonus){const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
- const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=n+1;S.won++;S.mercy=0;S.run=null;save();famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
+async function levelDone(bonus){if(S.run&&S.run.replay)return replayDone(bonus);const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
+ const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=Math.max(S.lvl||1,n+1);try{lvlGuard()}catch(e){}S.won++;S.mercy=0;S.run=null;save();famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
  const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${typeof houseNews==='function'?houseNews():''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
  if(n%5===0){try{await miniGame(n)}catch(e){console.error(e)}}
@@ -4276,16 +4294,17 @@ async function outOfMoves(){if(G.over)return;
   const v=await ask(`<div class="center"><h2 class="lob">Ходы закончились!</h2><p class="soft">Осталось совсем чуть-чуть:</p><div class="igoals">${rem}</div></div>`,[{t:'+5 ходов за 100 🦴',v:'b',dis:S.bones<100},{t:`+5 ходов за 🤗 обнимашки ${esc(S.himDat)}`,c:'pink',v:'d'},{t:'Сдаться',c:'ghost',v:'end'}]);
   if(v==='b'||v==='d'){if(v==='b')S.bones-=100;else addDebt({ic:'🤗',t:'Обнимашки 30 секунд',h:1});G.contUsed=true;G.moves+=5;save();updHUD();bigText('+5 ходов!',undefined,undefined,44);G.busy=false;return}}
  await runOver()}
-async function runOver(){G.over=true;G.busy=true;SFX.lose();S.runs++;const lostStreak=S.streak||0;S.streak=0;S.mercy=Math.min(3,S.mercy+1);const n=S.run?S.run.n:S.lvl;S.run=null;save();
+async function runOver(){G.over=true;G.busy=true;SFX.lose();S.runs++;const lostStreak=S.streak||0;S.streak=0;S.mercy=Math.min(3,S.mercy+1);const n=S.run?S.run.n:S.lvl;const wasRep=!!(S.run&&S.run.replay);S.run=null;save();
  const v=await ask(`<div class="center"><h2 class="lob">Почти получилось!</h2><img class="bigdog" src="${dogImg(0,80,true)}" alt=""><p>Уровень <b>${n}</b> ждёт тебя</p><p class="soft small">Прогресс не пропадает 💛 В следующий раз будет на ${S.mercy*2} хода больше</p>${lostStreak>1?`<p class="soft small">🔥 Серия из ${lostStreak} побед начнётся заново</p>`:''}</div>`,[{t:'Ещё раз 🔄',c:'green',v:'again'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
- if(Math.random()<.5)await teoNote();if(v==='again')iris(startRun);else iris(()=>showMenu())}
+ if(Math.random()<.5)await teoNote();if(v==='again'){if(wasRep)startReplay(n);else iris(startRun)}else iris(()=>showMenu())}
 async function teoNote(){const note=fmt(pick(S.notes.length?S.notes:DEF_NOTES));await ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><p class="soft">Тео принёс тебе записку 💌</p><div class="note"><p>${esc(note)}</p><span>— ${esc(S.him)}</span></div>${voiceBtn('note')}</div>`,[{t:'💛 Обнять Тео',c:'pink',v:1}]);heartsAt(APP.W/2,APP.H/2,16);dogBark(0,true)}
 function choosePerk(){const avail=PERKS.filter(p=>p.stack||!S.run.perks[p.id]);const opts=shuffleArr(avail.slice()).slice(0,3);
  return new Promise(res=>{const m=el('div','modal');m.innerHTML=`<div class="panel center"><h2 class="lob">Выбери улучшение</h2><p class="soft">Действует до конца забега</p><div class="perks">${opts.map(p=>`<button class="perk" data-p="${p.id}"><span class="pi">${p.ic}</span><b>${p.n}</b><small>${p.d}</small>${S.run.perks[p.id]?`<i>×${S.run.perks[p.id]+1}</i>`:''}</button>`).join('')}</div></div>`;
   m.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;const id=b.dataset.p;S.run.perks[id]=(S.run.perks[id]||0)+1;if(id==='paw')S.run.freePaw+=2;SFX.chime(2);save();m.remove();res()});APP.mods.appendChild(m)})}
 async function pause(){if(G.busy||G.over)return;const perks=Object.keys(S.run.perks).map(id=>PERKS.find(p=>p.id===id)).filter(Boolean).map(p=>`${p.ic} ${p.n}${S.run.perks[p.id]>1?' ×'+S.run.perks[p.id]:''}`).join(', ');
- const v=await ask(`<div class="center"><h2 class="lob">Пауза</h2><p class="soft">${G.lv?G.lv.se.ic+' '+G.lv.se.n+' · ':''}уровень ${S.run.n}</p></div>`,[{t:'Продолжить',c:'green',v:'c'},{t:'Как играть',v:'h'},{t:'⚙️ Настройки',v:'set'},{t:'В меню',c:'ghost',v:'menu'},{t:'Сдаться',c:'ghost',v:'quit'}]);
+ const v=await ask(`<div class="center"><h2 class="lob">Пауза</h2><p class="soft">${G.lv?G.lv.se.ic+' '+G.lv.se.n+' · ':''}уровень ${S.run.n}</p></div>`,[{t:'Продолжить',c:'green',v:'c'},{t:'Начать уровень заново 🔄',v:'re'},{t:'Как играть',v:'h'},{t:'⚙️ Настройки',v:'set'},{t:'В меню',c:'ghost',v:'menu'},{t:'Сдаться',c:'ghost',v:'quit'}]);
  if(v==='h'){await howTo();return pause()}if(v==='set'){await showSettings();return pause()}if(v==='s'){S.sound=!S.sound;save();return pause()}if(v==='m'){S.music=!S.music;musicSet();save();return pause()}
+ if(v==='re'){const n=S.run.n;if(S.run.replay)startReplay(n);else{S.run.perks={};S.run.lifeUsed=false;S.run.freePaw=0;save();iris(startLevel)}return}
  if(v==='menu')showMenu();
  if(v==='quit'){const ok=await ask('<div class="center"><h2 class="lob">Точно сдаться?</h2><p class="soft">Уровень можно будет пройти заново, прогресс сохранится.</p></div>',[{t:'Нет, играю!',c:'green',v:0},{t:'Да, сдаюсь',c:'ghost',v:1}]);if(ok)await runOver()}}
 
@@ -4481,6 +4500,7 @@ function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.long
 function act(a,b){
  if(a==='fam'){SFX.tap();showFamily();return}
  if(a==='moodclaim'){moodClaim();return}
+ if((a==='rpyr'||a==='rpplay'||a==='replaylist')&&levelsAct(a,b))return;
  if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
  if(a.startsWith('d')&&a!=='dogs'&&a!=='decor'&&a!=='dslot'&&a!=='dback'){dimaAct(a,b);return}
@@ -4540,7 +4560,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:30';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 14:34';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
