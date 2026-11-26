@@ -431,6 +431,8 @@ button.chip{cursor:pointer;font-family:inherit}
 @keyframes wishGlow{0%,100%{box-shadow:0 3px 0 #B07A10,0 0 0 0 rgba(255,214,90,.0)}50%{box-shadow:0 3px 0 #B07A10,0 0 0 5px rgba(255,214,90,.35)}}
 .shgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shbtn{display:flex;align-items:center;gap:8px;text-align:left;background:#FFFDF6;border:2px solid #EAD9B8;border-radius:14px;padding:7px 10px 7px 7px;font:800 13px/1.15 Nunito,sans-serif;color:#3b2416;box-shadow:0 2px 0 #D9C29A;transition:transform .1s;min-height:44px}
 .shbtn span{flex:none;width:30px;height:30px;border-radius:50%;background:#FFF1D6;display:flex;align-items:center;justify-content:center;font-size:16px}.shbtn:active,.shwish:active{transform:scale(.96)}
+.actsheet{max-height:66%;display:flex;flex-direction:column}.shscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px 2px}.shsec{font:900 11.5px Nunito,sans-serif;color:#9A7A55;margin:6px 2px 5px;letter-spacing:.3px}.shav.pp.xo{background:linear-gradient(#FFF1D6,#F2D09A);font-size:24px}
+.actsheet{max-height:56%}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3443,7 +3445,7 @@ function drawPzMarks(c,L,now){const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).
   const[bx,by,bw,bh]=pzBox(sel,deco,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}
  c.restore()}
 /* ===== Sims-like: pie menu, wants & mood ===== */
-const WANTL={pzwater:['полить цветы','💧'],pzmusic:['послушать пластинку','🎶'],pzlook:['полюбоваться домом','🖼'],dance:['потанцевать','💃'],selfie:['сделать селфи','📸'],pet:['погладить собачку','🐶'],window:['посмотреть в окно','🪟'],hug:['обнимашки','🤗'],fire:['погреться у камина','🔥'],read:['почитать','📖'],kiss:['поцелуй','💋'],
+const WANTL={carry:['взять собачку на ручки','🥰'],pzwater:['полить цветы','💧'],pzmusic:['послушать пластинку','🎶'],pzlook:['полюбоваться домом','🖼'],dance:['потанцевать','💃'],selfie:['сделать селфи','📸'],pet:['погладить собачку','🐶'],window:['посмотреть в окно','🪟'],hug:['обнимашки','🤗'],fire:['погреться у камина','🔥'],read:['почитать','📖'],kiss:['поцелуй','💋'],
  pzpouf:['поспать на пуфике','💤'],pzaqua:['посмотреть на рыбок','🐟'],pztoys:['поиграть игрушками','🧸'],pzplant:['понюхать листики','🌿'],zoom:['побегать','💨'],roll:['чтобы почесали пузико','🐾'],beg:['вкусняшку','🍪'],sofa:['на диван','🛋'],lap:['на ручки','💕'],fetch:['поиграть в апорт','🎾'],snack:['покушать','🥣'],paw:['дать лапу','🐾'],guard:['охранять дом','🛡']};
 function actorKey(a){return a.who?a.who:'d'+a.i}
 function actorName(a){return a.who==='her'?S.her:a.who==='him'?S.him:dname(a.i)}
@@ -3476,12 +3478,23 @@ async function pzPersonAct(p,id,L,deco,tok,hn){const nearFoot=it=>pzFloorFoot(it
  if(id==='pzlight'){const pl=pickT(Object.keys(PZ).filter(k=>PZ[k].light));if(!pl)return false;const f=nearFoot(pl),pp=pzPos(pl,deco,L);await pStand(p,tok);await pTo(p,clamp(pp.x+(p.x<pp.x?-28:28),30,370),PZ[pl.id].s==='floor'?f.y+4:clamp(L.fl+60,L.fl+40,L.VH-110),tok);p.face=pp.x>p.x?1:-1;pl.on=pl.on===false;save();say(p,pl.on?`${hn} включает свет ✨`:`${hn} выключает свет`);const b=pzBox(pl,deco,L);pzPart(b[0]+b[2]/2,b[1]+b[3]/2,'spark',8);await hold(900,tok);await pHome(p,tok);return true}
  return false}
 /* ---- pie menu ---- */
+const XL={x_bigbed:['Полежать на кровати','🛏'],x_bathtub:['Принять ванну','🛁'],x_kitchen:['Приготовить вкусное','🍳'],x_dtable:['Поужинать вместе','🍽'],x_tv:['Посмотреть телевизор','📺'],x_piano:['Сыграть на пианино','🎹'],x_guitar:['Сыграть на гитаре','🎸'],x_hammock:['Покачаться в гамаке','🌴'],x_kotatsu:['Погреться под котацу','♨️'],x_gramophone:['Завести граммофон','🎶'],x_snowglobe:['Встряхнуть снежный шар','❄️'],x_aquarium:['Покормить рыбок','🐟'],x_caketable:['Задуть свечи на торте','🎂'],x_pizza:['Съесть пиццу','🍕'],x_cuckoo:['Позвать кукушку','🕰'],x_sinkmirror:['Умыться у зеркала','🪞'],x_sledtree:['Нарядить ёлку','🎄'],x_tree:['Полюбоваться ёлкой','🎄'],x_robot:['Включить робота','🤖'],x_balloons:['Поиграть с шариками','🎈'],x_boxes:['Распаковать коробки','📦'],x_cafetable:['Выпить кофе','☕'],x_ringbox:['Открыть шкатулку','💍'],x_archlights:['Зажечь арку','✨'],x_memwall:['Вспомнить моменты','📷'],x_lovetree:['Дерево любви','💗'],x_weddingarch:['Постоять под аркой','💒'],x_coffeebar:['Сварить кофе','☕'],x_cakecase:['Выбрать пирожное','🧁'],x_parasol:['Отдохнуть под зонтиком','⛱']};
+function xLabel(e){const l=XL[e.id];return l?l:[(EXI[e.id]&&EXI[e.id].n)||'Использовать','✨']}
+function runObj(e){if(ACT.cur){toast('Секундочку, сейчас закончат 🙂');return}if(PPL.sleep&&e.id!=='x_bigbed'){toast('Тсс… они спят 😴');return}ACT.q.push({obj:e,key:'x:'+e.u});runQ()}
+const cap=t=>t[0].toUpperCase()+t.slice(1);
+const DL={beg:'Дать вкусняшку',roll:'Почесать пузико',sofa:'Позвать на диван',lap:'Посадить на ручки',zoom:'Побегать',fetch:'Поиграть в апорт',snack:'Покормить',paw:'Дай лапу!',guard:'Охранять дом',window:'Посмотреть в окно',fire:'Погреться у камина',dance:'Потанцевать',howl:'Спеть луне',pzpouf:'Поспать на пуфике',pzaqua:'Посмотреть на рыбок',pztoys:'Поиграть игрушками',pzplant:'Понюхать листики'};
 function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();const want=k=>{const w=(S.wants||{})[k];return w&&w.id};
- const add=(t,ic,fn,hot)=>o.push({t,ic,fn,hot});
+ const add=(t,ic,fn,hot,sec)=>o.push({t,ic,fn,hot,sec:sec||''});
  if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);if(wi&&WANTL[wi])add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1);
-  for(const id of['hug','dance','selfie','pet','window'].concat(deco.fire?['fire']:[]).concat(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on?['kiss']:[]))if(id!==wi)add(WANTL[id][0][0].toUpperCase()+WANTL[id][0].slice(1),WANTL[id][1],()=>runAct(p,id));return o.slice(0,6)}
+  const ids=[...new Set(PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her'],['window']).concat(deco.fire?['fire']:[]))].filter(id=>id!=='kiss'||(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on)).filter(id=>id!=='read'||p.sitH).filter(id=>WANTL[id]);
+  for(const id of ids)if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Вдвоём');
+  for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате')}
+  const seen=new Set();for(const it of pzList(deco)){const d=PZ[it.id];if(!d)continue;let t=null,id=null,ic='';if(d.act==='water'){t='Полить: '+d.n.toLowerCase();id='pzwater';ic='💧'}else if(d.act==='music'){t='Поставить пластинку';id='pzmusic';ic='🎶'}else if(d.light&&!seen.has('light')){seen.add('light');t=(it.on===false?'Включить: ':'Выключить: ')+d.n.toLowerCase();id='pzlight';ic='💡'}else if(['love','shine','fish','spin','flutter'].includes(d.act)&&!seen.has('look')){seen.add('look');t='Полюбоваться вещами';id='pzlook';ic='😍'}if(!t||seen.has(t))continue;seen.add(t);const u=it.u;add(t,ic,()=>{PZT=u;runAct(p,id)},want(k)===id,'С вещами')}
+  return o}
  if(kind==='dog'){const w=obj,k=actorKey(w),wi=want(k);if(wi&&WANTL[wi])add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(w,wi),1);
-  const ids=[...new Set(pzAutoIds(deco).filter(x=>x!=='pzmusic').concat(AUTOACT[w.i]||[]).filter(x=>WANTL[x]&&x!=='howl'))];for(const id of ids.slice(0,5))if(id!==wi)add(WANTL[id][0][0].toUpperCase()+WANTL[id][0].slice(1),WANTL[id][1],()=>runAct(w,id));return o.slice(0,6)}
+  const ids=[...new Set((DACTS[w.i]||[]).concat(AUTOACT[w.i]||[]).filter(x=>WANTL[x]&&!(x==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')))];for(const id of ids)if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'Игры');
+  for(const id of pzAutoIds(deco).filter(x=>x!=='pzmusic'&&WANTL[x]))if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'С вещами');return o}
+ if(kind==='xobj'){const e=obj,[l,ic]=xLabel(e);add(l,ic,()=>runObj(e));add('Переставить','✋',()=>{showPlace();APP.pz.sel='x:'+e.u;pzBar()});return o}
  const it=obj,d=PZ[it.id],tap=()=>placedTap(it);
  const her=(id,t,ic)=>add(`${S.her}: ${t}`,ic,()=>{PZT=it.u;runAct(H,id)},want('her')===id),him=(id,t,ic)=>add(`${S.him}: ${t}`,ic,()=>{PZT=it.u;runAct(M,id)},want('him')===id);
  switch(d.act){
@@ -3495,20 +3508,21 @@ function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();c
  default:add('Полюбоваться','✨',tap);her('pzlook','полюбоваться','😍')}
  add('Переставить','✋',()=>{showPlace();APP.pz.sel=it.u;pzBar()});return o}
 function showPie(kind,obj,px,py){closePie();const opts=pieOpts(kind,obj);if(!opts.length)return;SFX.tap();vib(8);APP.pieT={kind,obj,t0:performance.now()};
- const isA=kind==='person'||kind==='dog';const title=isA?actorName(obj):PZ[obj.id].n;const k=isA?actorKey(obj):null;
- const av=kind==='dog'?`<img class="shav" src="${dogImg(obj.i,48)}" alt="">`:kind==='person'?`<div class="shav pp ${obj.who}">${esc(title[0]||'?')}</div>`:`<img class="shav it" src="${pzIcon(obj.id,obj.c||0)}" alt="">`;
+ const isA=kind==='person'||kind==='dog';const title=isA?actorName(obj):kind==='xobj'?(EXI[obj.id]?EXI[obj.id].n:''):PZ[obj.id].n;const k=isA?actorKey(obj):null;
+ const av=kind==='dog'?`<img class="shav" src="${dogImg(obj.i,48)}" alt="">`:kind==='person'?`<div class="shav pp ${obj.who}">${esc(title[0]||'?')}</div>`:(kind==='xobj'?`<div class="shav pp xo">${xLabel(obj)[1]}</div>`:`<img class="shav it" src="${pzIcon(obj.id,obj.c||0)}" alt="">`);
  const m=isA?Math.round(moodOf(k)):null;const mc=m==null?'':m>=60?'g':m>=35?'y':'r';
- const sub=isA?`<div class="shmood"><span>Настроение</span><i><b class="${mc}" style="width:${m}%"></b></i></div>`:`<div class="shsub">${esc(PZC.find(c=>c.id===PZ[obj.id].s)?.n||'')}</div>`;
+ const sub=isA?`<div class="shmood"><span>Настроение</span><i><b class="${mc}" style="width:${m}%"></b></i></div>`:`<div class="shsub">${kind==='xobj'?'В комнате':esc(PZC.find(c=>c.id===PZ[obj.id].s)?.n||'')}</div>`;
  const hot=opts.filter(o=>o.hot),rest=opts.filter(o=>!o.hot);
  const sh=el('div','actsheet');sh.innerHTML=`<div class="shgrab"></div><div class="shhead">${av}<div class="shtt"><b>${esc(title)}</b>${sub}</div><button class="shx" data-close aria-label="Закрыть">✕</button></div>`+
   hot.map(o=>`<button class="shwish" data-pi="${opts.indexOf(o)}"><span>✨</span><div><small>Желание</small>${esc(o.t.replace('Исполнить желание: ',''))}</div><em>+🦴</em></button>`).join('')+
-  `<div class="shgrid">${rest.map(o=>`<button class="shbtn" data-pi="${opts.indexOf(o)}"><span>${o.ic}</span>${esc(o.t)}</button>`).join('')}</div>`;
+  `<div class="shscroll">${[...new Set(rest.map(o=>o.sec))].map(sec=>`${sec?`<div class="shsec">${esc(sec)}</div>`:''}<div class="shgrid">${rest.filter(o=>o.sec===sec).map(o=>`<button class="shbtn" data-pi="${opts.indexOf(o)}"><span>${o.ic}</span>${esc(o.t)}</button>`).join('')}</div>`).join('')}</div>`;
  const bg=el('div','piebg');bg.addEventListener('pointerdown',e=>{e.preventDefault();closePie()});APP.uiEl.appendChild(bg);APP.uiEl.appendChild(sh);
  sh.querySelector('[data-close]').addEventListener('click',()=>closePie());
- requestAnimationFrame(()=>{try{const top=APP.H-sh.offsetHeight-12;const sc=APP.W/400;let fy;if(isA)fy=(obj.y+8)*sc;else{const b=pzBox(obj,curDeco(),APP.L);fy=(b[1]+b[3]+6)*sc}const need=top-14-fy;if(need<0&&Math.abs(APP.view.s-1)<.02&&Math.abs(APP.view.y)<3){APP.pieShift=1;tween(APP.view,{x:0,y:Math.max(need,-APP.H*.55),s:1},380,E.inOut)}}catch(e){}});
+ requestAnimationFrame(()=>{try{const top=APP.H-sh.offsetHeight-12;const sc=APP.W/400;let fy;if(isA)fy=(obj.y+8)*sc;else{const b=kind==='xobj'?exBox(obj,APP.L):pzBox(obj,curDeco(),APP.L);fy=(b[1]+b[3]+6)*sc}let need=top-14-fy;const headH=(isA?(obj.who?172:64):(kind==='xobj'?exBox(obj,APP.L)[3]:pzBox(obj,curDeco(),APP.L)[3]))*sc;const topUI=($('.topbar')||$('#ttl'))?Math.min(250,APP.H*.3):40;need=Math.max(need,topUI-(fy-headH));if(need<0&&Math.abs(APP.view.s-1)<.02&&Math.abs(APP.view.y)<3){APP.pieShift=1;tween(APP.view,{x:0,y:Math.max(need,-APP.H*.55),s:1},380,E.inOut)}}catch(e){}});
  sh.querySelectorAll('[data-pi]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const o=opts[+b.dataset.pi];closePie();SFX.tap();try{o.fn()}catch(err){console.error(err)}}))}
 function drawPieTarget(c,now){const t=APP.pieT;if(!t||!$('.actsheet',APP.uiEl)){APP.pieT=null;return}const p=.5+.5*Math.sin(now*.008);c.save();
- if(t.kind==='placed'){const deco=curDeco();if(!pzList(deco).includes(t.obj)){c.restore();return}const[bx,by,bw,bh]=pzBox(t.obj,deco,APP.L);c.strokeStyle=`rgba(255,214,90,${.6+.4*p})`;c.lineWidth=3;c.setLineDash([7,5]);c.lineDashOffset=-now*.02;rr(c,bx-6,by-6,bw+12,bh+12,10);c.stroke()}
+ if(t.kind==='xobj'){if(!(curDeco().extra||[]).includes(t.obj)){c.restore();return}const[bx,by,bw,bh]=exBox(t.obj,APP.L);c.strokeStyle=`rgba(255,214,90,${.6+.4*p})`;c.lineWidth=3;c.setLineDash([7,5]);c.lineDashOffset=-now*.02;rr(c,bx-6,by-6,bw+12,bh+12,10);c.stroke()}
+ else if(t.kind==='placed'){const deco=curDeco();if(!pzList(deco).includes(t.obj)){c.restore();return}const[bx,by,bw,bh]=pzBox(t.obj,deco,APP.L);c.strokeStyle=`rgba(255,214,90,${.6+.4*p})`;c.lineWidth=3;c.setLineDash([7,5]);c.lineDashOffset=-now*.02;rr(c,bx-6,by-6,bw+12,bh+12,10);c.stroke()}
  else{const a=t.obj,r=a.who?42:30;c.globalCompositeOperation='lighter';const g=c.createRadialGradient(a.x,a.y,4,a.x,a.y,r*1.3);g.addColorStop(0,`rgba(255,214,90,${.35+.2*p})`);g.addColorStop(1,'rgba(255,214,90,0)');c.fillStyle=g;c.save();c.translate(a.x,a.y+2);c.scale(1,.32);ell(c,0,0,r*1.3,r*1.3);c.restore();c.fill();c.globalCompositeOperation='source-over';c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;c.beginPath();c.ellipse(a.x,a.y+2,r,r*.32,0,0,Math.PI*2);c.stroke()}
  c.restore()}
 function closePie(){$$('.pie,.piebg,.actsheet',APP.uiEl).forEach(x=>x.remove());APP.pieT=null;if(APP.pieShift){APP.pieShift=0;tween(APP.view,{x:0,y:0,s:1},380,E.inOut)}}
@@ -3772,7 +3786,7 @@ function roomHit(px,py){const v=APP.view,sc=APP.W/400,L=APP.L;if(!L)return null;
 function roomTap(h,px,py){switch(h){case'placed':showPie('placed',APP.tapPl,px,py);return;
  case'walker':if(APP.tapW)showPie('dog',APP.tapW,px,py);break;
  case'person':if(APP.tapP){if(PPL.sleep||PPL.nap){toast('Тсс… они спят 😴');break}showPie('person',APP.tapP,px,py)}break;
- case'xobj':if(APP.tapX)tapObj(APP.tapX,px,py);break;case'guest':if(APP.tapG)tapGuest(APP.tapG,px,py);break;case'plant':waterPlant(px,py);break;
+ case'xobj':if(APP.tapX)showPie('xobj',APP.tapX,px,py);break;case'guest':if(APP.tapG)tapGuest(APP.tapG,px,py);break;case'plant':waterPlant(px,py);break;
  case'bed':RS.taps++;RS.wag=1600;dogBark(0,RS.taps%3===0);heartsAt(px,py-20,6);if(RS.taps%10===0){RS.belly=4000;bigText('Почеши пузико!',px,py-70,30)}break;
  case'marsa':tween(RS,{my:-26},160,E.out).then(()=>tween(RS,{my:0},420,E.bounce));dogBark(1);heartsAt(px,py-30,6);break;
  case'fire':RS.fireBoost=1;tween(RS,{fireBoost:0},1600,E.out);SFX.fire();burst(px,py,['#FFB04A','#FFE27A','#FF6A1A'],16,{v:1.3,up:2,g:-.03,max:900});break;
@@ -3855,7 +3869,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 09:53';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 09:58';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
