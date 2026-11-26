@@ -485,6 +485,7 @@ button.chip{cursor:pointer;font-family:inherit}
 .rarr{width:54px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-size:0}
 .rarr b{font:900 26px/22px 'Nunito',sans-serif}.rarr small{font:800 9px/1.1 'Nunito',sans-serif;margin-top:2px;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;opacity:.95}
 .rwhere{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 138px);border:0;border-radius:16px;padding:8px 14px;background:rgba(255,248,230,.95);color:#5A3A1A;font:800 12px 'Nunito',sans-serif;box-shadow:0 2px 0 #C9A26A;pointer-events:auto;white-space:nowrap;max-width:94%}
+.hnews{margin:6px 0 0;font:700 13px 'Nunito',sans-serif;color:#5A3A1A;background:#FFF3D6;border-radius:12px;padding:6px 10px}.hnews.ev{background:#E9F7E0;color:#2F5A2A}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3839,6 +3840,17 @@ Object.assign(TASKS,{
   T_('Мячик для Тео',1,{x:'x_ball'},[[0,'Мяч! В саду! Лучший день! 🎾'],['him','Теперь все цветы в опасности 😂']]),
   T_('Фонарик для вечеров',2,{x:'x_lantern'},[['her','Вечером тут будет сказка 🏮'],['him','Она и так есть, когда ты рядом']]),
   T_('Кресло-качалка',3,{x:'x_rocker'},[['him','Для нас на старость 👵👴'],['her','Только без твоих историй про рыбалку 😄']])]});
+
+/* ===== what changed at home after a level ===== */
+function houseNews(){let h='';try{const rid=S.rooms.cur,ts=taskState(rid);const rn=ROOM[rid]?ROOM[rid].n:'';
+ if(ts.next){if(S.stars>=ts.next.s)h+=`<p class="hnews">📋 Можно выполнить задание: <b>${esc(ts.next.t)}</b></p>`;else h+=`<p class="hnews">⭐ До задания «${esc(ts.next.t)}» ещё <b>${ts.next.s-S.stars}</b></p>`}
+ if(Math.random()<.4){const ev=[
+  ()=>{S.bones+=25;return'🐕 Тео принёс из сада косточку: <b>+25 🦴</b>'},
+  ()=>{S.plantG=S.plantG||{};S.plantG[rid]=Math.min(3,(S.plantG[rid]||0)+1);return'🌿 Растение в «'+esc(rn)+'» подросло'},
+  ()=>{S.stars=(S.stars||0)+1;return'🐩 Марса нашла звёздочку: <b>+1 ⭐</b>'},
+  ()=>{S.bones+=15;return'💌 Дима оставил записку под подушкой: <b>+15 🦴</b>'},
+  ()=>{S.hearts=(S.hearts||0)+(Math.random()<.2?1:0);return'🏡 В доме стало ещё уютнее'}];
+  h+=`<p class="hnews ev">${pick(ev)()}</p>`;save()}}catch(e){}return h}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3920,7 +3932,7 @@ async function winLevel(){if(G.over)return;G.over=true;G.busy=true;clearIdle();S
  const left=await bonusMoves();await wait(350);await levelDone(left*2)}
 async function levelDone(bonus){const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
  const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=n+1;S.won++;S.mercy=0;S.run=null;save();famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
- const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
+ const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${typeof houseNews==='function'?houseNews():''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
  if(n%5===0){try{await miniGame(n)}catch(e){console.error(e)}}
  if(v==='next')iris(()=>{showMenu(true);showMap()});else iris(()=>showMenu())}
@@ -4189,7 +4201,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:44';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:45';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
