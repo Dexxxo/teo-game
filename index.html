@@ -500,6 +500,9 @@ button.chip{cursor:pointer;font-family:inherit}
 .phflash,.phview{pointer-events:none!important}
 .moodpill{display:block;margin:6px auto 0;max-width:330px;font:700 12.5px 'Nunito',sans-serif;color:#2F5A2A;background:#E9F7E0;border:2px solid #9ACB86;border-radius:14px;padding:6px 10px;text-align:center;cursor:pointer;box-shadow:0 2px 0 #7FAE6C}.moodpill.done,.moodpill.low{background:rgba(255,243,214,.9);color:#6B4A2A;border-color:#E2C48A;box-shadow:none;cursor:default}
 .maprp{display:block;flex:none;margin:8px auto 0}.rpyr{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:6px}.rpyr .btn{padding:6px 16px}.rpg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.rpb{border:2px solid #C9A877;background:#FFF6E4;border-radius:12px;padding:6px 0;font:800 16px 'Nunito',sans-serif;color:#5b3519;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;box-shadow:0 2px 0 #B8925A}.rpb i{font-style:normal;font-size:11px;color:#E8A91E;letter-spacing:1px;min-height:14px}.rpb.cur{background:#DDF4CF;border-color:#7FB85F;box-shadow:0 2px 0 #5E9A44}.rpb:disabled{opacity:.45;box-shadow:none;cursor:default}
+.toast.tm{top:auto;bottom:calc(env(safe-area-inset-bottom) + 112px + var(--k,0)*58px)}.toast.tg{top:auto;bottom:calc(env(safe-area-inset-bottom) + 12% + var(--k,0)*58px)}
+.bellbtn{position:relative}.bdg{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#E8453C;color:#fff;font:900 11px/18px 'Nunito',sans-serif;text-align:center;border:2px solid #fff;font-style:normal;padding:0 3px;box-sizing:content-box;animation:bdgp 1.6s infinite}@keyframes bdgp{50%{transform:scale(1.15)}}
+.cn-row{display:flex;align-items:center;gap:10px;background:#FFF6E4;border:2px solid #E2C48A;border-radius:14px;padding:8px 10px;margin:6px 0}.cn-row.ok{background:#E9F7E0;border-color:#9ACB86}.cn-row.done{opacity:.55}.cn-row>div{flex:1;min-width:0}.cn-row b{display:block;font-size:14.5px;color:#5b3519}.cn-row small{display:block;font-size:12px;color:#8a6a4a}.cn-i{font-size:26px;flex:none}.cn-r{font:800 12.5px 'Nunito',sans-serif;color:#8a6a4a;flex:none}.cn-row .btn{padding:6px 12px;font-size:13px;flex:none}.cn-bar{height:6px;border-radius:3px;background:#EAD9B8;margin-top:5px;overflow:hidden}.cn-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFC93C,#F59A1E);border-radius:3px}.cn-log{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#5b3519;padding:6px 2px;border-bottom:1px dashed #E2C48A}.cn-log i{font-style:normal;color:#a38b6a;font-size:11.5px;flex:none}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -4148,7 +4151,7 @@ PZD.t_sprout=(c,it,W,H,col,on,t,lw)=>{const st=sprStage(it),wilt=sprWilt(it),sw=
 PZACT.sprout=(it,anim,cx,cy,bx,by)=>{const today=dnum();if(sprWilt(it)){it.wd=today;it.sd=Math.max(1,(it.sd||1)-1);save();pzPart(cx,by,'drop',10);osc(520,.12,'sine',.05,700);toast('Цветок ожил! 💧 Не забывай его поливать');return}
  if(it.wd===today&&(it.sd||0)>0){pzPart(cx,by,'drop',4);toast('Сегодня уже полили 💧 Приходи завтра');return}
  const was=sprStage(it);it.sd=(it.sd||0)+1;it.wd=today;save();pzPart(cx,by,'drop',10);osc(520,.12,'sine',.05,700);setTimeout(()=>pzPart(cx,by,'spark',6),500);
- if(was<5&&sprStage(it)===5){S.bones+=100;S.stars=(S.stars||0)+1;save();pzPart(cx,by,'heart',10);SFX.chime&&SFX.chime(4);toast('Цветок расцвёл! 🌸 +100 🦴 +1 ⭐');heartsAt&&heartsAt(cx,cy,10)}
+ if(was<5&&sprStage(it)===5){S.bloom=(S.bloom||0)+1;S.bones+=100;S.stars=(S.stars||0)+1;save();pzPart(cx,by,'heart',10);SFX.chime&&SFX.chime(4);toast('Цветок расцвёл! 🌸 +100 🦴 +1 ⭐');heartsAt&&heartsAt(cx,cy,10)}
  else if(was>=5){S.bones+=10;save();toast('Цветок радуется! +10 🦴')}else toast(['Росточек проснулся 🌱','Появились листики 🍃','Появился бутон 🌷','Цветок почти готов! 🌼'][Math.min(3,sprStage(it)-1)]||'Полито 💧')};
 
 /* --- fragile things fall when a dog zooms past the table --- */
@@ -4182,10 +4185,10 @@ function moodPill(){try{const m=homeMood(),tr=moodTier(m),got=S.moodDay===todayK
  if(got)return`<div class="moodpill done">${ic} Настроение дома ${m}% · награда за сегодня получена ✓</div>`;
  if(tr)return`<button class="moodpill" data-a="moodclaim">${ic} ${tr.n}: ${m}% · забрать ${tr.b} 🦴${tr.s?' +⭐':''}${tr.h?' +💗':''}</button>`;
  return`<div class="moodpill low">${ic} Настроение дома ${m}% · выполни желания Саши и Димы, чтобы порадовать их</div>`}catch(e){return''}}
-function moodClaim(){const m=homeMood(),tr=moodTier(m);if(!tr||S.moodDay===todayKey())return;S.moodDay=todayKey();S.bones+=tr.b;if(tr.s)S.stars=(S.stars||0)+1;if(tr.h)S.hearts=(S.hearts||0)+1;save();SFX.chime&&SFX.chime(4);confetti&&confetti(30);toast(`${tr.n}! +${tr.b} 🦴${tr.s?' +1 ⭐':''}${tr.h?' +1 💗':''}`);if(APP.scr==='menu')showMenu(true)}
+function moodClaim(){const m=homeMood(),tr=moodTier(m);if(!tr||S.moodDay===todayKey())return;S.moodDay=todayKey();S.moodN=(S.moodN||0)+1;S.bones+=tr.b;if(tr.s)S.stars=(S.stars||0)+1;if(tr.h)S.hearts=(S.hearts||0)+1;save();SFX.chime&&SFX.chime(4);confetti&&confetti(30);toast(`${tr.n}! +${tr.b} 🦴${tr.s?' +1 ⭐':''}${tr.h?' +1 💗':''}`);if(APP.scr==='menu')showMenu(true)}
 
 /* --- ticker --- */
-function life2Tick(dt){if(APP.scr!=='menu'||!APP.L)return;const rid=S.rooms&&S.rooms.cur,deco=S.deco&&S.deco[rid];if(!deco)return;
+function life2Tick(dt){if(APP.scr!=='menu'||!APP.L)return;RS.acT=(RS.acT||0)+dt;if(RS.acT>6000){RS.acT=0;try{if(achCheck()||true)refreshBell()}catch(e){}}const rid=S.rooms&&S.rooms.cur,deco=S.deco&&S.deco[rid];if(!deco)return;
  if(rid==='living'&&!S.sproutPlaced&&roomId()===rid&&APP.view){S.sproutPlaced=1;deco.pl=deco.pl||[];const q=pzSpecPlace(deco,APP.L,['t_sprout','sill',-50]);if(q){APP.roomDirty=true;save();setTimeout(()=>toast('На подоконнике новый росток 🌱 Поливай его каждый день'),1500)}else{S.pinv=S.pinv||{};S.pinv.t_sprout=(S.pinv.t_sprout||0)+1;save()}}
  if(S.giftDay!==todayKey()){RS.gT=(RS.gT||0)+dt;if(RS.gT>40000+(RS.gR||(RS.gR=Math.random()*40000))){RS.gT=0;RS.gR=0;heroGift()}}}
 /* ===== endless levels: years/seasons counter, replaying any passed level, progress guard ===== */
@@ -4282,6 +4285,50 @@ function drawCritters(c,now){if(G.over||G.lv==null)return;if(G.critL!==G.lv){G.c
 function critTap(x,y){const k=G.crit;if(!k||k.tapped||APP.scr!=='game'||G.over)return false;const P=critPos(k,performance.now());if(Math.hypot(x-P.x,y-P.y)>G.cs*(k.id==='spring'?.9:.7))return false;
  k.tapped=1;S.bones+=4;save();SFX.chime&&SFX.chime(3);for(let i=0;i<10;i++)addP({type:'heart',x:P.x,y:P.y,vx:rnd(-2,2),vy:rnd(-3.4,-1),g:.05,size:rnd(5,8),color:pick(['#FF7FA8','#FFB3D9','#FFFFFF']),rot:rnd(-.4,.4),max:900});
  addP({type:'text',x:P.x,y:P.y-20,size:G.cs*.46,color:'#FFF3B0',text:'+4 🦴',max:1100,rise:50});G.crit.t0=Math.min(k.t0,performance.now()-k.dur+500);return true}
+/* ===== notification centre: achievements, rewards to claim, log of recent events ===== */
+const dogsTotal=()=>((S.stats&&S.stats.dogs)||[]).reduce((a,b)=>a+(b||0),0);
+const ACHS=[
+ {id:'w1',ic:'🐾',n:'Первый шаг',d:'Выиграй первый уровень',v:()=>S.won||0,g:1,r:{b:30}},
+ {id:'w10',ic:'🎯',n:'Разогрелись',d:'Выиграй 10 уровней',v:()=>S.won||0,g:10,r:{b:80}},
+ {id:'w50',ic:'🏅',n:'Опытные',d:'Выиграй 50 уровней',v:()=>S.won||0,g:50,r:{b:200,s:1}},
+ {id:'w150',ic:'🏆',n:'Мастера',d:'Выиграй 150 уровней',v:()=>S.won||0,g:150,r:{b:400,s:2}},
+ {id:'w365',ic:'👑',n:'Целый год вместе',d:'Выиграй 365 уровней',v:()=>S.won||0,g:365,r:{b:900,s:3,h:2}},
+ {id:'l15',ic:'❄️',n:'Первый сезон',d:'Дойди до 16-го уровня',v:()=>(S.best||0)+1,g:16,r:{b:100,s:1}},
+ {id:'l61',ic:'🎄',n:'Первый год',d:'Дойди до 61-го уровня',v:()=>(S.best||0)+1,g:61,r:{b:300,s:2}},
+ {id:'l121',ic:'🌍',n:'Второй год',d:'Дойди до 121-го уровня',v:()=>(S.best||0)+1,g:121,r:{b:500,s:2,h:1}},
+ {id:'st30',ic:'⭐',n:'Звёздное небо',d:'Собери 30 звёзд',v:()=>S.stars||0,g:30,r:{b:120}},
+ {id:'st150',ic:'🌟',n:'Млечный путь',d:'Собери 150 звёзд',v:()=>S.stars||0,g:150,r:{b:400,h:1}},
+ {id:'dg500',ic:'🐶',n:'Собачья дружба',d:'Собери 500 собачек',v:dogsTotal,g:500,r:{b:150}},
+ {id:'dg3000',ic:'🦴',n:'Стая',d:'Собери 3000 собачек',v:dogsTotal,g:3000,r:{b:500,s:1}},
+ {id:'str5',ic:'🔥',n:'В ударе',d:'Серия из 5 побед подряд',v:()=>Math.max(S.maxStreak||0,S.streak||0),g:5,r:{b:100,s:1}},
+ {id:'str12',ic:'☄️',n:'Не остановить',d:'Серия из 12 побед подряд',v:()=>Math.max(S.maxStreak||0,S.streak||0),g:12,r:{b:300,s:2}},
+ {id:'rm4',ic:'🏠',n:'Просторный дом',d:'Открой 4 комнаты',v:()=>((S.rooms&&S.rooms.un)||[]).length,g:4,r:{b:150}},
+ {id:'rm7',ic:'🏡',n:'Целый дом',d:'Открой 7 комнат',v:()=>((S.rooms&&S.rooms.un)||[]).length,g:7,r:{b:400,h:1}},
+ {id:'ph1',ic:'📸',n:'Фотограф',d:'Сделай первое фото комнаты',v:()=>(S.album||[]).length,g:1,r:{b:50}},
+ {id:'ph12',ic:'🖼️',n:'Семейный альбом',d:'Сохрани 12 фото',v:()=>(S.album||[]).length,g:12,r:{b:200,h:1}},
+ {id:'bl1',ic:'🌸',n:'Зелёный палец',d:'Вырасти цветок на подоконнике',v:()=>S.bloom||0,g:1,r:{b:80}},
+ {id:'bl5',ic:'🌷',n:'Садовники',d:'Вырасти 5 цветков',v:()=>S.bloom||0,g:5,r:{b:250,h:1}},
+ {id:'md5',ic:'😊',n:'Счастливый дом',d:'Забери награду за настроение 5 раз',v:()=>S.moodN||0,g:5,r:{b:150}},
+ {id:'fm5',ic:'🐕',n:'Любимая семья',d:'Достигни 5 уровня семьи',v:()=>(S.fam&&S.fam.lvl)||1,g:5,r:{b:200,s:1}}];
+function achState(){S.achC=S.achC||{};S.achN=S.achN||{};return S}
+function achDone(a){return a.v()>=a.g}
+function achReady(){achState();return ACHS.filter(a=>achDone(a)&&!S.achC[a.id])}
+function achCheck(quiet){achState();let n=0;S.maxStreak=Math.max(S.maxStreak||0,S.streak||0);for(const a of ACHS)if(achDone(a)&&!S.achC[a.id]&&!S.achN[a.id]){S.achN[a.id]=1;n++;if(!quiet)setTimeout(()=>toast(`🏆 Достижение: ${a.n}! Забери награду в 🔔`),n*900)}if(n)save();return n}
+function rewardTxt(r){return[r.b?r.b+' 🦴':'',r.s?r.s+' ⭐':'',r.h?r.h+' 💗':''].filter(Boolean).join(' ')}
+function achClaim(id){const a=ACHS.find(x=>x.id===id);achState();if(!a||!achDone(a)||S.achC[id])return;S.achC[id]=1;S.bones+=a.r.b||0;S.stars=(S.stars||0)+(a.r.s||0);S.hearts=(S.hearts||0)+(a.r.h||0);save();SFX.chime&&SFX.chime(4);confetti&&confetti(24)}
+function notesLog(msg){S.nlog=S.nlog||[];if(S.nlog[0]&&S.nlog[0].m===msg&&Date.now()-S.nlog[0].t<4000)return;S.nlog.unshift({m:msg,t:Date.now()});if(S.nlog.length>25)S.nlog.length=25}
+function centerCount(){try{achState();let n=achReady().length;if(typeof moodTier==='function'&&moodTier(homeMood())&&S.moodDay!==todayKey())n++;return n}catch(e){return 0}}
+const timeAgo=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'только что':m<60?m+' мин назад':m<1440?Math.round(m/60)+' ч назад':Math.round(m/1440)+' дн назад'};
+function showCenter(){achCheck(true);const ready=achReady(),hasMood=typeof moodTier==='function'&&moodTier(homeMood())&&S.moodDay!==todayKey();
+ const claim=(hasMood?`<div class="cn-row ok"><span class="cn-i">😊</span><div><b>Настроение дома ${homeMood()}%</b><small>${moodTier(homeMood()).n}</small></div><button class="btn green" data-a="moodclaim2">${(t=>[t.b+' 🦴',t.s?'⭐':'',t.h?'💗':''].filter(Boolean).join(' '))(moodTier(homeMood()))}</button></div>`:'')+ready.map(a=>`<div class="cn-row ok"><span class="cn-i">${a.ic}</span><div><b>${a.n}</b><small>${a.d}</small></div><button class="btn green" data-a="achclaim" data-id="${a.id}">${rewardTxt(a.r)}</button></div>`).join('');
+ const rest=ACHS.filter(a=>!ready.includes(a)).sort((a,b)=>(!!S.achC[a.id])-(!!S.achC[b.id])||b.v()/b.g-a.v()/a.g);
+ const list=rest.map(a=>{const done=!!S.achC[a.id],p=Math.min(1,a.v()/a.g);return`<div class="cn-row${done?' done':''}"><span class="cn-i">${a.ic}</span><div><b>${a.n}</b><small>${a.d}</small>${done?'':`<div class="cn-bar"><i style="width:${Math.round(p*100)}%"></i></div>`}</div><span class="cn-r">${done?'✓':Math.min(a.g,a.v())+'/'+a.g}</span></div>`}).join('');
+ const log=(S.nlog||[]).slice(0,12).map(n=>`<div class="cn-log"><span>${esc(n.m)}</span><i>${timeAgo(n.t)}</i></div>`).join('')||'<p class="soft small center">Пока тихо 🌙</p>';
+ openPage('center','🔔 Награды и события',`${claim?`<h3>Можно забрать</h3>${claim}`:'<p class="soft center">Сейчас забирать нечего. Играй дальше, и тут появятся награды 💛</p>'}<h3>Достижения</h3>${list}<h3>Недавние события</h3>${log}`)}
+function centerAct(a,b){if(a==='center'){SFX.tap();showCenter();return true}
+ if(a==='achclaim'){achClaim(b.dataset.id);showCenter();if(APP.scr==='menu')refreshBell();return true}
+ if(a==='moodclaim2'){moodClaim();showCenter();refreshBell();return true}return false}
+function refreshBell(){const n=centerCount(),b=$('.bellbtn');if(!b)return;let i=b.querySelector('.bdg');if(n){if(!i){i=document.createElement('i');i.className='bdg';b.appendChild(i)}i.textContent=n}else if(i)i.remove()}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4307,7 +4354,7 @@ const upCost=(it,s)=>Math.round(((it.p||400)*.55*s)/10)*10;
 /* ===== modal helpers ===== */
 function ask(html,btns,extra=''){return new Promise(res=>{const m=el('div','modal');m.innerHTML=`<div class="panel">${html}${extra}<div class="mbtns">${btns.map((b,i)=>`<button class="btn ${b.c||''}" data-i="${i}" ${b.dis?'disabled':''}>${b.t}</button>`).join('')}</div></div>`;
  m.addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(!b||b.disabled)return;SFX.tap();m.remove();res(btns[+b.dataset.i].v)});APP.mods.appendChild(m)})}
-function toast(msg){const t=el('div','toast');t.textContent=msg;APP.uiEl.appendChild(t);setTimeout(()=>t.classList.add('out'),1900);setTimeout(()=>t.remove(),2400)}
+function toast(msg){try{notesLog(msg)}catch(e){}const t=el('div','toast '+(APP.scr==='game'?'tg':'tm'));t.textContent=msg;const n=$$('.toast:not(.out)',APP.uiEl).length;t.style.setProperty('--k',n);APP.uiEl.appendChild(t);setTimeout(()=>t.classList.add('out'),2300);setTimeout(()=>t.remove(),2800)}
 function openPage(id,title,html){let m=APP.mods.querySelector(`.page[data-page="${id}"]`);if(!m){m=el('div','modal page');m.dataset.page=id;APP.mods.appendChild(m)}m.innerHTML=`<div class="panel pg"><div class="pgh"><b class="lob">${title}</b><button class="x" data-a="close" aria-label="Закрыть">✕</button></div><div class="pgb">${html}</div></div>`;return m}
 function rerenderPage(id,html){const b=APP.mods.querySelector(`.page[data-page="${id}"] .pgb`);if(b){const st=b.scrollTop;b.innerHTML=html;b.scrollTop=st}}
 function closeTop(){const ms=$$('.modal.page',APP.mods);const m=ms[ms.length-1];if(m){m.remove();if(APP.scr==='menu')showMenu(true)}}
@@ -4318,9 +4365,9 @@ const empty=t=>`<div class="empty"><img src="${dogImg(0,60,true)}" alt=""><p>${t
 /* ===== menu ===== */
 function showMenu(noGifts){if(typeof FAMQ!=='undefined'&&FAMQ.length)setTimeout(famLevelUp,1400);if(!S.tipLife&&S.welcomed){S.tipLife=1;save();setTimeout(()=>{if(APP.scr==='menu')toast('Нажми на Сашу, Диму или собачку — они что-нибудь сделают 💛')},2600)}APP.scr='menu';APP.move.on=false;G.over=true;G.grid=[];G.target=null;APP.roomDirty=true;tween(APP.view,{x:0,y:0,s:1},450,E.inOut);
  const nc=S.coupons.filter(c=>c.nw).length;
- APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="photo" aria-label="Фото">📸</button><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
+ APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico bellbtn" data-a="center" aria-label="Награды">🔔${(()=>{try{const n=centerCount();return n?`<i class="bdg">${n}</i>`:''}catch(e){return''}})()}</button><button class="ico" data-a="photo" aria-label="Фото">📸</button><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
- <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()+moodPill()})()}</div>
+ <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()})()}</div>
  ${typeof roomNavHtml==='function'?roomNavHtml():''}
  <div class="nav">${[['rooms','home','Дом',0],['decor','cozy','Уют',0],['hearts','shop','Лавка',0],['advent','tree','Адвент',advAvail()],['coupons','coupon','Купоны',nc],['dogs','paws','Семья',0]].map(([a,i,n,b])=>`<button class="navb" data-a="${a}"><span class="ni">${gim(i,'nimg')}</span><span>${n}</span>${b?`<i class="dot">${b}</i>`:''}</button>`).join('')}</div></div>`;
  const t=$('#ttl');let lt=null;const stop=()=>clearTimeout(lt);t.addEventListener('pointerdown',()=>{lt=setTimeout(dimaEnter,1500)});t.addEventListener('pointerup',stop);t.addEventListener('pointerleave',stop);t.addEventListener('pointercancel',stop);
@@ -4362,7 +4409,7 @@ function updBoosters(){for(const b of BOOST){const e=document.querySelector(`.bo
 async function winLevel(){if(G.over)return;G.over=true;G.busy=true;clearIdle();SFX.win();bigText('Ура!',undefined,undefined,68);confetti(45);dogBark(0,true);await wait(900);
  const left=await bonusMoves();await wait(350);await levelDone(left*2)}
 async function levelDone(bonus){if(S.run&&S.run.replay)return replayDone(bonus);const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
- const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=Math.max(S.lvl||1,n+1);try{lvlGuard()}catch(e){}S.won++;S.mercy=0;S.run=null;save();famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
+ const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.maxStreak=Math.max(S.maxStreak||0,S.streak);S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=Math.max(S.lvl||1,n+1);try{lvlGuard()}catch(e){}S.won++;S.mercy=0;S.run=null;save();try{achCheck()}catch(e){}famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
  const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${typeof houseNews==='function'?houseNews():''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
  if(n%5===0){try{await miniGame(n)}catch(e){console.error(e)}}
@@ -4579,6 +4626,7 @@ function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.long
 function act(a,b){
  if(a==='fam'){SFX.tap();showFamily();return}
  if(a==='moodclaim'){moodClaim();return}
+ if((a==='center'||a==='achclaim'||a==='moodclaim2')&&centerAct(a,b))return;
  if((a==='rpyr'||a==='rpplay'||a==='replaylist')&&levelsAct(a,b))return;
  if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
@@ -4639,7 +4687,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:57';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 15:00';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
