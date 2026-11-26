@@ -4366,7 +4366,10 @@ const STN={
  wardrobe:{ids:['f_wardrobe'],pose:'back',say:['Что бы надеть? 👗','Выбираю образ ✨'],open:1},
  washer:{ids:['f_washer'],pose:'back',say:['Запускаю стирку 🧺','Бельё само не постирается 😄'],fx:'drop'},
  basket:{ids:['f_basket'],pose:'crouch',say:['Разбираю бельё 🧦']},
- vanity:{ids:['p_vanity'],pose:'back',say:['Как я выгляжу? 💄','Ещё чуть-чуть, и пойдём ✨']},
+ vanity:{ids:['p_vanity','p_mirror'],pose:'back',say:['Как я выгляжу? 💄','Ещё чуть-чуть, и пойдём ✨','Что бы надеть? 👗']},
+ photo:{ids:['p_photo'],pose:'stand',say:['Какое классное фото 🥹','Помнишь этот день? 💛']},
+ pouf:{ids:['f_pouf'],pose:'tea',say:['Присяду на пуфик ☕','Тут так мягко 🧸']},
+ lamp:{ids:['t_moon','t_lava','p_sconce'],pose:'stand',say:['Люблю этот свет ✨','Как красиво светится 🌙']},
  hooks:{ids:['p_hooks'],pose:'back',say:['Куда повесить куртку? 🧥']},
  shoes:{ids:['f_shoes'],pose:'crouch',say:['Переобуваюсь 👟']},
  desk:{ids:['f_desk','t_laptop'],pose:'read',say:['Немного поработаю 💻','Надо записать идею ✍️']},
@@ -4388,9 +4391,14 @@ async function stationRun(p,s,L,deco,tok){const d=STN[s.k],it=s.it,hn=p.who==='h
  await Promise.all([pHome(p,tok),d.both&&o?pHome(o,tok):Promise.resolve()]);return true}
 async function soloPose(p,tok){const hn=p.who==='her'?S.her:S.him,k=pick(['phone','stretch','tea','wave']);await pStand(p,tok);const l={phone:['Сообщения от друзей 📱','Смотрю наши фото 📷'],stretch:['Ох, надо размяться 🙆','Потянуться бы! 🧘'],tea:['Сделаю чайку ☕','Чай — это счастье ☕'],wave:['Привет, ты там? 👋','Эй, я тут! 👋']}[k];say(p,pick(l));p.pose=k;await hold(k==='wave'?1800:3000,tok);p.pose='stand';await pHome(p,tok);return true}
 async function runPerson(p,fn){const tok=ACT.tok;ACT.cur={a:p,auto:1};try{await fn(tok)}catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}}
+async function bedRun(p,bed,L,tok,k){const bp=xpos(bed,L),side=p.x<bp.x?-1:1;await pStand(p,tok);await pTo(p,clamp(bp.x+side*86,30,370),bp.y+22,tok);p.face=bp.x>p.x?1:-1;
+ if(k==='tidy'){say(p,pick(['Заправляю кровать 🛏️','Подушки на место 🧸']));p.pose='crouch';sparkV&&sparkV(bp.x,bp.y-60,6);await hold(2600,tok);p.pose='stand';say(p,'Идеально ✨');await hold(1400,tok)}
+ else{say(p,pick(['Почитаю перед сном 📖','Новая глава! 📚']));p.pose='read';await hold(3600,tok);p.pose='stand'}
+ await pHome(p,tok);return true}
 function autoPeopleAct(){const L=APP.L,deco=curDeco();if(!L||!deco)return;const opts=[],P=[PPL.her,PPL.him];const p=pick(P);
  for(const s of stationsFor(deco))opts.push({w:3,run:()=>runPerson(pick(P),tok=>stationRun(pick(P),s,L,deco,tok))});
- for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id])opts.push({w:2.5,run:()=>{ACT.q.push({obj:e,key:'x:'+e.u});runQ()}});
+ const bed=(deco.extra||[]).find(e=>e.id==='x_bigbed');if(bed&&!PPL.sleep){opts.push({w:2.5,run:()=>runPerson(p,tok=>bedRun(p,bed,L,tok,'tidy'))});opts.push({w:2.5,run:()=>runPerson(p,tok=>bedRun(p,bed,L,tok,'read'))})}
+ for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id])opts.push({w:e.id==='x_bigbed'?.6:2.5,run:()=>{ACT.q.push({obj:e,key:'x:'+e.u});runQ()}});
  for(const id of['pzwater','pzmusic','pzlook','pzlight']){const ok=id==='pzwater'?pzFind(deco,'f_tree').length+pzFind(deco,'c_plant').length+pzFind(deco,'t_cactus').length:id==='pzmusic'?pzFind(deco,'t_player').length:id==='pzlook'?pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish','spin','flutter'].includes(PZ[i.id].act)):pzList(deco).some(i=>PZ[i.id]&&PZ[i.id].light&&PZ[i.id].s==='floor');if(ok)opts.push({w:1.2,run:()=>runPerson(p,tok=>doAct(p,id,L,deco,tok))})}
  opts.push({w:2.5,run:()=>{ACT.q.push(p);runQ()}});opts.push({w:1.5,run:()=>runPerson(p,tok=>soloPose(p,tok))});
  let tot=0;opts.forEach(o=>tot+=o.w);let q=Math.random()*tot;for(const o of opts){q-=o.w;if(q<=0){o.run();return}}}
@@ -5207,7 +5215,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 16:10';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 16:13';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
