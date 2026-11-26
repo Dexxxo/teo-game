@@ -1756,6 +1756,7 @@ async function doAct(a,id,L,deco,tok){
  const H=PPL.her,M=PPL.him;const night=['night','evening'].includes(dayPhase());
  /* ===== dogs ===== */
  if(a.i!=null){const w=a,nm=dname(w.i);
+  if(id.startsWith('pz'))return await pzDogAct(w,id,L,deco,tok,nm);
   switch(id){
   case'fetch':{const p=M;say(w,`${nm}: апорт! 🎾`);await pStand(p,tok);const f=frontOf(p);await pTo(p,f.x,f.y,tok);const tx=clamp(p.x<200?p.x+150:p.x-150,50,350),ty=clamp(L.fl+150,L.fl+80,L.VH-110);p.face=tx>p.x?1:-1;p.pose='throw';p.throwQ=0;await twk(p,{throwQ:1},450,tok);
    const b={sx:p.x+p.face*20,sy:p.y-150,tx,ty,l:0,keep:true};BALLS.push(b);SFX.whoosh();await hold(200,tok);dogBark(w.i);await dogTo(w,tx-(tx>w.x?14:-14),ty,tok,true);BALLS.splice(BALLS.indexOf(b),1);w.ball=true;await hold(250,tok);
@@ -2415,7 +2416,7 @@ async function whistleAll(){$$('.modal.page',APP.mods).forEach(m=>m.remove());os
 /* ---- dogs live on their own: one real activity now and then + small idle moments for 1–2 dogs ---- */
 const AUTOACT={0:['zoom','fetch','roll','fire','window'],1:['lap','roll','beg','zoom'],2:['guard','fire','paw','roll'],3:['snack','zoom','roll','beg'],4:['howl','zoom','window','roll'],5:['dance','roll','beg']};
 async function autoDogAct(){const cand=WK.list.filter(w=>w.mode==='stay'&&!w.hidden);if(!cand.length)return;const w=pick(cand);const tok=ACT.tok;ACT.cur={a:w,auto:1};if(w.micro){w.pose=w.micro.p0;w.face=w.micro.f0;w.micro=null}
- try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
+ try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());{const ex=pzAutoIds(deco);if(ex.length&&Math.random()<.55)list.unshift(...shuffleArr(ex))}for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
  catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}}
 const MICRO=['look','nap','beg','hop','roll','look','nap'];
 function dogMicro(dt){if(S.roam===false||APP.scr!=='menu'||!ACT.H||PPL.sleep)return;const now=performance.now();let busy=WK.list.filter(w=>w.micro).length;
@@ -3269,7 +3270,7 @@ function pzBox(it,deco,L){const d=PZ[it.id],p=pzPos(it,deco,L);const g=it.g?1+it
 function pzSurfaces(deco,L,dep=0){const out=[];const w=L.win;if(w)out.push({p:'sill',y:w.y+w.h+2,x0:w.x+12,x1:w.x+w.w-12});if(deco&&deco.fire&&L.fire)out.push({p:'mantel',y:L.fire.y-146,x0:L.fire.x-50,x1:L.fire.x+50});for(const it of pzList(deco)){const d=PZ[it.id];if(!d||!d.top||it._drag)continue;let x=it.x,y=d.s==='ceil'?pzCeilY(L):it.y;if(it.p){if(dep>3)continue;const pp=pzPos0(it,deco,L,d,dep);x=pp.x;y=pp.y}out.push({p:it.u,y:y+d.top.dy,x0:x-d.top.hw,x1:x+d.top.hw})}return out}
 function spPoint(e,L){const deco=typeof curDeco==='function'?curDeco():null;const s=pzSurfaces(deco||{},L).find(q=>q.p===e.sp.p);if(!s)return null;return{x:clamp(s.x0+(s.x1-s.x0)/2+(e.sp.dx||0),s.x0,s.x1),y:s.y}}
 /* ---- drawing ---- */
-function pzDraw(c,it,deco,L,t,still){const d=PZ[it.id];if(!d)return;const p=pzPos(it,deco,L),col=d.cols[it.c||0],on=it.on!==false;c.save();c.translate(p.x,p.y);if(it._sw&&d.s==='ceil'){const a=t-it._sw;if(a<3000)c.rotate(.22*Math.exp(-a/700)*Math.sin(a*.011));else delete it._sw}if(it._land){const a=t-it._land;if(a<260){const k=Math.sin(a/260*Math.PI)*(1-a/260);c.scale(1+.14*k,1-.16*k)}else delete it._land}if(it._drag){c.translate(0,-3);c.scale(1.06,1.06)}if(it.f)c.scale(-1,1);const g=it.g?1+it.g*.08:1;if(g!==1)c.scale(g,g);c.lineJoin='round';c.lineCap='round';const lw=2.2;const W=d.w,H=d.h;
+function pzDraw(c,it,deco,L,t,still){const d=PZ[it.id];if(!d)return;const p=pzPos(it,deco,L),col=d.cols[it.c||0],on=it.on!==false;c.save();c.translate(p.x,p.y);if(it._sw&&d.s==='ceil'){const a=t-it._sw;if(a<3000)c.rotate(.22*Math.exp(-a/700)*Math.sin(a*.011));else delete it._sw}if(it._land){const a=t-it._land;if(a<260){const k=Math.sin(a/260*Math.PI)*(1-a/260);c.scale(1+.14*k,1-.16*k)}else delete it._land}if(it._drag){c.translate(0,-3);c.scale(1.06,1.06)}if(it._bump){const a=t-it._bump;if(a<1400){const k=Math.exp(-a/420)*Math.sin(a*.016);if(d.s==='ceil')c.rotate(.12*k);else if(it.id==='f_pouf')c.scale(1+.05*k,1-.06*k);else c.rotate(.06*k)}}if(it.f)c.scale(-1,1);const g=it.g?1+it.g*.08:1;if(g!==1)c.scale(g,g);c.lineJoin='round';c.lineCap='round';const lw=2.2;const W=d.w,H=d.h;
  const sh=()=>{if(d.s==='floor'||d.s==='top'){c.fillStyle='rgba(30,15,5,.2)';ell(c,0,0,W*.5,W*.12);c.fill()}};sh();
  switch(it.id){
  case'p_frame':rr(c,-W/2,-H/2,W,H,3);fs(c,col,OL,lw);rr(c,-W/2+5,-H/2+5,W-10,H-10,2);fs(c,'#BFE6FF',OL,1.4);c.fillStyle='#7EC8A4';c.beginPath();c.moveTo(-W/2+5,H/2-5);c.lineTo(-6,-4);c.lineTo(2,4);c.lineTo(8,-6);c.lineTo(W/2-5,H/2-5);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-9,-1);c.lineTo(-6,-4);c.lineTo(-3,-1);c.fill();ell(c,W/2-12,-H/2+11,3.5,3.5);c.fillStyle='#FFD23F';c.fill();break;
@@ -3309,6 +3310,7 @@ function drawPlaced(c,L,deco,t,still){const list=deco.pl;if(!list||!list.length)
  for(const ch of list)if(ch.p==='sill')pzDraw(c,ch,deco,L,t,still)}
 function pzNightK(){const ph=dayPhase();return ph==='night'?1:ph==='evening'?.75:ph==='sunset'?.5:.22}
 function drawPlacedLights(c,L,deco,t){const list=deco.pl;if(list&&list.length){const k=pzNightK();c.save();c.globalCompositeOperation='lighter';for(const it of list){const d=PZ[it.id];if(!d||!d.light||it.on===false)continue;const b=pzBox(it,deco,L);let x=b[0]+b[2]/2,y=b[1]+b[3]*(d.s==='ceil'?.6:d.s==='floor'?.15:.35);if(it.id==='p_sconce')x+=it.f?-8:8;const col=it.id==='p_neon'?PZ.p_neon.cols[it.c||0]:it.id==='c_bulbs'?'#FFE08A':'#FFD08A';const fl=it.id==='t_candle'?.85+.15*Math.sin(t*.02):1;const r=d.light*(.8+.2*k);const g=c.createRadialGradient(x,y,2,x,y,r);g.addColorStop(0,rgba(col,.32*k*fl));g.addColorStop(1,rgba(col,0));c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2)}c.restore()}
+ pzBumpTick(deco,L,t);
  if(list)for(const it of list){if(it.id==='t_player'&&RS.pzAnim&&RS.pzAnim[it.u]&&t<RS.pzAnim[it.u].until&&Math.random()<.025){const b=pzBox(it,deco,L);pzPart(b[0]+b[2]/2,b[1],'note',1)}}
  pzFx(c,t)}
 /* ---- room particles ---- */
@@ -3324,10 +3326,10 @@ function placedTap(it){const d=PZ[it.id],deco=curDeco(),L=APP.L;if(!d)return;con
  case'shine':anim('shine',800);SFX.chime&&SFX.chime(2);pzPart(cx2,cy2,'spark',10);toast('Какая красивая! 💛');break;
  case'flutter':case'spin':anim(d.act,2200);SFX.chime&&SFX.chime(1);pzPart(cx2,cy2,'spark',6);break;
  case'water':it.g=Math.min(3,(it.g||0)+1);save();pzPart(cx2,by,'drop',10);osc(520,.12,'sine',.05,700);setTimeout(()=>pzPart(cx2,by,'spark',6),600);toast(it.g>=3?'Растение счастливо! 🌿':'Полито 💧');break;
- case'music':{const on2=!(RS.pzAnim[it.u]&&now<RS.pzAnim[it.u].until);if(on2){anim('music',16000);pzPart(cx2,by,'note',14);const mel=[72,76,79,76,74,77,81,77,72,76,79,84];mel.forEach((m,i)=>osc(440*2**((m-69)/12),.35,'triangle',.05,0,i*.32));toast('Играет пластинка 🎶')}else{RS.pzAnim[it.u].until=now;toast('Пластинка остановлена')}break}
- case'fish':anim('fish',2600);pzPart(cx2,by+4,'food',12);osc(700,.08,'sine',.04,900);toast('Рыбки обедают 🐟');break;
- case'toy':anim('toy',1200);pzPart(cx2,by,'spark',8);try{dogBark(0,true)}catch(e){}toast('Тео выбрал мячик! 🎾');break;
- case'boing':anim('boing',900);osc(300,.2,'sine',.08,520);pzPart(cx2,by,'heart',4);break;
+ case'music':{const on2=!(RS.pzAnim[it.u]&&now<RS.pzAnim[it.u].until);if(on2){anim('music',16000);pzPart(cx2,by,'note',14);const mel=[72,76,79,76,74,77,81,77,72,76,79,84];mel.forEach((m,i)=>osc(440*2**((m-69)/12),.35,'triangle',.05,0,i*.32));toast('Играет пластинка 🎶');setTimeout(()=>pzCallDog('pzmusic'),900)}else{RS.pzAnim[it.u].until=now;toast('Пластинка остановлена')}break}
+ case'fish':anim('fish',2600);pzPart(cx2,by+4,'food',12);osc(700,.08,'sine',.04,900);toast('Рыбки обедают 🐟');setTimeout(()=>pzCallDog('pzaqua'),700);break;
+ case'toy':anim('toy',1200);pzPart(cx2,by,'spark',8);if(!pzCallDog('pztoys'))toast('Собачки заняты — попробуй чуть позже 🐾');break;
+ case'boing':anim('boing',900);osc(300,.2,'sine',.08,520);pzPart(cx2,by,'heart',4);pzCallDog('pzpouf');break;
  default:pzPart(cx2,cy2,'heart',6);SFX.tap();anim('love',900)}}
 function placedUyut(rid){const d=S.deco[rid];if(!d||!d.pl)return 0;let u=0;for(const it of d.pl){const p=PZ[it.id];if(p)u+=p.u*(it.g?1+it.g*.1:1)}return Math.round(u)}
 
@@ -3343,6 +3345,22 @@ function pzTarget(kind,w,h,fx,fy,self,deco,L){const fl=pzFloor(L);const cx=v=>cl
  let y=clamp(Math.max(fy,fl.y0),fl.y0,fl.y1),x=cx(fx);
  if(kind==='floor'){for(let pass=0;pass<3;pass++)for(const it of pzList(deco)){if(it===self||it.p||!PZ[it.id]||PZ[it.id].s!=='floor')continue;const d=PZ[it.id];if(Math.abs(it.y-y)>24)continue;const need=(w+d.w)/2+2;if(Math.abs(x-it.x)<need)x=cx(x<it.x?it.x-need:it.x+need)}}
  return{t:'floor',x,y,ok:true}}
+/* ===== dogs use placed things ===== */
+function pzFind(deco,id){return pzList(deco).filter(i=>i.id===id&&PZ[i.id])}
+function pzAutoIds(deco){const ids=[];if(pzFind(deco,'f_pouf').length)ids.push('pzpouf');if(pzFind(deco,'t_aqua').length)ids.push('pzaqua');if(pzFind(deco,'f_toys').length)ids.push('pztoys');if(pzFind(deco,'f_tree').length||pzFind(deco,'c_plant').length)ids.push('pzplant');if(pzFind(deco,'t_player').some(i=>RS.pzAnim&&RS.pzAnim[i.u]&&performance.now()<RS.pzAnim[i.u].until))ids.push('pzmusic','pzmusic');return ids}
+function pzFloorFoot(it,deco,L){const p=pzPos(it,deco,L);if(it.p==='sill'&&typeof windowSpot==='function'){const s=windowSpot(L,deco);return{x:clamp(p.x,30,370),y:s.y}}if(it.p){let par=pzList(deco).find(q=>q.u===it.p);let guard=0;while(par&&par.p&&guard++<4)par=pzList(deco).find(q=>q.u===par.p);if(par&&PZ[par.id]&&PZ[par.id].s==='floor')return{x:clamp(p.x,30,370),y:par.y+10}}if(it.p==='mantel')return{x:L.fire.x+40,y:L.fire.y+44};return{x:clamp(p.x,30,370),y:clamp(L.fl+90,L.fl+60,L.VH-100)}}
+async function pzDogAct(w,id,L,deco,tok,nm){const anim=(it,k,ms)=>{RS.pzAnim=RS.pzAnim||{};RS.pzAnim[it.u]={k,until:performance.now()+ms}};
+ if(id==='pzpouf'){const pf=pick(pzFind(deco,'f_pouf'));if(!pf||WK.list.some(o=>o!==w&&o.onPouf===pf.u))return false;say(w,`${nm} запрыгивает на пуфик 💤`);await dogTo(w,pf.x+(w.x<pf.x?-26:26),pf.y+8,tok);w.face=pf.x>w.x?1:-1;await dogJumpUp(w,30,tok,pf.x,pf.y-1);anim(pf,'boing',900);w.onPouf=pf.u;w.mode='stay';w.pose='sleep';await hold(4200,tok);w.onPouf=null;await dogHome(w,tok);return true}
+ if(id==='pzaqua'){const aq=pick(pzFind(deco,'t_aqua'));if(!aq)return false;const f=pzFloorFoot(aq,deco,L);say(w,`${nm} смотрит на рыбок 🐟`);await dogTo(w,f.x+(w.x<f.x?-16:16),f.y,tok);w.face=pzPos(aq,deco,L).x>w.x?1:-1;w.mode='stay';w.pose='beg';anim(aq,'fish',3000);await hold(3000,tok);heartsBurstV(w.x,w.y-60);await dogHome(w,tok);return true}
+ if(id==='pztoys'){const tb=pick(pzFind(deco,'f_toys'));if(!tb)return false;say(w,`${nm} роется в игрушках 🧸`);await dogTo(w,tb.x+(w.x<tb.x?-34:34),tb.y+6,tok);w.face=tb.x>w.x?1:-1;w.mode='stay';w.pose='sniff';anim(tb,'toy',1400);await hold(1300,tok);w.ball=true;dogBark(w.i);await dogTo(w,clamp(L.rug.x+(tb.x<200?60:-60),40,360),L.rug.y+6,tok,true);w.ball=false;w.mode='stay';w.pose='roll';heartsBurstV(w.x,w.y-40);await hold(1800,tok);w.pose='sit';await dogHome(w,tok);return true}
+ if(id==='pzplant'){const pl=pick(pzFind(deco,'f_tree').concat(pzFind(deco,'c_plant')));if(!pl)return false;const p=pzPos(pl,deco,L);const fy=PZ[pl.id].s==='floor'?pl.y+8:clamp(L.fl+90,L.fl+60,L.VH-100);say(w,`${nm} нюхает листики 🌿`);await dogTo(w,clamp(p.x+(w.x<p.x?-24:24),30,370),fy,tok);w.face=p.x>w.x?1:-1;w.mode='stay';w.pose='sniff';pl._bump=performance.now();await hold(2000,tok);await dogHome(w,tok);return true}
+ if(id==='pzmusic'){say(w,`${nm} танцует под пластинку 🎶`);await dogTo(w,L.rug.x+rnd(-60,60),L.rug.y+rnd(-6,10),tok);w.mode='stay';for(let k=0;k<6;k++){w.pose=k%2?'beg':'sit';w.face=k%2?1:-1;await hold(420,tok)}heartsBurstV(w.x,w.y-60);w.pose='sit';await dogHome(w,tok);return true}
+ return false}
+function pzCallDog(id){if(typeof ACT==='undefined'||ACT.cur||!WK||!WK.list.length)return false;const cand=WK.list.filter(w=>w.mode==='stay'&&!w.hidden);if(!cand.length)return false;const w=pick(cand),tok=ACT.tok;ACT.cur={a:w,auto:1};if(w.micro){w.pose=w.micro.p0;w.face=w.micro.f0;w.micro=null}
+ (async()=>{try{await pzDogAct(w,id,APP.L,curDeco(),tok,dname(w.i))}catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}})();return true}
+/* ===== things react to passers-by ===== */
+function pzBumpTick(deco,L,t){const list=deco.pl;if(!list||!list.length||typeof WK==='undefined')return;const movers=WK.list.filter(w=>!w.hidden&&w.mode!=='stay').map(w=>({x:w.x,y:w.y}));for(const p of[PPL.her,PPL.him])if(p&&p.mode&&p.mode!=='stay')movers.push({x:p.x,y:p.y});if(!movers.length)return;
+ for(const it of list){const d=PZ[it.id];if(!d||it.p)continue;if(!['f_tree','c_plant','f_lamp','c_lantern','c_stars','f_pouf','c_chand','c_bulbs'].includes(it.id))continue;if(it._bump&&t-it._bump<1400)continue;for(const m of movers){if(Math.abs(m.x-it.x)>d.w/2+12)continue;if(d.s==='floor'&&Math.abs(m.y-it.y)>28)continue;it._bump=t;break}}}
 /* ===== design mode «Обустроить» ===== */
 const PZI={};
 function pzIcon(id,col=0){const k=id+col;if(PZI[k])return PZI[k];const d=PZ[id],S2=112,cv=mkCanvas(S2,S2),c=cv.getContext('2d');const sc=Math.min(80/d.w,80/d.h,2.4);c.translate(S2/2,S2/2);c.scale(sc,sc);const L0={fl:400,VH:700,win:null};const it={id,u:'icon',x:0,y:d.s==='wall'?0:d.s==='ceil'?-d.h/2:d.h/2,c:col};
@@ -3741,7 +3759,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 09:28';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 09:32';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
