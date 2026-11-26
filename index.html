@@ -3752,7 +3752,7 @@ async function useBoost(b){updHUD();if(b.id==='paw'||b.id==='bomb'){G.target=b.i
  if(b.id==='shuffle'){G.busy=true;clearIdle();await reshuffle();G.busy=false}}
 function useTarget(cell){const id=G.target;G.target=null;updBoosters();const[r,c]=cell;
  if(id==='paw'){burst(cx(c),cy(r),['#FFB3C8','#fff'],1,{type:'paw',size:16,v:0,max:700});heartsAt(cx(c),cy(r),5);boardBlast([K(r,c)])}
- else{const ks=[];for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)if(cellAt(r+i,c+j)&&cellAt(r+i,c+j).on)ks.push(K(r+i,c+j));boomFx(r,c,1);SFX.boom();boardBlast(ks)}}
+ else{const ks=[];for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)if(cellAt(r+i,c+j)&&cellAt(r+i,c+j).on)ks.push(K(r+i,c+j));bombFx(r,c,1);SFX.boom();boardBlast(ks)}}
 
 /* ===== coupons ===== */
 function rollCoupon(){if(!S.pool.length)return false;if(!S.coupons.length)return true;const p=[.15,.3,.5][S.rate]+((S.run&&S.run.perks.luck)||0)*.1+(G.lv&&G.lv.boss?1:0);return Math.random()<p}
@@ -3981,7 +3981,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 10:38';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 10:43';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
