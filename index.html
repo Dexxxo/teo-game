@@ -482,6 +482,8 @@ button.chip{cursor:pointer;font-family:inherit}
 .rdot{width:11px;height:11px;border-radius:50%;border:0;padding:0;background:#FFF3D6;opacity:.8}.rdot.on{background:#FFD24A;transform:scale(1.35);opacity:1}.rdot.lk{background:rgba(255,255,255,.3)}
 .rarr{position:absolute;top:46%;width:34px;height:58px;border:0;border-radius:14px;background:rgba(40,22,10,.4);color:#FFF3D6;font:900 30px/54px 'Nunito',sans-serif;pointer-events:auto;padding:0;text-align:center}
 .rarr.l{left:4px}.rarr.r{right:4px}.rarr:active{background:rgba(40,22,10,.7)}
+.rarr{width:54px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-size:0}
+.rarr b{font:900 26px/22px 'Nunito',sans-serif}.rarr small{font:800 9px/1.1 'Nunito',sans-serif;margin-top:2px;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;opacity:.95}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -1824,7 +1826,7 @@ function ensureLife(L,rid,deco){if(!L||!deco)return;const key=lifeKey(L,rid,deco
  const H=computeHomes(L,deco);ACT.H=H;
  const old=WK.list;WK.list=homeDogs().map(i=>{const o=old.find(w=>w.i===i)||{i,ph:0,jump:0};const h=H['d'+i];return Object.assign(o,{key:'d'+i,x:h.x,y:h.y,z:h.z||0,hop:0,face:h.face||1,mode:'stay',pose:h.pose,ball:false,_res:null,micro:null,mt:null})});
  for(const w of['her','him']){const h=H[w];PPL[w]=Object.assign(PPL[w]||{},{who:w,key:w,x:h.x,y:h.y,face:w==='her'?1:-1,mode:'stay',pose:h.sit?'sit':'stand',sitH:h.sit,ph:0,blink:0,throwQ:0,carry:null,_res:null})}
- PPL.joint=H.her.sofa?{k:'sofa',on:true}:null;PPL.sleep=isSleepTime(deco);PPL.nap=false;RS.bathDog=null;WK.list.forEach(w=>w.hidden=PPL.sleep&&w.i===1)}
+ PPL.joint=H.her.sofa?{k:'sofa',on:true}:null;PPL.sleep=isSleepTime(deco);PPL.nap=false;RS.bathDog=null;WK.list.forEach(w=>w.hidden=PPL.sleep&&w.i===1);if(APP.walkIn){const d=APP.walkIn;APP.walkIn=null;try{walkInPeople(d,ACT.tok)}catch(e){}}}
 function ensureWalkers(L,rid){if(typeof curDeco==='function')ensureLife(L,rid,curDeco())}
 function ensurePeople(L,rid,deco){ensureLife(L,rid,deco)}
 
@@ -3776,14 +3778,17 @@ function starterTick(){if(!APP.L||APP.scr==='game')return;const rid=S.rooms&&S.r
 function houseOrder(){const H=houseOf(S.rooms.cur);const o=H.floors?[...H.floors.flat(),...(H.yard||[])]:H.rooms.slice();return o.filter(id=>ROOM[id])}
 function roomNavHtml(){const o=houseOrder();if(o.length<2)return'';const cur=S.rooms.cur,i=o.indexOf(cur);const open=id=>roomOpen(ROOM[id]);
  const dots=o.map(id=>`<button class="rdot ${id===cur?'on':''} ${open(id)?'':'lk'}" data-a="rgo" data-id="${id}" aria-label="${esc(ROOM[id].n)}"></button>`).join('');
- const hasN=o.some((id,k)=>k!==i&&open(id));
- return`<div class="rnavp"><div class="rname">${esc(ROOM[cur]?ROOM[cur].n:'')}</div><div class="rdots">${dots}</div></div>${hasN?`<button class="rarr l" data-a="rprev" aria-label="Назад">‹</button><button class="rarr r" data-a="rnext" aria-label="Дальше">›</button>`:''}`}
+ const nb=d=>{for(let k=1;k<o.length;k++){const id=o[(i+d*k+o.length*3)%o.length];if(open(id))return id}return null};const nx=nb(1),pv=nb(-1);const fl=id=>{const H=houseOf(cur);if(!H.floors)return 0;if(H.floors[0].includes(id))return 0;if(H.floors[1].includes(id))return 1;return 2};const lab=id=>id?`<small>${fl(id)<fl(cur)?'⬆ ':fl(id)>fl(cur)?'⬇ ':''}${esc(ROOM[id].n)}</small>`:'';const hasN=!!(nx||pv);
+ return`<div class="rnavp"><div class="rname">${esc(ROOM[cur]?ROOM[cur].n:'')}</div><div class="rdots">${dots}</div></div>${hasN?`<button class="rarr l" data-a="rprev" aria-label="Назад"><b>‹</b>${lab(pv)}</button><button class="rarr r" data-a="rnext" aria-label="Дальше"><b>›</b>${lab(nx)}</button>`:''}`}
 function roomStep(dir){const o=houseOrder(),i=o.indexOf(S.rooms.cur);if(i<0)return;for(let k=1;k<o.length;k++){const id=o[(i+dir*k+o.length*3)%o.length];if(roomOpen(ROOM[id])){goRoom(id,dir);return}}}
 function goRoom(id,dir=1){const r=ROOM[id];if(!r||id===S.rooms.cur)return;if(!roomOpen(r)){houseTap(id);return}if(APP.rslide)return;
  let snap=null;try{const cv=APP.cv;snap=document.createElement('canvas');snap.width=cv.width;snap.height=cv.height;snap.getContext('2d').drawImage(cv,0,0);snap.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;transition:transform .38s cubic-bezier(.3,.7,.2,1);box-shadow:0 0 30px rgba(0,0,0,.4)';cv.parentNode.insertBefore(snap,cv.nextSibling)}catch(e){snap=null}
- if(!S.rooms.un.includes(id))S.rooms.un.push(id);S.rooms.cur=id;ensureDeco(id);save();APP.roomDirty=true;SFX.tap&&SFX.tap();showMenu(true);
+ if(!S.rooms.un.includes(id))S.rooms.un.push(id);S.rooms.cur=id;ensureDeco(id);save();APP.roomDirty=true;SFX.tap&&SFX.tap();APP.walkIn=dir;showMenu(true);
  if(snap){APP.rslide=1;const cv=APP.cv;cv.style.transition='none';cv.style.transform=`translateX(${dir*100}%)`;requestAnimationFrame(()=>requestAnimationFrame(()=>{cv.style.transition='transform .38s cubic-bezier(.3,.7,.2,1)';cv.style.transform='translateX(0)';snap.style.transform=`translateX(${-dir*100}%)`;setTimeout(()=>{snap.remove();cv.style.transition='';cv.style.transform='';APP.rslide=0},420)}))}
 }
+
+async function walkInPeople(dir,tok){if(PPL.sleep)return;const j=PPL.joint;PPL.joint=null;const jobs=['her','him'].map(async(w,k)=>{const p=PPL[w];if(!p)return;const tx=p.x,ty=p.y,sit=p.sitH,pose=p.pose,face=p.face;p.sitH=0;p.pose='walk';p.x=dir>0?408+k*26:-8-k*26;p.mode='stay';try{await pTo(p,tx,ty,tok)}catch(e){return}p.face=face;p.pose=pose;p.sitH=sit;p.mode='stay'});
+ try{await Promise.all(jobs)}finally{if(ACT.tok===tok)PPL.joint=j}}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4132,7 +4137,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:25';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:27';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
