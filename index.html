@@ -449,6 +449,11 @@ button.chip{cursor:pointer;font-family:inherit}
 .ni .nimg{width:34px;height:34px;display:block;filter:drop-shadow(0 2px 0 rgba(0,0,0,.18))}.icoimg{width:24px;height:24px;display:block;margin:auto}
 .flyr{position:absolute;width:26px;height:26px;z-index:70;pointer-events:none;left:0;top:0;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
 .chip.bump{animation:chipBump .35s cubic-bezier(.2,1.6,.4,1)}@keyframes chipBump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.piano{position:relative;display:flex;gap:2px;height:150px;margin:10px 0 4px;padding:6px;background:#3A2418;border-radius:12px;touch-action:none}
+.piano .pk{flex:1;border:0;border-radius:0 0 8px 8px;background:linear-gradient(#fff,#F1ECE0);box-shadow:inset 0 -6px 0 #D9D0BC;padding:0;touch-action:none}
+.piano .pk.on{background:#FFE6A8;transform:translateY(2px)}
+.piano .bk{position:absolute;top:6px;width:10.4%;flex:none;height:62%;background:linear-gradient(#3b2a22,#150d09);border-radius:0 0 6px 6px;box-shadow:none;z-index:2}
+.piano .bk.on{background:#6b4a3a}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -2239,7 +2244,7 @@ const EXTAP={
  x_boxes:async(e,L,deco,tok)=>{say(PPL.her,'Помнишь, как мы сюда переезжали? 📦');await hold(2500,tok);say(PPL.him,'Конечно. Самая важная коробка — с надписью «НАШЕ» 💛');await hold(2800,tok)},
  x_pizza:async(e,L,deco,tok)=>{say(PPL.him,'Первый ужин в новой квартире — на полу, с пиццей 🍕');await hold(2600,tok);say(PPL.her,'И это было одно из лучших свиданий 😄');heartsBurstV(PPL.her.x,PPL.her.y-150);await hold(2400,tok)},
  x_cafetable:async(e,L,deco,tok)=>{say(PPL.her,`Помнишь ${fmtD((S.dates||{}).start)}? ☕`);await hold(2400,tok);say(PPL.him,'Я тогда так волновался… и до сих пор волнуюсь, когда ты рядом 💛',3000);heartsBurstV(xpos(e,L).x,xpos(e,L).y-120);await hold(3000,tok)},
- x_piano:async(e,L,deco,tok)=>{RS.piano=4200;tune([7,4,4,5,2,2,0,2,4,5,7,7,7],392,.24,'sine',.07);say(PPL.him,'Это для тебя 🎶');await hold(3200,tok)},
+ x_piano:async(e,L,deco,tok)=>{pianoSong();say(PPL.him,'Это для тебя 🎶');await hold(4000,tok);setTimeout(()=>{if(!APP.mods.children.length)showPiano()},300)},
  x_tv:async(e,L,deco,tok)=>{const p=xpos(e,L);RS.tv=11000;osc(900,.05,'square',.04);const ds=freeDogs().slice(0,3);if(ds[0])say(ds[0],`${dn(ds[0].i)} смотрит мультики 📺`);await Promise.all(ds.map((w,k)=>dogTo(w,clamp(p.x-40+k*40,30,370),clamp(p.y+56+(k%2)*10,L.fl+40,L.VH-20),tok).then(()=>{w.mode='stay';w.pose='sit';w.face=w.x<p.x?1:-1})));await hold(6500,tok);await Promise.all(ds.map(w=>dogHome(w,tok)))},
  x_cuckoo:async(e,L,deco,tok)=>{RS.cuckoo=1600;for(let k=0;k<2;k++){osc(660,.16,'sine',.08,0,k*.55);osc(523,.22,'sine',.08,0,k*.55+.2)}await hold(1400,tok)},
  x_aquarium:async(e,L,deco,tok)=>{const p=xpos(e,L);const s=v2s(p.x,p.y-70);burst(s.x,s.y,['#BFE8FF','#FFFFFF'],12,{type:'ring',size:6,v:.6,up:1.5,g:-.02,max:1000});say(PPL.her,'Рыбки, привет! 🐠');await hold(1800,tok)},
@@ -2761,7 +2766,7 @@ function setInfo(rid){const d=S.deco[rid]||{};const cnt={};for(const sl of SLOTS
 function sShuffle(a,R){for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-1)%SEASON_LEN;let rc=RECIPES[idx];if(n<=15&&rc.g.some(x=>x==='feed'||x==='sleepy'))rc=Object.assign({},rc,idx===10?{g:['mud','dog'],pat:'bottom'}:{g:rc.g.filter(x=>x!=='feed')});const cyc=Math.floor((n-1)/(SEASON_LEN*4));const tier=cyc+Math.floor(idx/5)*.5;
  const L={n,se,season:se.id,idx,boss:!!rc.boss,hard:!!rc.hard,fin:!!rc.fin,muts:[],goals:[]};
- {const sh=(n<=3||rc.boss||rc.g.includes('treat'))?null:(R()<.8?(pool=>pool[(n*7+cyc*3)%pool.length])(rc.g.includes('box')||rc.g.includes('feed')?SHAPES2.filter(x=>!/Домик|половинки|Лапка|Бублик/.test(x.n)):SHAPES2):null);L.shape=sh?sh.m:null;L.shapeN=sh?sh.n:''}
+ {const sh=(n<=3||rc.boss||rc.g.includes('treat'))?null:(R()<.8?(pool=>pool[(n*7+cyc*3)%pool.length])(rc.g.includes('box')||rc.g.includes('feed')?SHAPES2.filter(x=>!/Домик|половинки|Лапка|Бублик/.test(x.n)):rc.g.some(x=>x==='ss'||x==='wool'||x==='mud'||x==='sleepy')?SHAPES2.filter(x=>!/Лапка/.test(x.n)):SHAPES2):null);L.shape=sh?sh.m:null;L.shapeN=sh?sh.n:''}
  const on=(r,c)=>!L.shape||L.shape[r][c]==='#';
  const cells=p=>{const out=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(on(r,c)&&PATS[p](r,c))out.push([r,c]);return out};
  const pk=Object.keys(PATS);const pat=rc.pat||pk[Math.floor(R()*pk.length)];
@@ -2776,6 +2781,9 @@ function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-
  if(g==='sleepy'||g==='feed'){const all2=cells(g==='feed'?(rc.fpat||'center'):(rc.spat||pat));const pickd=[];for(const x of all2){if(pickd.every(q=>Math.abs(q[0]-x[0])+Math.abs(q[1]-x[1])>=2))pickd.push(x);if(pickd.length>=(g==='feed'?3:4))break}for(const[r,c]of pickd)L.ss.push([r,c,g]);L.goals.push({type:g,need:pickd.length})}
  if(g==='mud'){const cs=cells(rc.mpat||pat).slice(0,10);for(const[r,c]of cs)L.mud.push([r,c]);L.goals.push({type:'mud',need:L.mud.length})}
   if(g==='treat'){L.treat=Math.min(5,2+Math.floor(idx/6)+cyc);L.goals.push({type:'treat',need:L.treat})}}
+ if(L.shape){const o2=(r,c)=>r>=0&&c>=0&&r<8&&c<8&&L.shape[r][c]==='#';const run=(r,c)=>{for(let a=-2;a<=0;a++){if(o2(r,c+a)&&o2(r,c+a+1)&&o2(r,c+a+2))return 1;if(o2(r+a,c)&&o2(r+a+1,c)&&o2(r+a+2,c))return 1}return 0};
+  L.ice=L.ice.filter(x=>run(x[0],x[1]));if(L.floor.length){L.floor=L.floor.filter(x=>run(x[0],x[1]));const g=L.goals.find(x=>x.type==='floor');if(g){const nn=L.floor.reduce((q,x)=>q+x[2],0);if(nn)g.need=nn;else L.goals.splice(L.goals.indexOf(g),1)}}}
+ if(L.ice.length){const occ=new Set();for(const x of[...L.boxes,...L.wool,...L.mud,...L.ss])occ.add(x[0]*8+x[1]);L.ice=L.ice.filter(([r,c])=>on(r,c)&&!occ.has(r*8+c));const g=L.goals.find(x=>x.type==='ice');if(g){if(L.ice.length)g.need=L.ice.length;else L.goals.splice(L.goals.indexOf(g),1)}}
  const dogGoals=rc.g.filter(g=>g==='dog').length;const used=[];
  for(let i=0;i<dogGoals;i++){const d=L.colList[i];used.push(d);const need=Math.round(Math.min(18+idx*1.7+cyc*5,48)*(dogGoals>1?.75:1));L.goals.push({type:'dog',d,need})}
  L.goals=L.goals.filter(g=>g.need>0);if(!L.goals.length)L.goals.push({type:'dog',d:L.colList[0],need:15});
@@ -3301,10 +3309,19 @@ function setRow(id,label,on){return`<label class="setrow"><span>${label}</span><
 function showSettings(){const vol=S.vol==null?.5:S.vol;const p=ask(`<div class="center"><h2 class="lob">Настройки</h2></div><div class="sets">${setRow('music','🎵 Музыка',S.music)}${setRow('sound','🔔 Звуки',S.sound)}<label class="setrow col"><span>🔊 Громкость</span><input type="range" min="0" max="100" value="${Math.round(vol*100)}" data-set="vol"></label>${setRow('vib','📳 Вибрация',S.vib!==false)}</div>`,[{t:'Готово',c:'green',v:1}]);
  const m=APP.mods.lastElementChild;m.querySelectorAll('[data-set]').forEach(inp=>inp.addEventListener(inp.type==='range'?'input':'change',()=>{const k=inp.dataset.set;auInit();
   if(k==='music'){S.music=inp.checked;musicSet()}else if(k==='sound'){S.sound=inp.checked;if(S.sound)SFX.tap()}else if(k==='vib'){S.vib=inp.checked;if(S.vib)vib(30)}else if(k==='vol'){S.vol=inp.value/100;try{AU.m.gain.setTargetAtTime(S.vol,AU.c.currentTime,.05)}catch(e){}}save()}));return p}
+
+/* ===== играбельное пианино ===== */
+const PIANO_W=[0,2,4,5,7,9,11,12],PIANO_B=[[1,12.5],[3,25],[null],[6,50],[8,62.5],[10,75]];
+function pianoNote(semi,vol=.16){auInit();const f=262*2**(semi/12);osc(f,1.1,'triangle',vol);osc(f*2,.6,'sine',vol*.35);osc(f*3,.3,'sine',vol*.12);RS.piano=900}
+async function pianoSong(){const m=[[7,.0],[4,.3],[4,.6],[5,.9],[2,1.2],[2,1.5],[0,1.8],[2,2.1],[4,2.4],[5,2.7],[7,3.0],[7,3.3],[7,3.6]];m.forEach(([n,t])=>setTimeout(()=>pianoNote(n,.13),t*1000));RS.piano=4200}
+function showPiano(){const keys=PIANO_W.map((s,i)=>`<button class="pk" data-n="${s}"></button>`).join('');const blk=PIANO_B.filter(b=>b[0]!=null).map(b=>`<button class="pk bk" data-n="${b[0]}" style="left:calc(${b[1]}% - 5.2%)"></button>`).join('');
+ const p=ask(`<div class="center"><h2 class="lob">Пианино 🎹</h2><div class="sub">Нажимай на клавиши!</div></div><div class="piano">${keys}${blk}</div>`,[{t:'Сыграть мелодию',c:'blue',v:2},{t:'Готово',c:'green',v:1}]);
+ const m=APP.mods.lastElementChild;m.querySelectorAll('.pk').forEach(k=>k.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pianoNote(+k.dataset.n);k.classList.add('on');setTimeout(()=>k.classList.remove('on'),160);vib(8)}));
+ p.then(v=>{if(v===2){pianoSong();setTimeout(showPiano,4300)}});return p}
 /* ===== free placement (Sims-like) ===== */
 const PZC=[{id:'wall',n:'Стены',ic:'🖼'},{id:'ceil',n:'Потолок',ic:'💡'},{id:'floor',n:'Пол',ic:'🪴'},{id:'top',n:'Мелочи',ic:'🕯'}];
 const PZ={
- p_frame:{n:'Картина «Горы»',s:'wall',w:46,h:36,p:220,u:6,cols:['#A8743F','#F4F0E8','#E2B23A','#F2A7C3']},
+ p_frame:{n:'Картина',s:'wall',w:46,h:36,p:220,u:6,cols:['#A8743F','#F4F0E8','#E2B23A','#F2A7C3'],act:'art'},
  p_photo:{n:'Наше фото',s:'wall',w:34,h:40,p:200,u:8,cols:['#FFFFFF','#C98A44','#F2A7C3','#8CC8F5'],act:'love'},
  p_clock:{n:'Часы',s:'wall',w:34,h:34,p:320,u:6,cols:['#FFFFFF','#F6D66A','#A6D8F2','#F2A7C3'],act:'clock'},
  p_mirror:{n:'Зеркало',s:'wall',w:36,h:48,p:300,u:6,cols:['#E2B23A','#F4F0E8','#C98A44','#B79CF5'],act:'shine'},
@@ -3348,7 +3365,13 @@ function spPoint(e,L){const deco=typeof curDeco==='function'?curDeco():null;cons
 function pzDraw(c,it,deco,L,t,still){const d=PZ[it.id];if(!d)return;const p=pzPos(it,deco,L),col=d.cols[it.c||0],on=it.on!==false;c.save();c.translate(p.x,p.y);if(it._sw&&d.s==='ceil'){const a=t-it._sw;if(a<3000)c.rotate(.22*Math.exp(-a/700)*Math.sin(a*.011));else delete it._sw}if(it._land){const a=t-it._land;if(a<260){const k=Math.sin(a/260*Math.PI)*(1-a/260);c.scale(1+.14*k,1-.16*k)}else delete it._land}if(it._drag){c.translate(0,-3);c.scale(1.06,1.06)}if(it._bump){const a=t-it._bump;if(a<1400){const k=Math.exp(-a/420)*Math.sin(a*.016);if(d.s==='ceil')c.rotate(.12*k);else if(it.id==='f_pouf')c.scale(1+.05*k,1-.06*k);else c.rotate(.06*k)}}if(it.f)c.scale(-1,1);const g=it.g?1+it.g*.08:1;if(g!==1)c.scale(g,g);c.lineJoin='round';c.lineCap='round';const lw=2.2;const W=d.w,H=d.h;
  const sh=()=>{if(d.s==='floor'||d.s==='top'){c.fillStyle='rgba(30,15,5,.2)';ell(c,0,0,W*.5,W*.12);c.fill()}};sh();
  switch(it.id){
- case'p_frame':rr(c,-W/2,-H/2,W,H,3);fs(c,col,OL,lw);rr(c,-W/2+5,-H/2+5,W-10,H-10,2);fs(c,'#BFE6FF',OL,1.4);c.fillStyle='#7EC8A4';c.beginPath();c.moveTo(-W/2+5,H/2-5);c.lineTo(-6,-4);c.lineTo(2,4);c.lineTo(8,-6);c.lineTo(W/2-5,H/2-5);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-9,-1);c.lineTo(-6,-4);c.lineTo(-3,-1);c.fill();ell(c,W/2-12,-H/2+11,3.5,3.5);c.fillStyle='#FFD23F';c.fill();break;
+ case'p_frame':{rr(c,-W/2,-H/2,W,H,3);fs(c,col,OL,lw);const v=(it.v||0)%4,x0=-W/2+5,y0=-H/2+5,w=W-10,h=H-10;c.save();rr(c,x0,y0,w,h,2);c.clip();
+  const sky=[['#BFE6FF','#EAF7FF'],['#9FD8F0','#DDF3FF'],['#FFE9F1','#FFF7E8'],['#FFB27A','#FFE0A8']][v];const gr=c.createLinearGradient(0,y0,0,y0+h);gr.addColorStop(0,sky[0]);gr.addColorStop(1,sky[1]);c.fillStyle=gr;c.fillRect(x0,y0,w,h);
+  if(v===0){c.fillStyle='#7EC8A4';c.beginPath();c.moveTo(x0,y0+h);c.lineTo(-6,-4);c.lineTo(2,4);c.lineTo(8,-6);c.lineTo(x0+w,y0+h);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-9,-1);c.lineTo(-6,-4);c.lineTo(-3,-1);c.fill();ell(c,W/2-12,-H/2+11,3.5,3.5);c.fillStyle='#FFD23F';c.fill()}
+  else if(v===1){c.fillStyle='#4FA8DC';c.fillRect(x0,y0+h*.5,w,h*.5);c.strokeStyle='#fff';c.lineWidth=1.2;for(let k=0;k<3;k++){c.beginPath();c.moveTo(x0+4+k*10,y0+h*.65+k*3);c.quadraticCurveTo(x0+9+k*10,y0+h*.6+k*3,x0+14+k*10,y0+h*.65+k*3);c.stroke()}ell(c,x0+w-9,y0+8,4,4);c.fillStyle='#FFD23F';c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-3,y0+h*.5);c.lineTo(-3,y0+h*.2);c.lineTo(7,y0+h*.48);c.closePath();c.fill()}
+  else if(v===2){c.fillStyle='#8FD68F';c.fillRect(x0,y0+h*.65,w,h*.35);const cl=['#F2575A','#FFD23F','#B77CF0','#FF8FB6'];for(let k=0;k<6;k++){const fx=x0+6+k*7,fy=y0+h*.62+(k%2)*5;c.strokeStyle='#4E9A4E';c.lineWidth=1;c.beginPath();c.moveTo(fx,fy);c.lineTo(fx,y0+h);c.stroke();ell(c,fx,fy,3.2,3.2);c.fillStyle=cl[k%4];c.fill()}}
+  else{ell(c,0,y0+h*.62,10,10);c.fillStyle='#FF6B4A';c.fill();c.fillStyle='#E8884A';c.fillRect(x0,y0+h*.7,w,h*.3);c.fillStyle='rgba(255,230,160,.6)';c.fillRect(-8,y0+h*.72,16,2);c.fillRect(-5,y0+h*.8,10,2)}
+  c.restore();rr(c,x0,y0,w,h,2);c.strokeStyle=OL;c.lineWidth=1.4;c.stroke();if(RS.pzAnim&&RS.pzAnim[it.u]&&RS.pzAnim[it.u].k==='art'&&t<RS.pzAnim[it.u].until){c.globalAlpha=.5*Math.sin((RS.pzAnim[it.u].until-t)/500);c.fillStyle='#fff';c.fillRect(x0,y0,w,h);c.globalAlpha=1}break}
  case'p_photo':rr(c,-W/2,-H/2,W,H,3);fs(c,col,OL,lw);rr(c,-W/2+4,-H/2+4,W-8,H-12,2);fs(c,'#FFE9C7',OL,1.2);ell(c,-5,-3,4.5,5);fs(c,'#7A4A26',null);ell(c,5,-3,4.5,5);fs(c,'#3B2416',null);ell(c,-5,6,6,5);fs(c,'#F2A7C3',null);ell(c,5,6,6,5);fs(c,'#5A6E8C',null);c.fillStyle='#F2575A';c.font='9px serif';c.textAlign='center';c.fillText('♥',0,H/2-3);break;
  case'p_clock':{ell(c,0,0,W/2,W/2);fs(c,col,OL,lw);ell(c,0,0,W/2-4,W/2-4);fs(c,'#FFFDF6',OL,1);c.fillStyle=OL;for(let k=0;k<12;k++){const a=k/12*6.283;ell(c,Math.cos(a)*(W/2-7),Math.sin(a)*(W/2-7),1,1);c.fill()}const nd=new Date(),hh=(nd.getHours()%12+nd.getMinutes()/60)/12*6.283,mm=nd.getMinutes()/60*6.283;c.strokeStyle=OL;c.lineWidth=2;c.beginPath();c.moveTo(0,0);c.lineTo(Math.sin(hh)*7,-Math.cos(hh)*7);c.stroke();c.lineWidth=1.4;c.beginPath();c.moveTo(0,0);c.lineTo(Math.sin(mm)*11,-Math.cos(mm)*11);c.stroke();const ss=(t*.001)%60/60*6.283;c.strokeStyle='#E0565B';c.lineWidth=.8;c.beginPath();c.moveTo(0,0);c.lineTo(Math.sin(ss)*12,-Math.cos(ss)*12);c.stroke();
   const ck=RS.pzAnim&&RS.pzAnim[it.u];if(ck&&ck.k==='clock'&&t<ck.until){const q=Math.sin(Math.min(1,(ck.until-t)/300)*Math.PI/2);ell(c,0,-W/2-4-q*10,6,5);fs(c,'#FFD23F',OL,1.4);c.beginPath();c.moveTo(5,-W/2-4-q*10);c.lineTo(10,-W/2-3-q*10);c.lineTo(5,-W/2-1-q*10);fs(c,'#F08A2C',null)}break}
@@ -3398,6 +3421,7 @@ function placedTap(it){const d=PZ[it.id],deco=curDeco(),L=APP.L;if(!d)return;con
  switch(d.act){
  case'light':it.on=it.on===false;save();SFX.tap();pzPart(cx2,cy2,'spark',it.on?8:3);toast(it.on?'Свет включён ✨':'Свет выключен');break;
  case'clock':anim('clock',1600);osc(880,.18,'sine',.08);osc(698,.25,'sine',.08,0,.22);osc(880,.18,'sine',.08,0,.6);osc(698,.25,'sine',.08,0,.82);pzPart(cx2,by,'spark',5);toast('Ку-ку! Сейчас '+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));break;
+ case'art':{it.v=((it.v||0)+1)%4;save();anim('art',700);pzPart(cx2,cy2,'spark',8);SFX.chime&&SFX.chime(1);toast(['Горы ⛰','Море 🌊','Луг с цветами 🌷','Закат 🌅'][it.v]);break}
  case'shine':anim('shine',800);SFX.chime&&SFX.chime(2);pzPart(cx2,cy2,'spark',10);toast('Какая красивая! 💛');break;
  case'flutter':case'spin':anim(d.act,2200);SFX.chime&&SFX.chime(1);pzPart(cx2,cy2,'spark',6);break;
  case'water':it.g=Math.min(3,(it.g||0)+1);save();pzPart(cx2,by,'drop',10);osc(520,.12,'sine',.05,700);setTimeout(()=>pzPart(cx2,by,'spark',6),600);toast(it.g>=3?'Растение счастливо! 🌿':'Полито 💧');break;
@@ -3981,7 +4005,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 10:43';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 12:36';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
