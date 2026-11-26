@@ -455,6 +455,27 @@ button.chip{cursor:pointer;font-family:inherit}
 .piano .bk{position:absolute;top:6px;width:10.4%;flex:none;height:62%;background:linear-gradient(#3b2a22,#150d09);border-radius:0 0 6px 6px;box-shadow:none;z-index:2}
 .piano .bk.on{background:#6b4a3a}
 .pzcard.set{min-width:104px}.pzcard.set .seti{font-size:34px;line-height:46px;display:block}.pzcard.set[disabled]{opacity:.45}
+.bighouse{margin:2px -6px 10px;padding:6px 6px 0;border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(#9FD6F5,#DDF1FF 60%,#BFE6A8 60%)}
+.bighouse.dusk{background:linear-gradient(#F7A97A,#FFD9A8 60%,#9CC585 60%)}
+.bighouse.night{background:linear-gradient(#1B2147,#3A4378 60%,#3F6B4A 60%)}
+.bsky{position:absolute;inset:0;pointer-events:none}.bsun{position:absolute;right:16px;top:12px;width:34px;height:34px;border-radius:50%;background:#FFE27A;box-shadow:0 0 22px #FFE27A}
+.bighouse.night .bsun{background:#F4F1DD;box-shadow:0 0 16px #fff8}.bighouse.dusk .bsun{background:#FF8A4A;box-shadow:0 0 26px #FF8A4A}
+.bcloud{position:absolute;width:56px;height:18px;background:#fff;border-radius:12px;opacity:.85;animation:bcl 40s linear infinite}.bcloud.c1{top:20px;left:-60px}.bcloud.c2{top:46px;left:-60px;animation-delay:-18s;width:40px;height:14px}
+.bighouse.night .bcloud{opacity:.15}@keyframes bcl{to{transform:translateX(520px)}}
+.house.big{position:relative;z-index:1;margin:0 auto}
+.house.big .hroof{height:56px}.house.big .hgrid{border-radius:0;padding:5px;gap:5px}.house.big .hgrid.h3{grid-template-columns:repeat(3,1fr)}
+.house.big .hgrid.low{border-top:0}.house.big .hcell{aspect-ratio:1.05}.house.big .hlab b{font-size:11px}.house.big .hlab small{font-size:9.5px}
+.hsep{height:8px;background:linear-gradient(#5A3A22,#3A2418)}
+.chim{position:absolute;right:18%;top:-6px;width:20px;height:34px;background:#8A3B30;border:2px solid #5A2420;border-radius:3px 3px 0 0;z-index:-1}
+.smoke{position:absolute;left:3px;top:-6px;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.8);animation:smk 3.2s ease-out infinite;opacity:0}.smoke.s2{animation-delay:1s}.smoke.s3{animation-delay:2s}
+@keyframes smk{0%{opacity:.8;transform:translate(0,0) scale(.5)}100%{opacity:0;transform:translate(14px,-46px) scale(1.7)}}
+.hdoor{height:6px}
+.hyard{position:relative;margin:0 -6px;padding:10px 12px 8px;background:linear-gradient(#7FC27A,#5DA35F);border-top:3px solid #4A8A4C}.bighouse.night .hyard{background:linear-gradient(#3F6B4A,#2C4F36)}
+.ybox{position:relative;z-index:1;max-width:60%;margin:0 auto}.ybox .hcell{aspect-ratio:2.4;border:3px solid #6B4A2A;border-radius:10px}
+.ytree{position:absolute;bottom:14px;width:30px;height:44px;border-radius:50% 50% 40% 40%;background:#3E8A4C;box-shadow:inset -6px -6px 0 rgba(0,0,0,.12)}.ytree:after{content:'';position:absolute;left:12px;bottom:-12px;width:6px;height:14px;background:#7A5230}
+.ytree.t1{left:5%}.ytree.t2{right:5%;height:54px;width:36px}
+.ypath{position:absolute;left:50%;top:-6px;width:24px;height:12px;margin-left:-12px;background:#E8D2A6;border-radius:4px}
+.yfence{height:8px;margin:6px -12px -8px;background:repeating-linear-gradient(90deg,#F4EBD8 0 10px,transparent 10px 16px);border-bottom:3px solid #E8D2A6}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -2261,7 +2282,7 @@ function extraHit(x,y){const d=curDeco(),L=APP.L;const list=(d.extra||[]).filter
 function tapObj(e,px,py){heartsAt(px,py-10,3);if(ACT.cur){if(ACT.q.length<3&&!ACT.q.some(q=>q.obj===e))ACT.q.push({obj:e,key:'x:'+e.u});return}ACT.q.push({obj:e,key:'x:'+e.u});runQ()}
 function waterPlant(px,py){const rid=S.rooms.cur;S.plantG=S.plantG||{};S.plantW=S.plantW||{};const tk=todayKey();burst(px,py-30,['#7FD6FF','#BFE8FF','#FFFFFF'],12,{type:'blob',v:1,g:.16,size:3.5,max:700});
  if(S.plantW[rid]===tk){toast('Цветок уже полит сегодня 💧 Завтра подрастёт ещё');return}S.plantW[rid]=tk;S.plantG[rid]=Math.min(6,(S.plantG[rid]||0)+1);save();APP.roomDirty=true;SFX.chime(3);toast(S.plantG[rid]>=6?'Цветок вырос во всю красу! 🌸':`Полито! Цветок подрос 🌱 (${S.plantG[rid]}/6)`)}
-function updHouse(dt){if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
+function updHouse(dt){try{starterTick()}catch(e){}if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
 
 /* ---- scenes (dialogue between Sasha, Dima and the dogs) ---- */
 async function playScene(lines){let n=0;while((ACT.cur||ACT.q.length)&&n++<60)await wait(200);ACT.cur={a:'scene'};
@@ -2361,9 +2382,14 @@ function whereNow(){const h=new Date().getHours();const un=id=>S.rooms.un.includ
 function hcell(r){const open=roomOpen(r),cur=S.rooms.cur===r.id,ts=taskState(r.id),wn=whereNow()===r.id;let st;
  if(cur)st='Вы сейчас здесь';else if(open)st=ts.list.length?(ts.done?'✅ Обжита':`📋 ${Math.min(ts.i,ts.list.length)}/${ts.list.length}`):'Открыта';else if(r.mem)st=memState(r).txt;else st=`🔒 ${r.p} 🦴`;
  const dg=open&&houseOf(r.id)===houseOf(S.rooms.cur)?allHomeDogs().filter(i=>dogRoom(i)===r.id||(r.id===S.rooms.cur&&dogRoom(i)===S.rooms.cur)).length:0;return`<button class="hcell ${cur?'cur':''} ${open?'':'locked'}" data-a="hroom" data-id="${r.id}"><canvas data-hroom="${r.id}"></canvas>${cur||dg?`<i class="hwho">${cur?'💑':''}${dg?'🐾'+dg:''}</i>`:''}<span class="hlab"><b>${esc(r.n)}</b><small>${st}</small></span></button>`}
+function bigHouse(H){const row=ids=>ids.map(id=>ROOM[id]).filter(Boolean).map(hcell).join('');const h=new Date().getHours(),night=h>=20||h<6,dusk=(h>=17&&h<20)||(h>=6&&h<8);
+ return`<div class="bighouse ${night?'night':dusk?'dusk':'day'}"><div class="bsky"><i class="bsun"></i><i class="bcloud c1"></i><i class="bcloud c2"></i></div>
+ <div class="house big" data-h="${H.id}"><div class="hroof"><span>${esc(H.n)}</span><b class="chim"><i class="smoke s1"></i><i class="smoke s2"></i><i class="smoke s3"></i></b></div>
+ <div class="hgrid h3">${row(H.floors[0])}</div><div class="hsep"></div><div class="hgrid h3 low">${row(H.floors[1])}</div><div class="hdoor"><i></i></div></div>
+ <div class="hyard"><div class="ytree t1"></div><div class="ytree t2"></div><div class="ypath"></div><div class="ybox">${row(H.yard||[])}</div><div class="yfence"></div></div></div>`}
 function houseHtml(){const cur=S.rooms.cur;const hid=APP.htab||houseOf(cur).id;const H=HOUSES.find(h=>h.id===hid)||HOUSES[0];const rs=H.rooms.map(id=>ROOM[id]).filter(Boolean);
  return`<div class="htabs">${HOUSES.map(h=>`<button class="htab ${h.id===H.id?'on':''}" data-a="htab" data-id="${h.id}">${h.ic}<small>${esc(h.n)}</small></button>`).join('')}</div>
- <div class="house" data-h="${H.id}"><div class="hroof"><span>${esc(H.n)}</span></div><div class="hgrid">${rs.map(hcell).join('')}</div><div class="hfloor"></div></div>
+ ${H.floors?bigHouse(H):`<div class="house" data-h="${H.id}"><div class="hroof"><span>${esc(H.n)}</span></div><div class="hgrid">${rs.map(hcell).join('')}</div><div class="hfloor"></div></div>`}
  <p class="soft small center">${H.id===houseOf(cur).id?'💑 Вы здесь. Собаки гуляют по комнатам этого дома 🐾':'Нажми на комнату, чтобы переехать сюда — собаки пойдут с вами 🐾'}</p>
  <label class="tog"><input type="checkbox" id="rndRoom" ${S.rooms.rnd?'checked':''}><span>🎲 Случайная комната на каждом уровне</span></label>`}
 function houseHtmlOld(){const reg=ROOMS.filter(r=>!r.mem),mem=ROOMS.filter(r=>r.mem);const h=new Date().getHours();const where=ROOM[whereNow()];
@@ -3444,7 +3470,7 @@ function freeX(want,w,x0,x1,others){const fits=x=>others.every(o=>Math.abs(x-o.x
 const SOLW={fire:62,sofa:86,lamp:14,plant:20,bed:60},SOLD={fire:[-30,10],sofa:[-40,10],lamp:[-14,8],plant:[-14,8],bed:[-26,10]};
 function solidFoot(L,deco,skipE,skipK){const out=[];for(const k of Object.keys(SOLW)){if(k===skipK||!deco[k]||!L[k])continue;const p=L[k];out.push({x0:p.x-SOLW[k],x1:p.x+SOLW[k],y0:p.y+SOLD[k][0],y1:p.y+SOLD[k][1],k})}
  for(const e of(deco.extra||[])){if(e===skipE)continue;const d=EXI[e.id];if(!d||d.wall||d.toy||d.sp||e.sp||exSmall(d)||d.pseat)continue;const q=xpos(e,L);out.push({x0:q.x-d.sz[0]*.4,x1:q.x+d.sz[0]*.4,y0:q.y-Math.min(26,d.sz[1]*.4),y1:q.y+6,e:1})}return out}
-function wallObst(L,deco){const out=[];if(deco.fire&&L.fire){const f=L.fire,st=stOf(deco.fire);out.push({x0:f.x-64,x1:f.x+64,y0:f.y-142,y1:f.y});if(st==='retro'||st==='loft')out.push({x0:f.x-11,x1:f.x+11,y0:f.y-205,y1:f.y-140})}
+function wallObst(L,deco){const out=[];if(L.win&&L.win.w<300&&L.win.h>60)out.push({x0:L.win.x-8,x1:L.win.x+L.win.w+8,y0:L.win.y-10,y1:L.win.y+L.win.h+6});if(deco.fire&&L.fire){const f=L.fire,st=stOf(deco.fire);out.push({x0:f.x-64,x1:f.x+64,y0:f.y-142,y1:f.y});if(st==='retro'||st==='loft')out.push({x0:f.x-11,x1:f.x+11,y0:f.y-205,y1:f.y-140})}
  for(const k of['sofa','lamp','plant']){if(!deco[k]||!L[k])continue;const b=boxOf(L,k);out.push({x0:b.x+(k==='lamp'?20:6),x1:b.x+b.w-(k==='lamp'?0:6),y0:b.y+(k==='plant'?20:0),y1:b.y+b.h})}return out}
 function rectHit(x,y,w,h,rs){for(const r of rs)if(x+w/2>r.x0&&x-w/2<r.x1&&y+h/2>r.y0&&y-h/2<r.y1)return r;return null}
 function wallFreeX(x,y,w,h,L,deco){const rs=wallObst(L,deco);if(!rectHit(x,y,w,h,rs))return x;for(let d=4;d<400;d+=4)for(const nx of[x-d,x+d]){if(nx-w/2<4||nx+w/2>396)continue;if(!rectHit(nx,y,w,h,rs))return nx}return null}
@@ -3702,6 +3728,43 @@ function showFamily(){const f=famS(),need=famNeed(f.lvl),pc=Math.round(f.xp/need
   <h3 class="fh">Мы</h3><div class="fmem">${mem.map(m=>`<div class="fcard">${m.av}<b>${esc(m.n)}</b><small>${esc(m.sub)}</small></div>`).join('')}</div>
   <h3 class="fh">Дружба собак</h3><div class="fpairs">${pairs.join('')||'<p class="soft small">Когда собак станет больше — они подружатся 🐾</p>'}</div><p class="soft small">Лучшие друзья спят в обнимку 💞</p>
   <h3 class="fh">Впереди</h3>${road}`)}
+/* ===== bigger home: more rooms, rooms come furnished ===== */
+const HOME2=[
+ {id:'hall',n:'Прихожая',p:500,wall:['#F4DCDD','#E3B9BD'],floor:'#7E4E3C',curt:'#B05A7A',scene:'day',no:['sofa','fire','mantel'],sig:[['x_vanity',96,40],['x_bookcase',312,40]]},
+ {id:'study',n:'Кабинет',p:1300,wall:['#C08A5C','#97653F'],floor:'#64412A',curt:'#2F6B4F',scene:'day',no:['sofa','fire','mantel'],sig:[['x_bookcase',92,40],['x_easel',302,76]]},
+ {id:'garden',n:'Сад',p:1900,wall:['#BFE3F2','#9BD0E8'],floor:'#B08A62',curt:'#5DA35F',scene:'garden',no:['sofa','fire','mantel'],sig:[['x_hammock',118,44],['x_parasol',296,72]]}];
+Object.assign(ARCH,{
+ hall:{t:'french',win:L=>({x:236,y:L.fl-326,w:116,h:290}),wall:'paris',floor:'checker',def:{lamp:'scandi',bed:'scandi',rug:'scandi',plant:'scandi'},tip:'Дома пахнет уютом 🏡'},
+ study:{t:'twin',win:L=>({x:186,y:L.fl-262,w:196,h:92}),wall:'logs',floor:'parquetdark',def:{lamp:'rustic',bed:'rustic',rug:'boho',plant:'rustic'},tip:'Тихо… самое время для мечтаний 📚'},
+ garden:{t:'sky',win:L=>({x:0,y:0,w:400,h:L.fl-70}),wall:'terraceday',floor:'deck',def:{lamp:'retro',bed:'scandi',plant:'ocean'},tip:'Тео роет ямки у цветов 🌷'}});
+for(const r of HOME2){ROOMS.push(r);ROOM[r.id]=r}
+{const h=HOUSES.find(q=>q.id==='home');if(h){h.rooms=['study','bedroom','bath','hall','living','kitchen','garden'];h.floors=[['study','bedroom','bath'],['hall','living','kitchen']];h.yard=['garden']}}
+HOUSES.forEach(h=>h.rooms.forEach(r=>HOUSE_OF[r]=h));
+
+/* starter furnishing: free decorations the first time a room is empty */
+const STARTER={
+ bedroom:[['p_photo','w',96,.35],['p_mirror','w',322,.45],['t_moon','sill',0],['f_pouf','f',70,.55],['f_tree','f',368,.7]],
+ bath:[['p_clock','w',200,.2],['t_cactus','sill',0],['f_tree','f',360,.7],['f_pouf','f',210,.8]],
+ kitchen:[['p_clock','w',100,.15],['p_frame','w',320,.1],['t_cactus','sill',-20],['t_mug','sill',24],['f_toys','f',60,.75]],
+ hall:[['p_mirror','w',180,.45],['p_clock','w',270,.3],['f_tree','f',370,.7],['f_pouf','f',200,.8]],
+ study:[['p_frame','w',92,.2],['p_clock','w',300,.12],['t_candle','sill',0],['f_pouf','f',210,.8],['f_tree','f',370,.7]],
+ garden:[['c_lantern','c',130],['c_lantern','c',280],['f_tree','f',40,.65],['f_pouf','f',200,.82],['f_toys','f',330,.82],['t_cactus','sill',-30]],
+ winter:[['p_frame','w',90,.25],['t_candle','sill',0],['f_tree','f',366,.7],['f_pouf','f',200,.8]],
+ sea:[['p_clock','w',90,.2],['t_cactus','sill',0],['f_tree','f',40,.7],['f_pouf','f',200,.8]],
+ cabin:[['p_frame','w',92,.3],['t_candle','sill',0],['f_toys','f',60,.78],['f_pouf','f',200,.82]],
+ sakura:[['p_frame','w',92,.25],['f_tree','f',366,.7],['f_pouf','f',200,.8]],
+ paris:[['p_mirror','w',90,.4],['t_vase','sill',0],['f_tree','f',48,.7],['f_pouf','f',200,.8]],
+ space:[['p_clock','w',90,.2],['t_moon','sill',0],['f_pouf','f',200,.8]]};
+function starterFill(rid){S.starter=S.starter||{};if(S.starter[rid])return;const deco=S.deco[rid],L=APP.L;if(!deco||!L)return;S.starter[rid]=1;
+ const list=STARTER[rid];if(!list||(deco.pl&&deco.pl.length)){save();return}deco.pl=deco.pl||[];let n=0;
+ for(const sp of list){const id=sp[0],d=PZ[id];if(!d)continue;const it={u:'z'+Date.now().toString(36)+Math.floor(Math.random()*9999)+n,id,c:Math.floor(Math.random()*d.cols.length),f:0};
+  if(sp[1]==='w'){const wl=pzWall(L);const tg=pzTarget('wall',d.w,d.h,sp[2],wl.y0+(wl.y1-wl.y0)*sp[3],null,deco,L);if(!tg.ok)continue;it.x=Math.round(tg.x);it.y=Math.round(tg.y)}
+  else if(sp[1]==='c'){it.x=sp[2]}
+  else if(sp[1]==='f'){const fl=pzFloor(L),tg=pzTarget('floor',d.w,d.h,sp[2],fl.y0+(fl.y1-fl.y0)*sp[3],null,deco,L);if(!tg.ok)continue;it.x=Math.round(tg.x);it.y=Math.round(tg.y)}
+  else if(sp[1]==='sill'){const s=pzSurfaces(deco,L).find(q=>q.p==='sill');if(!s)continue;const c0=(s.x0+s.x1)/2,xx=freeX(c0+sp[2],d.w,s.x0,s.x1,onSurf(deco,L,'sill',null)||[]);if(xx==null)continue;it.p='sill';it.dx=Math.round(xx-c0)}
+  deco.pl.push(it);n++}
+ save();APP.roomDirty=true}
+function starterTick(){if(!APP.L||APP.scr==='game')return;const rid=S.rooms&&S.rooms.cur;if(!rid||roomId()!==rid)return;S.starter=S.starter||{};if(S.starter[rid])return;if(!S.deco[rid])return;if(APP.W&&APP.view)starterFill(rid)}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4048,7 +4111,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:18';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:21';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
