@@ -1771,18 +1771,19 @@ function tapActor(a,px,py){if(!ACT.H)return;if(a.who&&(PPL.sleep||PPL.nap)){toas
  if(ACT.cur){if(ACT.q.length>=3){heartsAt(px,py-20,3);return}ACT.q.push(a);say(a,'Сейчас моя очередь! ⏳',1600);heartsAt(px,py-20,4);if(a.i!=null)dogBark(a.i);return}
  ACT.q.push(a);heartsAt(px,py-20,6);runQ()}
 async function runQ(){if(ACT.cur||!ACT.q.length)return;const a=ACT.q.shift();const tok=ACT.tok;ACT.cur={a};if(a.micro){a.pose=a.micro.p0;a.face=a.micro.f0;a.micro=null}
- try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f)await f(a.obj,L,deco,tok,a)}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
+ try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f){const ic='x:'+a.obj.id,P=[PPL.her,PPL.him].filter(Boolean);P.forEach(p=>p._act=ic);try{await f(a.obj,L,deco,tok,a)}finally{P.forEach(p=>p._act=null)}}}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
   for(let tries=0;tries<list.length&&!ok;tries++){const id=list[n%list.length];n++;ok=await doAct(a,id,L,deco,tok)}ACT.idx[k]=n}}
  catch(e){if(e!==ABORT)console.error(e)}
  if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}
 function bigDogs(){return WK.list.filter(w=>[0,2,4].includes(w.i))}
 function smallDogs(){return WK.list.filter(w=>[1,3,5].includes(w.i))}
 function nearestDog(p,list){let b=null,bd=1e9;for(const w of list){const d=Math.hypot(w.x-p.x,w.y-p.y);if(d<bd){bd=d;b=w}}return b}
-async function doAct(a,id,L,deco,tok){const r=await doActRaw(a,id,L,deco,tok);if(r)try{wantDone(a,id)}catch(e){}return r}
+async function doAct(a,id,L,deco,tok){a._act=id;let r=false;try{r=await doActRaw(a,id,L,deco,tok)}finally{a._act=null}if(r)try{wantDone(a,id)}catch(e){}return r}
 async function doActRaw(a,id,L,deco,tok){
  const H=PPL.her,M=PPL.him;const night=['night','evening'].includes(dayPhase());
  /* ===== dogs ===== */
  if(a.i!=null){const w=a,nm=dname(w.i);
+  if(DGAMES[id]){const mt=DGM;DGM=null;return await dogGame(w,id,L,deco,tok,nm,mt&&!mt.busyPair&&mt.mode==='stay'?mt:null)}
   if(id.startsWith('pz'))return await pzDogAct(w,id,L,deco,tok,nm);
   switch(id){
   case'fetch':{const p=M;say(w,`${nm}: апорт! 🎾`);await pStand(p,tok);const f=frontOf(p);await pTo(p,f.x,f.y,tok);const tx=clamp(p.x<200?p.x+150:p.x-150,50,350),ty=clamp(L.fl+150,L.fl+80,L.VH-110);p.face=tx>p.x?1:-1;p.pose='throw';p.throwQ=0;await twk(p,{throwQ:1},450,tok);
@@ -2444,11 +2445,11 @@ async function whistleAll(){$$('.modal.page',APP.mods).forEach(m=>m.remove());os
 /* ---- dogs live on their own: one real activity now and then + small idle moments for 1–2 dogs ---- */
 const AUTOACT={0:['zoom','fetch','roll','fire','window'],1:['lap','roll','beg','zoom'],2:['guard','fire','paw','roll'],3:['snack','zoom','roll','beg'],4:['howl','zoom','window','roll'],5:['dance','roll','beg']};
 async function autoDogAct(){const cand=WK.list.filter(w=>w.mode==='stay'&&!w.hidden);if(!cand.length)return;const w=pick(cand);const tok=ACT.tok;ACT.cur={a:w,auto:1};if(w.micro){w.pose=w.micro.p0;w.face=w.micro.f0;w.micro=null}
- try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());{const ex=pzAutoIds(deco);if(ex.length&&Math.random()<.55)list.unshift(...shuffleArr(ex))}for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
+ try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());{const ex=pzAutoIds(deco);if(ex.length&&Math.random()<.5)list.unshift(...shuffleArr(ex))}if(freeMates(w).length&&Math.random()<.45)list.unshift(pick(Object.keys(DGAMES)));for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
  catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}}
 const MICRO=['look','nap','beg','hop','roll','look','nap'];
 function dogMicro(dt){if(S.roam===false||APP.scr!=='menu'||!ACT.H||PPL.sleep)return;const now=performance.now();let busy=WK.list.filter(w=>w.micro).length;
- for(const w of WK.list){if(ACT.cur&&ACT.cur.a===w)continue;if(w.micro){if(now>w.micro.until){if(w.mode==='stay'&&w.pose===w.micro.pose){w.pose=w.micro.p0;w.face=w.micro.f0}w.micro=null}continue}
+ for(const w of WK.list){if((ACT.cur&&ACT.cur.a===w)||w.busyPair)continue;if(w.micro){if(now>w.micro.until){if(w.mode==='stay'&&w.pose===w.micro.pose){w.pose=w.micro.p0;w.face=w.micro.f0}w.micro=null}continue}
   if(w.mode!=='stay'||w.hidden)continue;w.mt=(w.mt==null?rnd(2000,8000):w.mt)-dt;if(w.mt>0||busy>=2)continue;w.mt=rnd(6000,13000);
   let k=pick(MICRO);if(k==='roll'&&w.z>0)k='nap';const m={k,p0:w.pose,f0:w.face,until:now+2500,pose:w.pose};
   if(k==='look'){w.face=-w.face;m.until=now+2600}
@@ -3385,7 +3386,7 @@ async function pzDogAct(w,id,L,deco,tok,nm){const anim=(it,k,ms)=>{RS.pzAnim=RS.
  if(id==='pzmusic'){say(w,`${nm} танцует под пластинку 🎶`);await dogTo(w,L.rug.x+rnd(-60,60),L.rug.y+rnd(-6,10),tok);w.mode='stay';for(let k=0;k<6;k++){w.pose=k%2?'beg':'sit';w.face=k%2?1:-1;await hold(420,tok)}heartsBurstV(w.x,w.y-60);w.pose='sit';await dogHome(w,tok);return true}
  return false}
 function pzCallDog(id){if(typeof ACT==='undefined'||ACT.cur||!WK||!WK.list.length)return false;const cand=WK.list.filter(w=>w.mode==='stay'&&!w.hidden);if(!cand.length)return false;const w=pick(cand),tok=ACT.tok;ACT.cur={a:w,auto:1};if(w.micro){w.pose=w.micro.p0;w.face=w.micro.f0;w.micro=null}
- (async()=>{try{await pzDogAct(w,id,APP.L,curDeco(),tok,dname(w.i))}catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}})();return true}
+ (async()=>{w._act=id;try{await pzDogAct(w,id,APP.L,curDeco(),tok,dname(w.i))}catch(e){if(e!==ABORT)console.error(e)}finally{w._act=null;if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}})();return true}
 /* ===== things react to passers-by ===== */
 function pzBumpTick(deco,L,t){const list=deco.pl;if(!list||!list.length||typeof WK==='undefined')return;const movers=WK.list.filter(w=>!w.hidden&&w.mode!=='stay').map(w=>({x:w.x,y:w.y}));for(const p of[PPL.her,PPL.him])if(p&&p.mode&&p.mode!=='stay')movers.push({x:p.x,y:p.y});if(!movers.length)return;
  for(const it of list){const d=PZ[it.id];if(!d||it.p)continue;if(!['f_tree','c_plant','f_lamp','c_lantern','c_stars','f_pouf','c_chand','c_bulbs'].includes(it.id))continue;if(it._bump&&t-it._bump<1400)continue;for(const m of movers){if(Math.abs(m.x-it.x)>d.w/2+12)continue;if(d.s==='floor'&&Math.abs(m.y-it.y)>28)continue;it._bump=t;break}}}
@@ -3456,8 +3457,8 @@ function moodMoves(){const a=(moodOf('her')+moodOf('him'))/2;return a>=90?2:a>=7
 function wantPool(a,deco){const has=id=>pzList(deco).some(i=>i.id===id);const plants=['f_tree','c_plant','t_cactus'].some(has),player=has('t_player'),pretty=pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish'].includes(PZ[i.id].act));
  if(a.who){const base=['dance','selfie','pet','window','hug'];if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
  const ids=(AUTOACT[a.i]||['roll']).filter(x=>x!=='howl').concat(pzAutoIds(deco).filter(x=>x!=='pzmusic'));return ids.filter(x=>WANTL[x])}
-function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep)return;moodTick();S.wants=S.wants||{};const deco=curDeco();const now=Date.now();
- for(const a of actorsNow()){const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wants[k]={id:pick(pool),room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
+function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep)return;moodTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
+ for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wants[k]={id:pick(pool),room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
 function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
 function drawWants(c,now){if(APP.scr!=='menu'||!APP.L)return;S.wants=S.wants||{};c.save();c.lineJoin='round';
@@ -3469,7 +3470,7 @@ function drawWants(c,now){if(APP.scr!=='menu'||!APP.L)return;S.wants=S.wants||{}
 /* ---- running a specific action like the queue does ---- */
 function runAct(a,id){if(!ACT.H)return false;if(a.who&&(PPL.sleep||PPL.nap)){toast('Тсс… они спят 😴');return false}if(ACT.cur){toast('Секундочку, сейчас закончат 🙂');return false}const tok=ACT.tok;ACT.cur={a};if(a.micro){a.pose=a.micro.p0;a.face=a.micro.f0;a.micro=null}
  (async()=>{try{await doAct(a,id,APP.L,curDeco(),tok)}catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}})();return true}
-let PZT=null;
+let PZT=null,DGM=null;
 async function pzPersonAct(p,id,L,deco,tok,hn){const nearFoot=it=>pzFloorFoot(it,deco,L);const anim=(it,k,ms)=>{RS.pzAnim=RS.pzAnim||{};RS.pzAnim[it.u]={k,until:performance.now()+ms}};
  const pickT=ids=>{const l=pzList(deco).filter(i=>ids.includes(i.id));if(PZT){const t=l.find(i=>i.u===PZT);PZT=null;if(t)return t}return pick(l)};
  if(id==='pzwater'){const pl=pickT(['f_tree','c_plant','t_cactus']);if(!pl)return false;const f=nearFoot(pl),pp=pzPos(pl,deco,L);say(p,`${hn} поливает цветы 💧`);await pStand(p,tok);await pTo(p,clamp(pp.x+(p.x<pp.x?-30:30),30,370),f.y+4,tok);p.face=pp.x>p.x?1:-1;p.pose='crouch';const b=pzBox(pl,deco,L);pzPart(b[0]+b[2]/2,b[1],'drop',12);osc(520,.12,'sine',.05,700);pl.g=Math.min(3,(pl.g||0)+1);pl._bump=performance.now();save();await hold(1800,tok);pzPart(b[0]+b[2]/2,b[1],'spark',6);await pHome(p,tok);return true}
@@ -3491,7 +3492,7 @@ function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();c
   for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате')}
   const seen=new Set();for(const it of pzList(deco)){const d=PZ[it.id];if(!d)continue;let t=null,id=null,ic='';if(d.act==='water'){t='Полить: '+d.n.toLowerCase();id='pzwater';ic='💧'}else if(d.act==='music'){t='Поставить пластинку';id='pzmusic';ic='🎶'}else if(d.light&&!seen.has('light')){seen.add('light');t=(it.on===false?'Включить: ':'Выключить: ')+d.n.toLowerCase();id='pzlight';ic='💡'}else if(['love','shine','fish','spin','flutter'].includes(d.act)&&!seen.has('look')){seen.add('look');t='Полюбоваться вещами';id='pzlook';ic='😍'}if(!t||seen.has(t))continue;seen.add(t);const u=it.u;if(id===wi)continue;add(t,ic,()=>{PZT=u;runAct(p,id)},0,'С вещами')}
   return o}
- if(kind==='dog'){const w=obj,k=actorKey(w),wi=want(k);if(wi&&WANTL[wi])add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(w,wi),1);
+ if(kind==='dog'){const w=obj,k=actorKey(w),wi=null;{const mates=freeMates(w);if(mates.length){const mt=mates.sort((a,b)=>Math.hypot(a.x-w.x,a.y-w.y)-Math.hypot(b.x-w.x,b.y-w.y))[0];for(const gid of Object.keys(DGAMES))add(DGAMES[gid][0]+' с '+dname(mt.i),DGAMES[gid][1],()=>{DGM=mt;runAct(w,gid)},0,'С друзьями')}}
   const ids=[...new Set((DACTS[w.i]||[]).concat(AUTOACT[w.i]||[]).filter(x=>WANTL[x]&&!(x==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')))];for(const id of ids)if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'Игры');
   for(const id of pzAutoIds(deco).filter(x=>x!=='pzmusic'&&WANTL[x]))if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'С вещами');return o}
  if(kind==='xobj'){const e=obj,[l,ic]=xLabel(e);add(l,ic,()=>runObj(e));add('Переставить','✋',()=>{showPlace();APP.pz.sel='x:'+e.u;pzBar()});return o}
@@ -3526,6 +3527,27 @@ function drawPieTarget(c,now){const t=APP.pieT;if(!t||!$('.actsheet',APP.uiEl)){
  else{const a=t.obj,r=a.who?42:30;c.globalCompositeOperation='lighter';const g=c.createRadialGradient(a.x,a.y,4,a.x,a.y,r*1.3);g.addColorStop(0,`rgba(255,214,90,${.35+.2*p})`);g.addColorStop(1,'rgba(255,214,90,0)');c.fillStyle=g;c.save();c.translate(a.x,a.y+2);c.scale(1,.32);ell(c,0,0,r*1.3,r*1.3);c.restore();c.fill();c.globalCompositeOperation='source-over';c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;c.beginPath();c.ellipse(a.x,a.y+2,r,r*.32,0,0,Math.PI*2);c.stroke()}
  c.restore()}
 function closePie(){$$('.pie,.piebg,.actsheet',APP.uiEl).forEach(x=>x.remove());APP.pieT=null;if(APP.pieShift){APP.pieShift=0;tween(APP.view,{x:0,y:0,s:1},380,E.inOut)}}
+/* ===== dogs play with each other ===== */
+const DGAMES={dchase:['Догонялки','🐾'],dtug:['Перетягивание игрушки','🧶'],dsniff:['Обнюхаться','👃'],dwrestle:['Возня','🤼']};
+let DG=null;
+function freeMates(w){return WK.list.filter(o=>o!==w&&!o.hidden&&o.mode==='stay'&&!o.busyPair&&!(ACT.cur&&ACT.cur.a===o))}
+async function dogGame(w,id,L,deco,tok,nm,mate){mate=mate||pick(freeMates(w));if(!mate)return false;const m=mate,mn=dname(m.i);m.busyPair=true;m._act=id;if(m.micro){m.pose=m.micro.p0;m.face=m.micro.f0;m.micro=null}
+ const cx=clamp(L.rug.x,90,310),cy=clamp(L.rug.y,L.fl+70,L.VH-110);
+ try{
+ if(id==='dchase'){say(w,`${nm} и ${mn} играют в догонялки! 💨`);dogBark(w.i);const pts=[[cx-90,cy-8],[cx,cy+26],[cx+90,cy-6],[cx+20,cy-30],[cx-70,cy+18],[cx+70,cy+14]];for(let k=0;k<pts.length;k++){const[a,b]=pts[k],[a2,b2]=pts[(k+pts.length-1)%pts.length];await Promise.all([dogTo(w,a,b,tok,true),dogTo(m,(a+a2)/2,(b+b2)/2,tok,true)]);if(k===2)dogBark(m.i)}w.mode=m.mode='stay';w.pose=m.pose='sit';w.face=m.x>w.x?1:-1;m.face=-w.face;heartsBurstV((w.x+m.x)/2,w.y-50);await hold(700,tok)}
+ else if(id==='dtug'){say(w,`${nm} и ${mn} тянут игрушку 🧶`);await Promise.all([dogTo(w,cx-30,cy,tok),dogTo(m,cx+30,cy,tok)]);w.face=1;m.face=-1;w.mode=m.mode='stay';w.pose=m.pose='sniff';DG={a:w,b:m,t0:performance.now()};for(let k=0;k<6;k++){const d=k%2?6:-6;w.x+=d;m.x+=d;if(k===3)dogBark(pick([w.i,m.i]));await hold(380,tok)}DG=null;const win=pick([w,m]);win.pose='beg';heartsBurstV(win.x,win.y-60);say(win,`${dname(win.i)} победил${win.i===1||win.i===5||win.i===4?'а':''}! 🏆`,1500);await hold(1100,tok)}
+ else if(id==='dsniff'){say(w,`${nm} знакомится с ${mn} 👃`);const tx=m.x+(w.x<m.x?-30:30);await dogTo(w,tx,m.y+2,tok);w.face=m.x>w.x?1:-1;m.face=-w.face;w.mode='stay';w.pose='sniff';m.pose='sniff';await hold(1200,tok);w.pose=m.pose='beg';heartsBurstV((w.x+m.x)/2,w.y-55);dogBark(w.i);await hold(900,tok)}
+ else{say(w,`${nm} и ${mn} возятся на ковре 🤼`);await Promise.all([dogTo(w,cx-14,cy,tok,true),dogTo(m,cx+14,cy+4,tok,true)]);w.mode=m.mode='stay';for(let k=0;k<6;k++){w.pose=k%2?'roll':'sit';m.pose=k%2?'sit':'roll';w.face=-w.face;if(k%2)pzPart((w.x+m.x)/2,cy+4,'dust',5);await hold(360,tok)}heartsBurstV((w.x+m.x)/2,w.y-45);dogBark(m.i);w.pose=m.pose='sit';await hold(500,tok)}
+ }finally{DG=null;m.busyPair=false;m._act=null}
+ await Promise.all([dogHome(w,tok),dogHome(m,tok)]);return true}
+function drawTug(c,now){if(!DG)return;const a=DG.a,b=DG.b;const ax=a.x+a.face*24,ay=a.y-26-(a.z||0),bx=b.x+b.face*24,by=b.y-26-(b.z||0);const mx=(ax+bx)/2,my=(ay+by)/2+4+Math.sin(now*.02)*2;c.save();c.lineCap='round';c.strokeStyle=OL;c.lineWidth=6;c.beginPath();c.moveTo(ax,ay);c.quadraticCurveTo(mx,my+6,bx,by);c.stroke();c.strokeStyle='#E0565B';c.lineWidth=4;c.stroke();c.strokeStyle='#fff';c.lineWidth=2;c.setLineDash([4,5]);c.stroke();c.setLineDash([]);ell(c,mx,my+4,6,5);fs(c,'#E0565B',OL,1.6);c.restore()}
+/* ===== activity bubbles: only while doing something ===== */
+function actIcon(id){if(!id)return null;if(id.startsWith('x:')){const l=XL[id.slice(2)];return l?l[1]:'✨'}if(DGAMES[id])return DGAMES[id][1];const m={kiss:'💋',carry:'🥰',read:'📖',hug:'🤗',dance:'💃',selfie:'📸',pet:'🤲',window:'🪟',fire:'🔥',fetch:'🎾',beg:'🍪',roll:'🐾',sofa:'🛋',lap:'💕',zoom:'💨',snack:'🥣',paw:'🐾',guard:'🛡',howl:'🌙',pzwater:'💧',pzmusic:'🎶',pzlook:'😍',pzlight:'💡',pzpouf:'💤',pzaqua:'🐟',pztoys:'🧸',pzplant:'🌿'};return m[id]||(WANTL[id]&&WANTL[id][1])||null}
+function drawActivity(c,now){if(APP.scr!=='menu'||!APP.L)return;drawTug(c,now);c.save();c.lineJoin='round';
+ for(const a of actorsNow()){let ic=actIcon(a._act);if(!ic){if(a.who&&(PPL.sleep||PPL.nap))ic='💤';else if(a.i!=null&&a.mode==='stay'&&a.pose==='sleep')ic='💤'}if(!ic)continue;
+  const top=a.who?a.y-(a.sitH?146:174):a.y-62-(a.z||0);const bx=a.x+(a.who?26:20),by=top-(a.who?8:4)+Math.sin(now*.003+a.x)*2;const s=.95+.05*Math.sin(now*.005);
+  c.save();c.translate(bx,by);c.scale(s,s);c.fillStyle='rgba(40,20,8,.16)';ell(c,1.5,3,17,13);c.fill();cloud(c,0,0,[[-8,2,8],[0,-3,10],[9,1,8],[1,5,8]],'#FFFFFF','#9A7A5A',1.2);ell(c,-11,13,3,2.6);fs(c,'#fff','#9A7A5A',1);ell(c,-15,18,1.8,1.6);fs(c,'#fff','#9A7A5A',.9);c.font='14px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(ic,0,1);c.restore()}
+ c.restore()}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3850,7 +3872,7 @@ function renderRoomCache(){const D=APP.DPR,W=APP.W,H=APP.H;if(!APP.rc)APP.rc=mkC
 function frame(now){try{const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
  const c=APP.ctx,D=APP.DPR,W=APP.W,H=APP.H;if(APP.curtAnim)APP.roomDirty=true;{const ph=dayPhase();if(APP.ph!==ph){APP.ph=ph;APP.roomDirty=true}}if(APP.roomDirty||!APP.rc)renderRoomCache();ensureWalkers(APP.L,roomId());updWalkers(dt,APP.L,curDeco());ensurePeople(APP.L,roomId(),curDeco());updPeople(dt,APP.L,curDeco());updCouple(dt);if(RS.fw>0)RS.fw-=dt;
  c.setTransform(D,0,0,D,0,0);c.fillStyle='#1d120b';c.fillRect(0,0,W,H);
- const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu'){drawPieTarget(c,now);drawWants(c,now)}if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
+ const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu'){drawPieTarget(c,now);drawActivity(c,now)}if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
  c.setTransform(D,0,0,D,0,0);if(APP.scr==='game'&&G.grid.length){drawBackdrop(c,now);drawBoard(c,now)}
  const f=APP.fctx;f.setTransform(D,0,0,D,0,0);f.clearRect(0,0,W,H);drawP(f)}catch(err){console.error(err)}
  requestAnimationFrame(frame)}
@@ -3869,7 +3891,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 09:58';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 10:05';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
