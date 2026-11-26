@@ -498,6 +498,7 @@ button.chip{cursor:pointer;font-family:inherit}
 .phgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}.phth{border:0;background:none;padding:0;cursor:pointer;text-align:center;font:700 11px 'Nunito',sans-serif;color:#5A3A1A}.phth img{width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .shutter{pointer-events:auto}
 .phflash,.phview{pointer-events:none!important}
+.moodpill{display:block;margin:6px auto 0;max-width:330px;font:700 12.5px 'Nunito',sans-serif;color:#2F5A2A;background:#E9F7E0;border:2px solid #9ACB86;border-radius:14px;padding:6px 10px;text-align:center;cursor:pointer;box-shadow:0 2px 0 #7FAE6C}.moodpill.done,.moodpill.low{background:rgba(255,243,214,.9);color:#6B4A2A;border-color:#E2C48A;box-shadow:none;cursor:default}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -2332,7 +2333,7 @@ function extraHit(x,y){const d=curDeco(),L=APP.L;const list=(d.extra||[]).filter
 function tapObj(e,px,py){heartsAt(px,py-10,3);if(ACT.cur){if(ACT.q.length<3&&!ACT.q.some(q=>q.obj===e))ACT.q.push({obj:e,key:'x:'+e.u});return}ACT.q.push({obj:e,key:'x:'+e.u});runQ()}
 function waterPlant(px,py){const rid=S.rooms.cur;S.plantG=S.plantG||{};S.plantW=S.plantW||{};const tk=todayKey();burst(px,py-30,['#7FD6FF','#BFE8FF','#FFFFFF'],12,{type:'blob',v:1,g:.16,size:3.5,max:700});
  if(S.plantW[rid]===tk){toast('Цветок уже полит сегодня 💧 Завтра подрастёт ещё');return}S.plantW[rid]=tk;S.plantG[rid]=Math.min(6,(S.plantG[rid]||0)+1);save();APP.roomDirty=true;SFX.chime(3);toast(S.plantG[rid]>=6?'Цветок вырос во всю красу! 🌸':`Полито! Цветок подрос 🌱 (${S.plantG[rid]}/6)`)}
-function updHouse(dt){try{starterTick();starter2Tick();scheduleTick(dt)}catch(e){}if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
+function updHouse(dt){try{starterTick();starter2Tick();scheduleTick(dt);life2Tick(dt)}catch(e){}if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
 
 /* ---- scenes (dialogue between Sasha, Dima and the dogs) ---- */
 async function playScene(lines){let n=0;while((ACT.cur||ACT.q.length)&&n++<60)await wait(200);ACT.cur={a:'scene'};
@@ -3491,13 +3492,13 @@ function drawPlaced(c,L,deco,t,still){const list=deco.pl;if(!list||!list.length)
  for(const ch of list)if(ch.p==='sill'||ch.p==='mantel')pzDraw(c,ch,deco,L,t,still)}
 function pzNightK(){const ph=dayPhase();return ph==='night'?1:ph==='evening'?.75:ph==='sunset'?.5:.22}
 function drawPlacedLights(c,L,deco,t){const list=deco.pl;try{pzLightsRender(c,L,deco,t)}catch(e){console.error(e)}
- pzBumpTick(deco,L,t);
+ pzBumpTick(deco,L,t);try{pzFragileTick(deco,L,t)}catch(e){}
  if(list)for(const it of list){if(it.id==='t_player'&&RS.pzAnim&&RS.pzAnim[it.u]&&t<RS.pzAnim[it.u].until&&Math.random()<.025){const b=pzBox(it,deco,L);pzPart(b[0]+b[2]/2,b[1],'note',1)}}
  pzFx(c,t)}
 /* ---- room particles ---- */
 function pzPart(x,y,kind,n=6){for(let i=0;i<n;i++)PZX.push({x,y,vx:(Math.random()-.5)*(kind==='note'?.6:1.6),vy:kind==='drop'?Math.random()*.5:kind==='dust'?-(.1+Math.random()*.3):-(.6+Math.random()*1.2),k:kind,t0:performance.now()+i*(kind==='note'?260:30),life:kind==='note'?1800:1000,c:['#FF6F9E','#FFD23F','#8CC8F5','#7EE07F'][i%4]})}
-function pzFx(c,t){for(let i=PZX.length-1;i>=0;i--){const p=PZX[i],a=t-p.t0;if(a<0)continue;if(a>p.life){PZX.splice(i,1);continue}const q=a/p.life,x=p.x+p.vx*a*.03+(p.k==='note'?Math.sin(a*.006)*6:0),y=p.y+p.vy*a*.03+(p.k==='drop'?a*a*.00012:0);c.save();c.globalAlpha=1-q;
- if(p.k==='heart'){c.fillStyle=p.c;c.font='12px serif';c.textAlign='center';c.fillText('♥',x,y)}else if(p.k==='note'){c.fillStyle=p.c;c.font='900 14px serif';c.textAlign='center';c.fillText(['♪','♫','♬'][i%3],x,y)}else if(p.k==='drop'){ell(c,x,y,2,3);c.fillStyle='#7FC4FF';c.fill()}else if(p.k==='dust'){ell(c,x,y,3*(1-q)+1,2*(1-q)+.6);c.fillStyle='rgba(200,180,150,.7)';c.fill()}else if(p.k==='food'){ell(c,x,y,1.4,1.4);c.fillStyle='#C98A44';c.fill()}else{c.fillStyle='#FFF6C0';star4(c,x,y,3.4*(1-q)+1);c.fill()}c.restore()}}
+function pzFx(c,t){for(let i=PZX.length-1;i>=0;i--){const p=PZX[i],a=t-p.t0;if(a<0)continue;if(a>p.life){PZX.splice(i,1);continue}const q=a/p.life,x=p.x+p.vx*a*.03+(p.k==='note'?Math.sin(a*.006)*6:0),y=p.y+p.vy*a*.03+((p.k==='drop'||p.k==='shard')?a*a*.00012:0);c.save();c.globalAlpha=1-q;
+ if(p.k==='heart'){c.fillStyle=p.c;c.font='12px serif';c.textAlign='center';c.fillText('♥',x,y)}else if(p.k==='note'){c.fillStyle=p.c;c.font='900 14px serif';c.textAlign='center';c.fillText(['♪','♫','♬'][i%3],x,y)}else if(p.k==='drop'){ell(c,x,y,2,3);c.fillStyle='#7FC4FF';c.fill()}else if(p.k==='shard'){c.fillStyle=p.c;c.beginPath();c.moveTo(x,y-3);c.lineTo(x+2.5,y+2);c.lineTo(x-2.5,y+2);c.closePath();c.fill()}else if(p.k==='dust'){ell(c,x,y,3*(1-q)+1,2*(1-q)+.6);c.fillStyle='rgba(200,180,150,.7)';c.fill()}else if(p.k==='food'){ell(c,x,y,1.4,1.4);c.fillStyle='#C98A44';c.fill()}else{c.fillStyle='#FFF6C0';star4(c,x,y,3.4*(1-q)+1);c.fill()}c.restore()}}
 /* ---- interactions in normal mode ---- */
 function placedHit(x,y){const deco=curDeco(),L=APP.L;if(!deco||!deco.pl||!L)return null;let best=null;for(const it of deco.pl){if(!PZ[it.id])continue;const[bx,by,bw,bh]=pzBox(it,deco,L);if(x>=bx-4&&x<=bx+bw+4&&y>=by-4&&y<=by+bh+4){if(!best||PZ[it.id].s==='top'||PZ[best.id].s==='wall')best=it}}return best}
 function placedTap(it){const d=PZ[it.id],deco=curDeco(),L=APP.L;if(!d)return;const[bx,by,bw,bh]=pzBox(it,deco,L),cx2=bx+bw/2,cy2=by+bh/2,now=performance.now();RS.pzAnim=RS.pzAnim||{};const anim=(k,ms)=>RS.pzAnim[it.u]={k,until:now+ms};
@@ -4123,6 +4124,67 @@ function edgeDoor(c,L,s,k){const fl=L.fl+2;c.save();c.lineJoin='round';
  c.restore()}
 function drawEdgeDoors(c,L,room){if(!room||room.id!==S.rooms.cur||typeof houseOrder!=='function')return;const n=navNeighbors(room.id);if(!n)return;if(n.l)edgeDoor(c,L,-1,n.l.k);if(n.r)edgeDoor(c,L,1,n.r.k)}
 function doorTapAt(x,y){const L=APP.L;if(!L||APP.scr!=='menu')return false;const n=navNeighbors(S.rooms.cur);if(!n)return false;const k=400/APP.W,rx=x*k,ry=y*k;if(ry<L.fl-215||ry>L.fl+40)return false;if(rx<46&&n.l){roomStep(-1);return true}if(rx>354&&n.r){roomStep(1);return true}return false}
+/* ===== life in the house: fragile things, growing flower, gifts from the heroes, mood rewards ===== */
+const dnum=()=>{const d=new Date();return Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/864e5)};
+
+/* --- the sprout on the sill --- */
+PZ.t_sprout={n:'Росток в горшке',s:'top',w:26,h:46,p:90,u:6,cols:['#C98A44','#F4F0E8','#F2A7C3','#8CC8F5'],act:'sprout'};
+const SPR_FL=['#F77DBE','#FFD23F','#B77CF0','#FF7A5A','#FFFFFF'];
+const sprStage=it=>Math.min(5,it.sd||0),sprWilt=it=>it.wd!=null&&(it.sd||0)>0&&dnum()-it.wd>=2;
+PZD.t_sprout=(c,it,W,H,col,on,t,lw)=>{const st=sprStage(it),wilt=sprWilt(it),sw=Math.sin(t*.0014+(it.dx||0))*(wilt?0:1.6);
+ c.beginPath();c.moveTo(-9,-14);c.lineTo(9,-14);c.lineTo(7,0);c.lineTo(-7,0);c.closePath();fs(c,col,OL,1.8);rr(c,-10,-17,20,5,2);fs(c,shade(col,-.12),OL,1.5);ell(c,0,-17,8,2);fs(c,'#6B4A2A',null);
+ if(st===0){ell(c,0,-19,4,2.6);fs(c,'#7A5632',OL,1);return}
+ const hh=[0,12,20,28,30,32][st],g=wilt?'#8E9A5A':'#4FAE4A',lean=wilt?7:sw;c.strokeStyle=g;c.lineWidth=2.4;c.beginPath();c.moveTo(0,-17);c.quadraticCurveTo(lean*.6,-17-hh*.6,lean+(wilt?4:0),-17-hh+(wilt?6:0));c.stroke();
+ const lf=(x,y,r,a)=>{c.save();c.translate(x,y);c.rotate(a);ell(c,r,0,r,r*.45);fs(c,g,OL,1.1);c.restore()};
+ const tx=lean+(wilt?4:0),ty=-17-hh+(wilt?6:0);
+ if(st>=1){lf(tx*.3,-17-hh*.45,5,wilt?.9:-.5);lf(tx*.3,-17-hh*.45,5,wilt?2.2:-2.6)}
+ if(st>=2){lf(tx*.7,-17-hh*.75,6,wilt?1:-.2);lf(tx*.7,-17-hh*.75,6,wilt?2.1:-2.9)}
+ if(st===3){ell(c,tx,ty-2,3.4,4.4);fs(c,wilt?'#B9A78A':'#F2A7C3',OL,1.2)}
+ if(st>=4){const fc=SPR_FL[(it.u||'').length%5+((it.c||0)%2)],R=st===5?6.2:4.4,sz=wilt?.7:1;for(let k=0;k<6;k++){const a=k/6*6.283+.3;ell(c,tx+Math.cos(a)*R*.95*sz,ty+Math.sin(a)*R*.95*sz,R*.62,R*.62);fs(c,wilt?shade(fc,-.3):fc,OL,1)}ell(c,tx,ty,R*.5,R*.5);fs(c,'#FFD23F',OL,1)}
+ if(wilt){c.fillStyle='rgba(120,190,255,.6)';ell(c,tx+7,ty+14+(t*.01%6),1.4,2);c.fill()}};
+PZACT.sprout=(it,anim,cx,cy,bx,by)=>{const today=dnum();if(sprWilt(it)){it.wd=today;it.sd=Math.max(1,(it.sd||1)-1);save();pzPart(cx,by,'drop',10);osc(520,.12,'sine',.05,700);toast('Цветок ожил! 💧 Не забывай его поливать');return}
+ if(it.wd===today&&(it.sd||0)>0){pzPart(cx,by,'drop',4);toast('Сегодня уже полили 💧 Приходи завтра');return}
+ const was=sprStage(it);it.sd=(it.sd||0)+1;it.wd=today;save();pzPart(cx,by,'drop',10);osc(520,.12,'sine',.05,700);setTimeout(()=>pzPart(cx,by,'spark',6),500);
+ if(was<5&&sprStage(it)===5){S.bones+=100;S.stars=(S.stars||0)+1;save();pzPart(cx,by,'heart',10);SFX.chime&&SFX.chime(4);toast('Цветок расцвёл! 🌸 +100 🦴 +1 ⭐');heartsAt&&heartsAt(cx,cy,10)}
+ else if(was>=5){S.bones+=10;save();toast('Цветок радуется! +10 🦴')}else toast(['Росточек проснулся 🌱','Появились листики 🍃','Появился бутон 🌷','Цветок почти готов! 🌼'][Math.min(3,sprStage(it)-1)]||'Полито 💧')};
+
+/* --- fragile things fall when a dog zooms past the table --- */
+const FRAG=['t_vase','t_mug','t_frame','t_fairy','t_sprout'];
+['t_vase','t_mug','t_frame','t_fairy'].forEach(k=>PZ[k].fragile=1);
+function pzFragileTick(deco,L,t){const list=deco.pl;if(!list||!list.length||APP.scr!=='menu'||typeof WK==='undefined')return;if(t-(RS.frT||0)<900)return;RS.frT=t;if(Date.now()-(S.frLast||0)<240000)return;
+ const dogs=WK.list.filter(w=>!w.hidden&&(w.mode==='zoom'||(w.mode==='walk'&&w.fast)));if(!dogs.length)return;
+ for(const it of list){if(!PZ[it.id]||!PZ[it.id].fragile||!it.p||it.p==='sill'||it.p==='mantel')continue;const par=list.find(q=>q.u===it.p);if(!par||!PZ[par.id]||PZ[par.id].s!=='floor')continue;const d=PZ[par.id];
+  for(const w of dogs)if(Math.abs(w.x-par.x)<d.w/2+26&&Math.abs(w.y-par.y)<36&&Math.random()<.5){pzDrop(it,w,deco,L);return}}}
+function pzDrop(it,w,deco,L){const d=PZ[it.id],b=pzBox(it,deco,L);deco.pl=deco.pl.filter(q=>q!==it);S.pinv=S.pinv||{};S.pinv[it.id]=(S.pinv[it.id]||0)+1;S.frLast=Date.now();save();APP.roomDirty=true;
+ const x=b[0]+b[2]/2,y=b[1]+b[3];pzPart(x,y,'spark',4);for(let i=0;i<14;i++)PZX.push({x,y,vx:(Math.random()-.5)*2.4,vy:-(.4+Math.random()*1.1),k:'shard',t0:performance.now()+i*8,life:900,c:['#DDF0FF','#FFFFFF','#9CCDF2',shade(d.cols[it.c||0],.2)][i%4]});
+ osc(1800,.05,'square',.05);osc(2400,.09,'triangle',.05,0,.04);osc(900,.2,'sawtooth',.04,0,.08);say(w,'Ой! 😳');if(PPL.her&&!PPL.away)say(PPL.her,`${dn(w.i)}! 😅`);dogBark&&dogBark(w.i);
+ toast(`Собачки носились, и ${d.n.toLowerCase()} разбилась 🙈 Целая ждёт в запасе`)}
+
+/* --- a gift from one of the heroes every day --- */
+const GIFTS=['t_vase','t_mug','t_frame','t_candle','t_books','t_cactus','t_fairy','t_lava'];
+const GIFT_SAY={t_vase:['Цветы для тебя 💐'],t_mug:['Какао ещё тёплое ☕'],t_frame:['Нашёл нашу фотографию 📷'],t_candle:['Для уюта 🕯️'],t_books:['Тебе точно понравится 📚'],t_cactus:['Он колючий, как я 🌵'],t_fairy:['Поймал светлячков ✨'],t_lava:['Правда красиво? 🌈']};
+function heroGift(){if(!ACT.H||ACT.cur||PPL.away||PPL.sleep||PPL.nap||APP.mods.children.length||APP.scr!=='menu')return false;const L=APP.L,deco=curDeco(),rid=S.rooms.cur;if(!L||!deco)return false;deco.pl=deco.pl||[];if(deco.pl.length>=26)return false;
+ const giver=Math.random()<.5?PPL.her:PPL.him,recv=giver===PPL.her?PPL.him:PPL.her,surfs=pzSurfaces(deco,L);if(!surfs.length)return false;let it=null,tx=0;
+ for(let k=0;k<10&&!it;k++){const id=pick(GIFTS),s=pick(surfs),c0=(s.x0+s.x1)/2;const q=pzSpecPlace(deco,L,[id,s.p,Math.round((Math.random()-.5)*(s.x1-s.x0))],null,1);if(q){it=q;tx=clamp(c0+(q.dx||0),40,360)}}
+ if(!it)return false;S.giftDay=todayKey();save();const tok=ACT.tok;ACT.cur={a:giver};
+ (async()=>{try{await pStand(giver,tok);const y=clamp(L.fl+96,L.fl+60,L.VH-90);await pTo(giver,clamp(tx+(giver.x<tx?-34:34),30,370),y,tok);giver.face=tx>giver.x?1:-1;giver.pose='stand';
+  say(giver,pick(GIFT_SAY[it.id]||['Это тебе 💝']));await hold(1100,tok);deco.pl.push(it);it._land=performance.now();const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',10);pzPart(bx[0]+bx[2]/2,bx[1],'heart',5);SFX.chime&&SFX.chime(3);APP.roomDirty=true;save();
+  if(recv&&!PPL.away){await hold(700,tok);say(recv,'Ой, спасибо! 🥰')}S.bones+=20;save();toast(`${giver===PPL.her?S.her:S.him} поставил${giver===PPL.her?'а':''}: ${PZ[it.id].n.toLowerCase()} 🎁 +20 🦴`);await hold(1200,tok)}
+  catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}})();return true}
+
+/* --- mood of the house: a daily gift --- */
+function homeMood(){return Math.round((moodOf('her')+moodOf('him'))/2)}
+function moodTier(m){return m>=90?{b:160,s:1,h:1,n:'Дом сияет от счастья'}:m>=75?{b:100,s:1,h:0,n:'Дом счастлив'}:m>=60?{b:50,s:0,h:0,n:'Дому уютно'}:null}
+function moodPill(){try{const m=homeMood(),tr=moodTier(m),got=S.moodDay===todayKey();const ic=m>=75?'😊':m>=50?'🙂':'😕';
+ if(got)return`<div class="moodpill done">${ic} Настроение дома ${m}% · награда за сегодня получена ✓</div>`;
+ if(tr)return`<button class="moodpill" data-a="moodclaim">${ic} ${tr.n}: ${m}% · забрать ${tr.b} 🦴${tr.s?' +⭐':''}${tr.h?' +💗':''}</button>`;
+ return`<div class="moodpill low">${ic} Настроение дома ${m}% · выполни желания Саши и Димы, чтобы порадовать их</div>`}catch(e){return''}}
+function moodClaim(){const m=homeMood(),tr=moodTier(m);if(!tr||S.moodDay===todayKey())return;S.moodDay=todayKey();S.bones+=tr.b;if(tr.s)S.stars=(S.stars||0)+1;if(tr.h)S.hearts=(S.hearts||0)+1;save();SFX.chime&&SFX.chime(4);confetti&&confetti(30);toast(`${tr.n}! +${tr.b} 🦴${tr.s?' +1 ⭐':''}${tr.h?' +1 💗':''}`);if(APP.scr==='menu')showMenu(true)}
+
+/* --- ticker --- */
+function life2Tick(dt){if(APP.scr!=='menu'||!APP.L)return;const rid=S.rooms&&S.rooms.cur,deco=S.deco&&S.deco[rid];if(!deco)return;
+ if(rid==='living'&&!S.sproutPlaced&&roomId()===rid&&APP.view){S.sproutPlaced=1;deco.pl=deco.pl||[];const q=pzSpecPlace(deco,APP.L,['t_sprout','sill',-50]);if(q){APP.roomDirty=true;save();setTimeout(()=>toast('На подоконнике новый росток 🌱 Поливай его каждый день'),1500)}else{S.pinv=S.pinv||{};S.pinv.t_sprout=(S.pinv.t_sprout||0)+1;save()}}
+ if(S.giftDay!==todayKey()){RS.gT=(RS.gT||0)+dt;if(RS.gT>40000+(RS.gR||(RS.gR=Math.random()*40000))){RS.gT=0;RS.gR=0;heroGift()}}}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4161,7 +4223,7 @@ function showMenu(noGifts){if(typeof FAMQ!=='undefined'&&FAMQ.length)setTimeout(
  const nc=S.coupons.filter(c=>c.nw).length;
  APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="photo" aria-label="Фото">📸</button><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
- <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()})()}</div>
+ <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()+moodPill()})()}</div>
  ${typeof roomNavHtml==='function'?roomNavHtml():''}
  <div class="nav">${[['rooms','home','Дом',0],['decor','cozy','Уют',0],['hearts','shop','Лавка',0],['advent','tree','Адвент',advAvail()],['coupons','coupon','Купоны',nc],['dogs','paws','Семья',0]].map(([a,i,n,b])=>`<button class="navb" data-a="${a}"><span class="ni">${gim(i,'nimg')}</span><span>${n}</span>${b?`<i class="dot">${b}</i>`:''}</button>`).join('')}</div></div>`;
  const t=$('#ttl');let lt=null;const stop=()=>clearTimeout(lt);t.addEventListener('pointerdown',()=>{lt=setTimeout(dimaEnter,1500)});t.addEventListener('pointerup',stop);t.addEventListener('pointerleave',stop);t.addEventListener('pointercancel',stop);
@@ -4418,6 +4480,7 @@ function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.long
 /* ===== actions ===== */
 function act(a,b){
  if(a==='fam'){SFX.tap();showFamily();return}
+ if(a==='moodclaim'){moodClaim();return}
  if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
  if(a.startsWith('d')&&a!=='dogs'&&a!=='decor'&&a!=='dslot'&&a!=='dback'){dimaAct(a,b);return}
@@ -4477,7 +4540,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:27';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 14:30';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
