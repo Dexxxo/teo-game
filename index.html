@@ -3823,6 +3823,22 @@ function scheduleTick(dt){APP.sT=(APP.sT||0)+dt;if(APP.sT<15000)return;APP.sT=0;
  else if(nr===cur){APP.walkIn=1;ACT.key='';toast('Саша и Дима пришли сюда 🚶');refreshRoomNav()}else refreshRoomNav()}
 function refreshRoomNav(){const m=$('#menu');if(!m)return;const o=m.querySelectorAll('.rnavp,.rarr,.rwhere');o.forEach(e=>e.remove());m.insertAdjacentHTML('beforeend',roomNavHtml())}
 function whereHtml(){if(!schedAway())return'';const r=ROOM[schedRoomNow()];return r?`<button class="rwhere" data-a="rgo" data-id="${r.id}">🧑‍🤝‍🧑 ${esc(S.her)} и ${esc(S.him)} сейчас: ${esc(r.n)} →</button>`:''}
+
+/* ===== tasks for the new rooms ===== */
+Object.assign(TASKS,{
+ hall:[T_('Цветы у входа',1,{x:'x_flowers'},[['her','Теперь дом встречает цветами 🌷'],['him','Как и тебя, всегда 💛']]),
+  T_('Часы на стену',1,{x:'x_clock'},[['him','Чтобы мы никуда не опаздывали ⏰'],['her','Мы всегда опаздываем 😄']]),
+  T_('Тёплый плед для гостей',2,{x:'x_blankets'},[['her','Чтобы никто не мёрз в гостях 🧣'],[1,'Гав! (Марса уже заняла место)']]),
+  T_('Фото у двери',2,{x:'x_photo'},[['her','Каждый раз улыбаюсь, когда прохожу мимо 📷'],['him','И я 😎']])],
+ study:[T_('Свечи для вдохновения',1,{x:'x_candles'},[['him','Так лучше думается 🕯️'],['her','Значит, будем мечтать вместе 💭']]),
+  T_('Стопка книг',1,{x:'x_books'},[['her','Столько всего хочется прочитать 📚'],['him','Начнём с самой толстой?']]),
+  T_('Ночник-луна',2,{x:'x_moonlamp'},[['her','Моя любимая луна 🌙'],['him','Она всегда рядом с тобой']]),
+  T_('Бонсай для спокойствия',2,{x:'x_bonsai'},[['him','Говорят, он учит терпению 🌳'],['her','Тогда нам обоим пригодится 😄']]),
+  T_('Патефон с пластинками',3,{x:'x_gramophone'},[['her','Потанцуем? 🎶'],['him','С тобой хоть под «Собачий вальс» 💃']])],
+ garden:[T_('Подсолнухи у забора',1,{x:'x_sunflowers'},[['her','Они всегда смотрят на солнце 🌻'],['him','А я на тебя 😉']]),
+  T_('Мячик для Тео',1,{x:'x_ball'},[[0,'Мяч! В саду! Лучший день! 🎾'],['him','Теперь все цветы в опасности 😂']]),
+  T_('Фонарик для вечеров',2,{x:'x_lantern'},[['her','Вечером тут будет сказка 🏮'],['him','Она и так есть, когда ты рядом']]),
+  T_('Кресло-качалка',3,{x:'x_rocker'},[['him','Для нас на старость 👵👴'],['her','Только без твоих историй про рыбалку 😄']])]});
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4173,7 +4189,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:42';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:44';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
