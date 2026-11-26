@@ -2319,7 +2319,7 @@ const EXTAP={
   await pStand(M,tok);await pTo(M,clamp(p.x+74,30,370),p.y+28,tok);M.face=-1;say(M,'Можно одну? 🥺');await hold(1700,tok);say(H,'Только одну! 😄');heartsBurstV((H.x+M.x)/2,H.y-160);await hold(1700,tok);ds.forEach(w=>dogBark(w.i));
   await Promise.all([bothHome(tok),...ds.map(w=>dogHome(w,tok))])},
  x_dtable:async(e,L,deco,tok)=>{const H=PPL.her,M=PPL.him,p=xpos(e,L);RS.dinner=8000;sparkV(p.x,p.y-60,8);say(M,`Приятного аппетита, ${S.her} 💛`);await hold(2300,tok);say(H,'Ммм, вкусно! Ты лучший 😋');heartsBurstV(p.x,p.y-130);await hold(2400,tok)},
- x_bigbed:async(e,L,deco,tok)=>{if(PPL.sleep){toast('Тсс… спят в обнимку 💤 Марса охраняет их сон');RS.zz.push({x:xpos(e,L).x,y:xpos(e,L).y-90,l:0});return}const H=PPL.her,M=PPL.him;say(H,'Полежим немножко? 🥱');await hold(1500,tok);const mw=WK.list.find(w=>w.i===1);PPL.nap=true;if(mw)mw.hidden=true;await hold(5200,tok);PPL.nap=false;if(mw)mw.hidden=false;say(M,'Доброе утро, соня ☀️');heartsBurstV(H.x,H.y-150);await hold(1800,tok)},
+ x_bigbed:async(e,L,deco,tok)=>{if(PPL.sleep){toast('Тсс… спят в обнимку 💤 Марса охраняет их сон');RS.zz.push({x:xpos(e,L).x,y:xpos(e,L).y-90,l:0});return}const H=PPL.her,M=PPL.him;say(H,'Полежим немножко? 🥱');await hold(1500,tok);const mw=WK.list.find(w=>w.i===1);PPL.nap=true;if(mw)mw.hidden=true;try{await hold(5200,tok)}finally{PPL.nap=false;if(mw)mw.hidden=false}say(M,'Доброе утро, соня ☀️');heartsBurstV(H.x,H.y-150);await hold(1800,tok)},
  x_bathtub:async(e,L,deco,tok)=>{const p=xpos(e,L);const w=freeDogs([2])[0]||freeDogs([0])[0]||freeDogs()[0];if(!w)return;const M=PPL.him;say(PPL.her,`Купаем ${w.i===2?'Графа':w.i===0?'Тео':dn(w.i)}! 🛁`);await dogTo(w,clamp(p.x+100,30,370),p.y+20,tok);w.hidden=true;RS.bathDog=w.i;RS.bath=3800;SFX.whoosh();sparkV(p.x,p.y-80,6);await hold(3400,tok);
   RS.bathDog=null;w.hidden=false;w.x=clamp(p.x+104,30,370);w.y=p.y+24;w.z=0;w.mode='stay';w.pose='sit';const s=v2s(w.x,w.y-30);burst(s.x,s.y,['#9ED8FF','#CFEFFF','#FFFFFF'],26,{type:'blob',v:2.4,g:.12,size:4,max:800});dogBark(w.i);say(M,w.i===2?'Граф, ну я же весь мокрый! 😂':'Брызги во все стороны! 😂');await hold(2000,tok);await dogHome(w,tok)},
  x_sinkmirror:async(e,L,deco,tok)=>{const H=PPL.her,M=PPL.him,p=xpos(e,L);await pStand(H,tok);await pTo(H,p.x,L.fl+78,tok);H.pose='back';say(H,'Причёсываюсь ✨');await hold(2000,tok);H.pose='stand';H.face=1;say(M,'Самая красивая! 😍');heartsBurstV(H.x,H.y-160);await hold(1800,tok);await pHome(H,tok)},
@@ -4402,7 +4402,7 @@ function autoPeopleAct(){const L=APP.L,deco=curDeco();if(!L||!deco)return;const 
  for(const id of['pzwater','pzmusic','pzlook','pzlight']){const ok=id==='pzwater'?pzFind(deco,'f_tree').length+pzFind(deco,'c_plant').length+pzFind(deco,'t_cactus').length:id==='pzmusic'?pzFind(deco,'t_player').length:id==='pzlook'?pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish','spin','flutter'].includes(PZ[i.id].act)):pzList(deco).some(i=>PZ[i.id]&&PZ[i.id].light&&PZ[i.id].s==='floor');if(ok)opts.push({w:1.2,run:()=>runPerson(p,tok=>doAct(p,id,L,deco,tok))})}
  opts.push({w:2.5,run:()=>{ACT.q.push(p);runQ()}});opts.push({w:1.5,run:()=>runPerson(p,tok=>soloPose(p,tok))});
  let tot=0;opts.forEach(o=>tot+=o.w);let q=Math.random()*tot;for(const o of opts){q-=o.w;if(q<=0){o.run();return}}}
-function peopleAutoTick(dt){if(S.roam===false||APP.scr!=='menu'||!APP.L||!ACT.H||!PPL.her||PPL.away||PPL.sleep||PPL.nap)return;if(ACT.cur||ACT.q.length||$('.modal',APP.mods)){PA.t=0;return}PA.t+=dt;if(PA.t<PA.next)return;PA.t=0;PA.next=9000+Math.random()*10000;autoPeopleAct()}
+function peopleAutoTick(dt){if(S.roam===false||APP.scr!=='menu'||!APP.L||!ACT.H||!PPL.her||PPL.away||PPL.sleep||PPL.nap)return;if(PA.key!==ACT.key){PA.key=ACT.key;PA.t=0;PA.next=3500+Math.random()*2500}if(ACT.cur||ACT.q.length||$('.modal',APP.mods)){PA.t=0;return}PA.t+=dt;if(PA.t<PA.next)return;PA.t=0;PA.next=1500+Math.random()*2500;autoPeopleAct()}
 /* ===== endless levels: years/seasons counter, replaying any passed level, progress guard ===== */
 const YEAR_LEN=SEASON_LEN*4;
 const yearOf=n=>Math.floor((n-1)/YEAR_LEN)+1;
@@ -5215,7 +5215,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 16:15';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 16:26';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
