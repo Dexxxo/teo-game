@@ -398,6 +398,9 @@ button.chip{cursor:pointer;font-family:inherit}
 @keyframes spb{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-10px);opacity:1}}
 .boost{transition:transform .12s}.boost:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #5b3519,0 2px 6px rgba(0,0,0,.35)}
 .pb{transition:transform .12s,border-color .15s}.pb:active{transform:scale(.95)}.ico{transition:transform .12s}.ico:active{transform:scale(.92)}
+.sets{display:flex;flex-direction:column;gap:10px;margin:8px 0 4px}.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#FFF8EA;border:2px solid #EAD9B8;border-radius:14px;padding:10px 14px;font-weight:800;cursor:pointer;position:relative}
+.setrow input[type=checkbox]{position:absolute;opacity:0;pointer-events:none}.setrow .sw{width:48px;height:28px;border-radius:14px;background:#D9CBB0;position:relative;transition:background .2s;flex:none}.setrow .sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:left .2s}
+.setrow input:checked+.sw{background:#5DBB63}.setrow input:checked+.sw::after{left:23px}.setrow.col{flex-direction:column;align-items:stretch;gap:6px}.setrow input[type=range]{width:100%;accent-color:#5DBB63}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -479,12 +482,12 @@ const fmt=s=>String(s??'').replaceAll('{him}',S.him).replaceAll('{her}',S.her);
 
 /* ===== audio ===== */
 const AU={c:null,m:null,mus:null};
-function auInit(){if(AU.c){if(AU.c.state==='suspended')AU.c.resume().catch(()=>{});return}try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;AU.c=new C();AU.m=AU.c.createGain();AU.m.gain.value=.5;AU.m.connect(AU.c.destination);AU.mus=AU.c.createGain();AU.mus.gain.value=0;AU.mus.connect(AU.m);musicSet()}catch(e){AU.c=null}}
+function auInit(){if(AU.c){if(AU.c.state==='suspended')AU.c.resume().catch(()=>{});return}try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;AU.c=new C();AU.m=AU.c.createGain();AU.m.gain.value=S.vol==null?.5:S.vol;AU.m.connect(AU.c.destination);AU.mus=AU.c.createGain();AU.mus.gain.value=0;AU.mus.connect(AU.m);musicSet()}catch(e){AU.c=null}}
 function osc(f,d,type='sine',v=.2,f2=0,del=0,dest=null){const c=AU.c;if(!c||(!S.sound&&!dest))return;try{const t=c.currentTime+del;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+Math.min(.02,d/4));g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||AU.m);o.start(t);o.stop(t+d+.05)}catch(e){}}
 let NB=null;function noiseBuf(){if(NB)return NB;const c=AU.c,b=c.createBuffer(1,c.sampleRate*.6,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return NB=b}
 function noise(d,v=.2,ff=1000,type='lowpass',del=0){const c=AU.c;if(!c||!S.sound)return;try{const t=c.currentTime+del;const s=c.createBufferSource();s.buffer=noiseBuf();const f=c.createBiquadFilter();f.type=type;f.frequency.value=ff;const g=c.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(AU.m);s.start(t);s.stop(t+d+.02)}catch(e){}}
 function bark(f0=300,del=0){const c=AU.c;if(!c||!S.sound)return;try{const t=c.currentTime+del;const o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.setValueAtTime(f0*1.3,t);o.frequency.exponentialRampToValueAtTime(f0*.7,t+.13);f.type='bandpass';f.frequency.value=f0*3;f.Q.value=1.3;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.32,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.15);o.connect(f);f.connect(g);g.connect(AU.m);o.start(t);o.stop(t+.2)}catch(e){}noise(.05,.07,f0*4,'bandpass',del)}
-function vib(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+function vib(ms){if(S&&S.vib===false)return;try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 const SFX={
  pop:(k=0)=>osc(480+k*70,.12,'sine',.16,820+k*110),
  swap:()=>osc(380,.08,'triangle',.1,520),
@@ -630,6 +633,7 @@ function iconImg(kind,size=64){const sid=(G.se||SEASONS[0]).id;const k=kind+size
  else if(kind==='box'){c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';drawBoxArt(c,sid,1)}
  else if(kind==='treat'){c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';drawTreatArt(c)}
  else if(kind==='comb'||kind==='shell'||kind==='lantern'){tileBg(c,s,['#FFF3D6','#F2D09A']);c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';if(kind==='comb')drawCombArt(c,2);else if(kind==='shell')drawShellArt(c,2);else drawLanternArt(c)}
+ else if(kind==='sleepy'||kind==='feed'){c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';if(kind==='sleepy')drawSleepyArt(c,1,3);else drawFeedArt(c,2)}
  else if(kind==='mud'){tileBg(c,s,['#E8D7C0','#C9A57A']);c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';drawMudArt(c)}
  else if(kind==='raccoon'){tileBg(c,s,['#E9EDF2','#AEB7C2']);drawRaccoon(c,s/2,s/2+s*.04,s*.8,0,false)}
  else if(kind==='cat'){tileBg(c,s,['#E9EDF2','#AEB7C2']);drawCat(c,s/2,s/2+s*.04,s*.8,0,false)}
@@ -2458,12 +2462,12 @@ function heartsAt(x,y,n=6){burst(x,y,['#FF6F9E','#FF4D6D','#FFB3C8'],n,{type:'he
 /* ===== board state ===== */
 const G={R:8,C:8,grid:[],cs:40,ox:0,oy:0,busy:true,moves:0,goals:[],lv:null,combo:0,sel:null,idle:0,hint:null,shake:0,lastSwap:null,target:null,contUsed:false,movesUsed:0,over:false,dying:[],cols:[0,1,2,3,4],room:'living',leftBonus:0,blinkT:0,sleepers:null,se:null};
 let TID=1;
-function mkTile(k,d,sp){return{id:TID++,k,d:d??-1,sp:sp||null,ice:0,hp:k==='comb'||k==='shell'?2:k==='wool'||k==='box'||k==='mud'||k==='lantern'?1:0,x:0,y:0,s:1,a:1,r:0,blink:0}}
+function mkTile(k,d,sp){return{id:TID++,k,d:d??-1,sp:sp||null,ice:0,hp:k==='sleepy'?3:k==='feed'?4:k==='comb'||k==='shell'?2:k==='wool'||k==='box'||k==='mud'||k==='lantern'?1:0,x:0,y:0,s:1,a:1,r:0,blink:0}}
 const cellAt=(r,c)=>r>=0&&c>=0&&r<G.R&&c<G.C?G.grid[r][c]:null;
 function T(r,c){const e=cellAt(r,c);return e&&e.on?e.t:null}
 function colAt(r,c){const t=T(r,c);return t&&t.k==='dog'?t.d:-1}
 const K=(r,c)=>r*16+c,KR=k=>k>>4,KC=k=>k&15;
-const isBlock=t=>!!t&&(t.k==='wool'||t.k==='box'||t.k==='mud'||t.k==='comb'||t.k==='shell'||t.k==='lantern');
+const isBlock=t=>!!t&&(t.k==='wool'||t.k==='box'||t.k==='mud'||t.k==='comb'||t.k==='shell'||t.k==='lantern'||t.k==='sleepy'||t.k==='feed');
 const swappable=t=>!!t&&!isBlock(t)&&!t.ice;
 const isSp=t=>!!t&&(t.k==='ball'||!!t.sp);
 const cx=c=>G.ox+(c+.5)*G.cs,cy=r=>G.oy+(r+.5)*G.cs;
@@ -2495,12 +2499,12 @@ function allCells(fn){const out=[];for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){
 /* ===== goals ===== */
 function goalAdd(type,d,r,c){for(let i=0;i<G.goals.length;i++){const g=G.goals[i];if(g.type!==type)continue;if(type==='dog'&&g.d!==d)continue;if(g.have>=g.need)continue;g.have++;flyToGoal(i,type,d,r,c);break}}
 const goalsDone=()=>G.goals.every(g=>g.have>=g.need);
-function goalSpr(type,d){return type==='comb'||type==='shell'||type==='lantern'?blockSpr(type,type==='lantern'?1:2):type==='mud'?mudSpr():type==='raccoon'?raccoonSpr():type==='dog'?SPR.dog[d]:type==='ice'?SPR.ice[0]:type==='wool'?SPR.wool[0]:type==='box'?SPR.box[0]:type==='treat'?SPR.treat:type==='floor'?SPR.floor[0]:SPR.cat}
+function goalSpr(type,d){return type==='sleepy'?sleepySpr(1,3):type==='feed'?feedSpr(2):type==='comb'||type==='shell'||type==='lantern'?blockSpr(type,type==='lantern'?1:2):type==='mud'?mudSpr():type==='raccoon'?raccoonSpr():type==='dog'?SPR.dog[d]:type==='ice'?SPR.ice[0]:type==='wool'?SPR.wool[0]:type==='box'?SPR.box[0]:type==='treat'?SPR.treat:type==='floor'?SPR.floor[0]:SPR.cat}
 function flyToGoal(i,type,d,r,c){const el=document.querySelector(`.goal[data-g="${i}"] img`);if(!el){updHUD();return}const ar=APP.root.getBoundingClientRect(),er=el.getBoundingClientRect();
  addP({type:'fly',x:cx(c),y:cy(r),tx:er.left-ar.left+er.width/2,ty:er.top-ar.top+er.height/2,bend:rnd(-60,60),img:goalSpr(type,d),size:G.cs*.9,max:rnd(520,700),onEnd:()=>{updHUD();el.parentElement.classList.remove('bump');void el.offsetWidth;el.parentElement.classList.add('bump');addP({type:'glow',x:er.left-ar.left+er.width/2,y:er.top-ar.top+er.height/2,size:26,color:'#FFE27A',max:300})}})}
 
 /* ===== effects ===== */
-const tileCol=t=>t.k==='mud'?'#8A5A33':t.k==='comb'?'#F2B33A':t.k==='shell'?'#F7C1D3':t.k==='lantern'?'#F08A2C':t.k==='dog'?DOGS[t.d].bg[1]:t.k==='box'?(G.se?G.se.boxCol:'#E0565B'):t.k==='wool'?'#C38BF0':'#FFE27A';
+const tileCol=t=>t.k==='sleepy'?'#B79CF5':t.k==='feed'?'#A0602C':t.k==='mud'?'#8A5A33':t.k==='comb'?'#F2B33A':t.k==='shell'?'#F7C1D3':t.k==='lantern'?'#F08A2C':t.k==='dog'?DOGS[t.d].bg[1]:t.k==='box'?(G.se?G.se.boxCol:'#E0565B'):t.k==='wool'?'#C38BF0':'#FFE27A';
 function splatAt(x,y,col,size){const lobes=[];const n=6+Math.floor(Math.random()*3);for(let k=0;k<n;k++)lobes.push([k/n*6.283+rnd(-.3,.3),rnd(.16,.3),rnd(.42,.62)]);addP({type:'splat',x,y,size,color:col,lobes,rot:rnd(0,6),max:rnd(520,700)})}
 function popFx(r,c,t){const x=cx(c),y=cy(r);const col=tileCol(t),col2=t.k==='dog'?DOGS[t.d].bg[0]:'#FFFFFF';
  splatAt(x,y,col,G.cs*.62);addP({type:'flash',x,y,size:G.cs*.8,max:200});
@@ -2533,7 +2537,7 @@ function comboFx(){if(G.combo<2)return;const k=Math.min(G.combo,6);bigText(CTXT[
 function hitFloor(r,c){const e=cellAt(r,c);if(!e||!e.fl)return;e.fl--;floorFx(r,c);if(e.fl===0)goalAdd('floor',0,r,c)}
 function removeTile(r,c,t){G.grid[r][c].t=null;t.dead=true;G.dying.push(t);tween(t,{s:1.28},70).then(()=>tween(t,{s:0,a:0},170,E.in)).then(()=>{const i=G.dying.indexOf(t);if(i>=0)G.dying.splice(i,1)});
  if(t.k==='dog'){goalAdd('dog',t.d,r,c);S.stats.dogs[t.d]=(S.stats.dogs[t.d]||0)+1;dailyAdd(t.d)}popFx(r,c,t);hitFloor(r,c)}
-function hitBlock(r,c,set){const k=K(r,c);if(set&&set.has(k))return;if(set)set.add(k);const t=T(r,c);if(!isBlock(t))return;t.hp-=1;blockFx(r,c,t);if(t.hp<=0){if(t.k==='mud')G.mudHit=true;onBlockGone(t,r,c);removeTile(r,c,t);goalAdd(t.k,0,r,c)}else{t.s=1.25;tween(t,{s:1},220,E.back)}}
+function hitBlock(r,c,set){const k=K(r,c);if(set&&set.has(k))return;if(set)set.add(k);const t=T(r,c);if(!isBlock(t))return;t.hp-=1;blockFx(r,c,t);if(t.hp<=0&&t.k==='sleepy'){wakeSleepy(r,c,t);return}if(t.hp<=0){if(t.k==='mud')G.mudHit=true;onBlockGone(t,r,c);removeTile(r,c,t);goalAdd(t.k,0,r,c)}else{t.s=1.25;tween(t,{s:1},220,E.back)}}
 function frisTarget(r,c,excl){const near=new Set([K(r,c),K(r+1,c),K(r-1,c),K(r,c+1),K(r,c-1)]);if(excl)excl.forEach(k=>near.add(k));const tiers=[[],[],[],[]];
  for(const k of allCells()){if(near.has(k))continue;const t=T(KR(k),KC(k));const e=G.grid[KR(k)][KC(k)];if(!t)continue;if(t.k==='treat')continue;if(isBlock(t)||t.ice)tiers[0].push(k);else if(e.fl&&G.goals.some(g=>g.type==='floor'&&g.have<g.need))tiers[1].push(k);else if(t.k==='dog'&&G.goals.some(g=>g.type==='dog'&&g.d===t.d&&g.have<g.need))tiers[2].push(k);else tiers[3].push(k)}
  for(const tr of tiers)if(tr.length)return pick(tr);return null}
@@ -2660,16 +2664,16 @@ const SHAPES=SHAPES2.map(x=>x.m);
 const PATS={center:(r,c)=>r>=2&&r<=5&&c>=1&&c<=6,ring:(r,c)=>((r===1||r===6)&&c>=1&&c<=6)||((c===1||c===6)&&r>=1&&r<=6),corners:(r,c)=>(r<2||r>5)&&(c<2||c>5),diamond:(r,c)=>Math.abs(r-3.5)+Math.abs(c-3.5)<=3,checker:(r,c)=>(r+c)%2===0&&r>=1&&r<=6,cross:(r,c)=>r===3||r===4||c===3||c===4,bottom:(r,c)=>r>=5,top:(r,c)=>r<=2,sides:(r,c)=>c<=1||c>=6,mid:(r,c)=>r===3||r===4,frame:(r,c)=>r===0||r===7||c===0||c===7,xx:(r,c)=>r===c||r===7-c};
 const RECIPES=[
  {g:['dog'],tut:1},{g:['dog','dog']},{g:['floor'],pat:'center'},{g:['ice'],pat:'mid'},{g:['mud','floor'],pat:'diamond',mpat:'corners'},
- {g:['ss','treat'],pat:'sides'},{g:['box'],pat:'corners'},{g:['ice','box'],pat:'cross',bpat:'sides'},{g:['floor','treat'],pat:'bottom'},{g:['dog'],boss:1},
- {g:['mud','dog'],pat:'bottom'},{g:['floor','ice'],pat:'ring',ipat:'center'},{g:['ss','dog'],pat:'checker'},{g:['wool','dog'],pat:'checker'},{g:['floor','box','ice'],pat:'frame',ipat:'mid',bpat:'corners',hard:1,fin:1}];
+ {g:['ss','treat'],pat:'sides'},{g:['box','feed'],pat:'corners',fpat:'center'},{g:['ice','box'],pat:'cross',bpat:'sides'},{g:['floor','treat'],pat:'bottom'},{g:['dog'],boss:1},
+ {g:['sleepy','dog'],pat:'center'},{g:['floor','ice'],pat:'ring',ipat:'center'},{g:['ss','dog'],pat:'checker'},{g:['wool','dog'],pat:'checker'},{g:['floor','box','ice'],pat:'frame',ipat:'mid',bpat:'corners',hard:1,fin:1}];
 const MUTS=[{id:'blizzard',ic:'❄️',n:'Метель',d:'Каждые 4 хода замерзают 2 собачки'},{id:'yarn',ic:'🧶',n:'Клубочный дождь',d:'Иногда вместо собачек падают клубки'}];
 const MUT={};MUTS.forEach(m=>MUT[m.id]=m);
 const PERKS=[];
 function setInfo(rid){const d=S.deco[rid]||{};const cnt={};for(const sl of SLOTS){const st=stOf(d[sl.id]);if(st&&st!=='basic')cnt[st]=(cnt[st]||0)+1}let best=null,bn=0;for(const k in cnt)if(cnt[k]>bn){bn=cnt[k];best=k}return{st:best,n:bn,moves:bn>=10?2:bn>=5?1:0}}
 function sShuffle(a,R){for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-1)%SEASON_LEN;const rc=RECIPES[idx];const cyc=Math.floor((n-1)/(SEASON_LEN*4));const tier=cyc+Math.floor(idx/5)*.5;
+function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-1)%SEASON_LEN;let rc=RECIPES[idx];if(n<=15&&rc.g.some(x=>x==='feed'||x==='sleepy'))rc=Object.assign({},rc,idx===10?{g:['mud','dog'],pat:'bottom'}:{g:rc.g.filter(x=>x!=='feed')});const cyc=Math.floor((n-1)/(SEASON_LEN*4));const tier=cyc+Math.floor(idx/5)*.5;
  const L={n,se,season:se.id,idx,boss:!!rc.boss,hard:!!rc.hard,fin:!!rc.fin,muts:[],goals:[]};
- {const sh=(n<=3||rc.boss||rc.g.includes('treat'))?null:(R()<.8?SHAPES2[(n*7+cyc*3)%SHAPES2.length]:null);L.shape=sh?sh.m:null;L.shapeN=sh?sh.n:''}
+ {const sh=(n<=3||rc.boss||rc.g.includes('treat'))?null:(R()<.8?(pool=>pool[(n*7+cyc*3)%pool.length])(rc.g.includes('box')||rc.g.includes('feed')?SHAPES2.filter(x=>!/Домик|половинки|Лапка|Бублик/.test(x.n)):SHAPES2):null);L.shape=sh?sh.m:null;L.shapeN=sh?sh.n:''}
  const on=(r,c)=>!L.shape||L.shape[r][c]==='#';
  const cells=p=>{const out=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(on(r,c)&&PATS[p](r,c))out.push([r,c]);return out};
  const pk=Object.keys(PATS);const pat=rc.pat||pk[Math.floor(R()*pk.length)];
@@ -2681,6 +2685,7 @@ function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-
   if(g==='box'){const p=rc.bpat||pat;let cs=cells(p);if(cs.length>12){const keep=[];for(const x of cs)if((x[0]+x[1]+n)%2===0)keep.push(x);cs=keep.slice(0,12)}if(cs.length<8){const ex=cells('mid').filter(([r,c])=>(c===0||c===7||c===2||c===5)&&!cs.some(q=>q[0]===r&&q[1]===c));cs=cs.concat(ex).slice(0,10)}const hp=Math.min(3,1+Math.floor(idx/5)+(rc.fin?1:0)+cyc);for(const[r,c]of cs)L.boxes.push([r,c,PATS.center(r,c)?hp:Math.max(1,hp-1)]);L.goals.push({type:'box',need:L.boxes.length})}
   if(g==='wool'){for(const[r,c]of cells(pat).slice(0,14))L.wool.push([r,c,idx>=10||cyc>0?2:1]);L.goals.push({type:'wool',need:L.wool.length})}
  if(g==='ss'){const kind=SSK[se.id];const cs=cells(rc.spat||pat).slice(0,kind==='lantern'?8:10);if(kind==='mud'){for(const[r,c]of cs)L.mud.push([r,c]);L.goals.push({type:'mud',need:L.mud.length})}else{for(const[r,c]of cs)L.ss.push([r,c,kind]);L.goals.push({type:kind,need:L.ss.length})}}
+ if(g==='sleepy'||g==='feed'){const all2=cells(g==='feed'?(rc.fpat||'center'):(rc.spat||pat));const pickd=[];for(const x of all2){if(pickd.every(q=>Math.abs(q[0]-x[0])+Math.abs(q[1]-x[1])>=2))pickd.push(x);if(pickd.length>=(g==='feed'?3:4))break}for(const[r,c]of pickd)L.ss.push([r,c,g]);L.goals.push({type:g,need:pickd.length})}
  if(g==='mud'){const cs=cells(rc.mpat||pat).slice(0,10);for(const[r,c]of cs)L.mud.push([r,c]);L.goals.push({type:'mud',need:L.mud.length})}
   if(g==='treat'){L.treat=Math.min(5,2+Math.floor(idx/6)+cyc);L.goals.push({type:'treat',need:L.treat})}}
  const dogGoals=rc.g.filter(g=>g==='dog').length;const used=[];
@@ -2688,8 +2693,8 @@ function genLevel(n){const R=srand(n*7919+13);const se=seasonOf(n);const idx=(n-
  L.goals=L.goals.filter(g=>g.need>0);if(!L.goals.length)L.goals.push({type:'dog',d:L.colList[0],need:15});
  if(rc.boss){L.cat=true;L.bossK=(se.id==='spring'||se.id==='autumn')?'raccoon':'cat';L.goals.push({type:L.bossK,need:3})}
  if(se.id==='winter'&&rc.fin)L.muts.push('blizzard');if(se.id==='autumn'&&rc.g.includes('wool'))L.muts.push('yarn');
- let mv=17;for(const g of L.goals){if(g.type==='floor')mv+=g.need/3;if(g.type==='ice')mv+=g.need/2.4;if(g.type==='box')mv+=L.boxes.reduce((a,x)=>a+x[2],0)/3;if(g.type==='wool')mv+=g.need/3;if(g.type==='treat')mv+=g.need*3;if(g.type==='dog')mv+=g.need/7;if(g.type==='cat')mv+=4;if(g.type==='raccoon')mv+=6;if(g.type==='mud')mv+=g.need/1.8;if(g.type==='comb'||g.type==='shell')mv+=g.need/1.6;if(g.type==='lantern')mv+=g.need/2.6}
- if(L.goals.length>=3)mv+=3;if(L.shape)mv+=3;if(rc.hard)mv-=1;mv-=cyc*1.5;mv=clamp(Math.round(mv),18,45);
+ let mv=17;for(const g of L.goals){if(g.type==='floor')mv+=g.need/3;if(g.type==='ice')mv+=g.need/2.4;if(g.type==='box')mv+=L.boxes.reduce((a,x)=>a+x[2],0)/3;if(g.type==='wool')mv+=g.need/3;if(g.type==='treat')mv+=g.need*3;if(g.type==='dog')mv+=g.need/7;if(g.type==='cat')mv+=4;if(g.type==='raccoon')mv+=6;if(g.type==='mud')mv+=g.need/1.8;if(g.type==='comb'||g.type==='shell')mv+=g.need/1.6;if(g.type==='lantern')mv+=g.need/2.6;if(g.type==='sleepy')mv+=g.need*1.4;if(g.type==='feed')mv+=g.need*1.8}
+ if(L.goals.length>=3)mv+=3;if(L.shape)mv+=3;if(L.shape&&L.boxes.length)mv+=2;if(rc.hard)mv-=1;mv-=cyc*1.5;mv=clamp(Math.round(mv),18,45);
  L.baseMoves=mv;L.moves=mv+2*S.mercy+setInfo(G.room).moves;
  L.title=rc.boss?(L.bossK==='raccoon'?'Босс: Енот Шнырь':'Босс: Кот Барсик'):'Уровень '+n;return L}
 function setupBoard(L){G.R=8;G.C=8;
@@ -2699,7 +2704,7 @@ function setupBoard(L){G.R=8;G.C=8;
   for(const[r,c,hp]of L.boxes)if(G.grid[r][c].on){const b=mkTile('box');b.hp=hp;G.grid[r][c].t=b}
   for(const[r,c,hp]of L.wool)if(G.grid[r][c].on){const b=mkTile('wool');b.hp=hp;G.grid[r][c].t=b}
   for(const[r,c]of(L.mud||[]))if(G.grid[r][c].on&&!isBlock(G.grid[r][c].t))G.grid[r][c].t=mkTile('mud');
-  for(const[r,c,k]of(L.ss||[]))if(G.grid[r][c].on&&!isBlock(G.grid[r][c].t))G.grid[r][c].t=mkTile(k);
+  for(const[r,c,k]of(L.ss||[]))if(G.grid[r][c].on&&!isBlock(G.grid[r][c].t)){const nt=mkTile(k);if(k==='sleepy')nt.d=pick(G.cols);G.grid[r][c].t=nt}
   for(const[r,c,l]of L.ice){const t=T(r,c);if(t&&t.k==='dog')t.ice=l}
   if(L.treat){const cs=[3,4];for(const c of cs){let r=0;while(r<8&&!G.grid[r][c].on)r++;const t=T(r,c);if(t&&t.k==='dog'&&!t.ice){G.grid[r][c].t=mkTile('treat');break}}}
   if(!findGroups().length&&findMove())break}
@@ -2763,7 +2768,7 @@ function drawTile(c,t,now){const cs=G.cs;const x=G.ox+t.x*cs+cs/2,y=G.oy+t.y*cs+
  if(G.sel&&G.sel===t)s*=1.1+Math.sin(now*.012)*.03;
  c.save();c.translate(x,y);if(rot)c.rotate(rot);c.scale(s,s);c.globalAlpha=t.a;
  if(isSp(t))drawAura(c,t,now,cs);
- let img;if(t.k==='ball'){c.rotate(now*.002);img=SPR.ball}else if(t.k==='wool')img=SPR.wool[t.hp>1?1:0];else if(t.k==='mud')img=mudSpr();else if(t.k==='comb'||t.k==='shell'||t.k==='lantern')img=blockSpr(t.k,t.hp);else if(t.k==='box')img=SPR.box[Math.min(3,t.hp)-1];else if(t.k==='treat'){c.translate(0,Math.sin(now*.004+t.id)*cs*.03);img=SPR.treat}else img=(t.blink>now||t.sleep)?SPR.dogC[t.d]:SPR.dog[t.d];
+ let img;if(t.k==='ball'){c.rotate(now*.002);img=SPR.ball}else if(t.k==='wool')img=SPR.wool[t.hp>1?1:0];else if(t.k==='mud')img=mudSpr();else if(t.k==='comb'||t.k==='shell'||t.k==='lantern')img=blockSpr(t.k,t.hp);else if(t.k==='sleepy')img=sleepySpr(t.d,t.hp);else if(t.k==='feed')img=feedSpr(t.hp);else if(t.k==='box')img=SPR.box[Math.min(3,t.hp)-1];else if(t.k==='treat'){c.translate(0,Math.sin(now*.004+t.id)*cs*.03);img=SPR.treat}else img=(t.blink>now||t.sleep)?SPR.dogC[t.d]:SPR.dog[t.d];
  if(img){if(t.a>.5&&!t.dead){c.fillStyle='rgba(0,0,0,.2)';ell(c,0,cs*.4,cs*.34,cs*.07);c.fill()}c.drawImage(img,-cs/2,-cs/2,cs,cs)}
  if(t.k==='ball')c.rotate(-now*.002);if(t.sp)drawSpecialMark(c,t,now,cs);if(t.ice)c.drawImage(t.k==='dog'&&t.d>=0?iceSpr(t.d,t.ice>1?2:1):SPR.ice[t.ice>1?1:0],-cs/2,-cs/2,cs,cs);
  if(G.sel===t){c.strokeStyle='#fff';c.lineWidth=3;rr(c,-cs*.47,-cs*.47,cs*.94,cs*.94,cs*.24);c.stroke()}
@@ -2776,7 +2781,7 @@ function drawBoard(c,now){const cs=G.cs,ox=G.ox,oy=G.oy,bw=cs*G.C,bh=cs*G.R;cons
  if(G.target){const p=.5+.5*Math.sin(now*.01);c.strokeStyle=`rgba(255,220,120,${.5+.5*p})`;c.lineWidth=3;rr(c,ox-3,oy-3,bw+6,bh+6,12);c.stroke()}
  c.save();c.clip(BP.loose);
  for(let r=0;r<G.R;r++)for(let k=0;k<G.C;k++){const t=G.grid[r]&&G.grid[r][k].t;if(t)drawTile(c,t,now)}
- for(const t of G.dying)drawTile(c,t,now);for(let r=0;r<G.R;r++)for(let k=0;k<G.C;k++){const e=G.grid[r]&&G.grid[r][k];if(e&&e.on&&e.fl)drawFloorMark(c,ox+k*cs,oy+r*cs,cs,e.fl,se,now)}c.restore();drawShine(c,now,ox,oy,bw,bh);drawComboLinks(c,now);drawCatOnBoard(c,now);drawTapHint(c,now);drawTutHand(c,now);drawGoalGlow(c,now);c.restore();G.shake*=.88}
+ for(const t of G.dying)drawTile(c,t,now);for(let r=0;r<G.R;r++)for(let k=0;k<G.C;k++){const e=G.grid[r]&&G.grid[r][k];if(e&&e.on&&e.fl)drawFloorMark(c,ox+k*cs,oy+r*cs,cs,e.fl,se,now)}c.restore();drawShine(c,now,ox,oy,bw,bh);drawComboLinks(c,now);drawIntroHi(c,now);drawCatOnBoard(c,now);drawTapHint(c,now);drawTutHand(c,now);drawGoalGlow(c,now);c.restore();G.shake*=.88}
 function updGame(dt,now){if(G.busy||G.over||!G.grid.length)return;G.idle+=dt;
  G.blinkT-=dt;if(G.blinkT<=0){G.blinkT=rnd(150,450);const ks=allCells(t=>t&&t.k==='dog');if(ks.length){const k=pick(ks),t=T(KR(k),KC(k));if(t)t.blink=now+150}}
  if(G.idle>(G.lv&&G.lv.n<=3&&G.movesUsed<3?900:5000)&&!G.hint){const cp=comboPairs();const m=cp.length?cp[0]:findMove();if(m)G.hint=[T(m[0],m[1]),T(m[2],m[3])]}
@@ -2896,7 +2901,7 @@ function drawGoalGlow(c,now){if(G.idle<3500||G.busy||G.over)return;const q=.5+.5
  const want=t=>(t.ice&&G.goals.some(g=>g.type==='ice'&&g.have<g.need))||(isBlock(t)&&G.goals.some(g=>g.type===t.k&&g.have<g.need));
  for(let r=0;r<G.R;r++)for(let k=0;k<G.C;k++){const t=T(r,k);if(t&&want(t)){rr(c,G.ox+k*cs+2,G.oy+r*cs+2,cs-4,cs-4,cs*.24);c.stroke()}}c.restore()}
 /* goals always match what is really on the board (no impossible "ghost" ice / mud / boxes) */
-function boardCounts(){const n={ice:0,box:0,wool:0,mud:0,floor:0,comb:0,shell:0,lantern:0};for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){const e=G.grid[r][c];if(!e.on)continue;n.floor+=e.fl||0;const t=e.t;if(!t)continue;if(t.ice)n.ice++;if(t.k==='box')n.box++;if(t.k==='wool')n.wool++;if(t.k==='mud')n.mud++;if(n[t.k]!=null&&['comb','shell','lantern'].includes(t.k))n[t.k]++}return n}
+function boardCounts(){const n={ice:0,box:0,wool:0,mud:0,floor:0,comb:0,shell:0,lantern:0,sleepy:0,feed:0};for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){const e=G.grid[r][c];if(!e.on)continue;n.floor+=e.fl||0;const t=e.t;if(!t)continue;if(t.ice)n.ice++;if(t.k==='box')n.box++;if(t.k==='wool')n.wool++;if(t.k==='mud')n.mud++;if(n[t.k]!=null&&['comb','shell','lantern','sleepy','feed'].includes(t.k))n[t.k]++}return n}
 function syncGoals(){const n=boardCounts();for(const g of G.goals)if(n[g.type]!=null)g.need=n[g.type];G.goals=G.goals.filter(g=>g.need>0);if(!G.goals.length)G.goals.push({type:'dog',d:G.cols[0],need:20,have:0})}
 /* ===== season obstacles (comb / shell / lantern) + season map ===== */
 const SSK={winter:'mud',spring:'comb',summer:'shell',autumn:'lantern'};
@@ -2915,11 +2920,12 @@ function drawLanternArt(c){const g=c.createRadialGradient(0,4,4,0,4,48);g.addCol
 const SBS={};
 function blockSpr(k,hp){const D=APP.DPR,s=Math.round((G.cs||40)*D),key=k+hp+'_'+s;if(SBS[key])return SBS[key];const cv=mkCanvas(s,s),c=cv.getContext('2d');c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';
  if(k==='comb')drawCombArt(c,hp);else if(k==='shell')drawShellArt(c,hp);else drawLanternArt(c);return SBS[key]=cv}
-function onBlockGone(t,r,c){if(t.k==='comb'){G.bees=(G.bees||[]);G.bees.push([r,c])}else if(t.k==='lantern'){G.lanterns=(G.lanterns||[]);G.lanterns.push([r,c])}else if(t.k==='shell'){S.bones+=5;addP({type:'text',text:'+5 🦴',x:cx(c),y:cy(r),size:18,max:900,rise:30,c1:'#FFFFFF',c2:'#F7C1D3'})}}
+function onBlockGone(t,r,c){if(t.k==='comb'){G.bees=(G.bees||[]);G.bees.push([r,c])}else if(t.k==='lantern'){G.lanterns=(G.lanterns||[]);G.lanterns.push([r,c])}else if(t.k==='feed'){G.feeds=(G.feeds||[]);G.feeds.push([r,c])}else if(t.k==='shell'){S.bones+=5;addP({type:'text',text:'+5 🦴',x:cx(c),y:cy(r),size:18,max:900,rise:30,c1:'#FFFFFF',c2:'#F7C1D3'})}}
 function drawBee(c,x,y,s,t){c.save();c.translate(x,y);ell(c,0,0,s,s*.75);fs(c,'#FFD24A',OL,1.5);c.fillStyle=OL;c.fillRect(-s*.2,-s*.7,s*.25,s*1.4);c.fillStyle='rgba(220,240,255,.85)';const f=Math.sin(t*.06)*.3;ell(c,-s*.2,-s*.9,s*.5,s*.35,f);c.fill();ell(c,s*.3,-s*.9,s*.5,s*.35,-f);c.fill();c.restore()}
 async function seasonPost(){let any=false;
  while(G.bees&&G.bees.length){const[r,c]=G.bees.shift();const tg=frisTarget(r,c);if(tg==null)continue;any=true;const tr=KR(tg),tc=KC(tg);addP({type:'target',x:cx(tc),y:cy(tr),size:G.cs*.46,max:620});addP({type:'bee',x:cx(c),y:cy(r),tx:cx(tc),ty:cy(tr),size:G.cs*.22,max:560});osc(520,.4,'sawtooth',.02,560);await wait(560);await blast([tg])}
  while(G.lanterns&&G.lanterns.length){const[r,c]=G.lanterns.shift();any=true;addP({type:'shock',x:cx(c),y:cy(r),size:G.cs*2.4,color:'#FFC24A',max:520});addP({type:'flash',x:cx(c),y:cy(r),size:G.cs*2,max:420});SFX.chime(3);const ks=[];for(const[a,b]of[[1,0],[-1,0],[0,1],[0,-1]])if(cellAt(r+a,c+b)&&cellAt(r+a,c+b).on)ks.push(K(r+a,c+b));await wait(160);if(ks.length)await blast(ks)}
+ if(await feedPost())any=true;
  if(any){await gravity();return true}return false}
 
 /* ---- season map: 15 stops on a winding path ---- */
@@ -3162,6 +3168,51 @@ function mgFind(n){return new Promise(done=>{const M=mgOpen(),{c,W,H,D,cv}=M,se=
   const order=[...S2.bs].sort((a,b2)=>a.y-b2.y);for(const b2 of order){const i=S2.bs.indexOf(b2);if(i===S2.hid&&b2.lid>.05){const pk=b2.lid;c.save();c.beginPath();c.rect(b2.x-S2.sz,b2.y-S2.sz*1.4,S2.sz*2,S2.sz*1.4-S2.sz*.16);c.clip();drawDog(c,1,b2.x,b2.y-S2.sz*.2-pk*S2.sz*.32,S2.sz*.62,{tongue:true});c.restore()}drawBasket(c,b2.x,b2.y,S2.sz,b2.lid)}
   if(S2.ph==='pick'){c.font='900 21px Nunito, sans-serif';c.textAlign='center';c.lineWidth=5;c.strokeStyle=OL;const tt='Где Марса? 👆';c.strokeText(tt,W/2,H*.32);c.fillStyle='#fff';c.fillText(tt,W/2,H*.32)}
   mgDrawSparks(c,S2.sp,dt);mgDrawPops(c,S2.pops,dt);mgHud(c,W,`🧺 Раунд ${S2.round+1} из 3   💗 ${S2.score}`,null);requestAnimationFrame(loop)};requestAnimationFrame(loop)})}
+/* ===== new mechanics: sleepy dog (Соня) & feed bowl (Миска с кормом) ===== */
+function drawSleepyArt(c,d,hp){ell(c,0,30,44,14);c.fillStyle='rgba(40,20,8,.25)';c.fill();
+ rr(c,-44,6,88,34,16);fs(c,lingrad(c,6,40,'#D8C6FF','#9C7FE0'),OL,3);c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=2;c.beginPath();c.moveTo(-34,14);c.lineTo(34,14);c.stroke();
+ for(const sx of[-1,1]){c.fillStyle='#FFD23F';ell(c,sx*44,30,5,5);c.fill()}
+ drawDog(c,d,0,-4,70,{closed:hp>1,tongue:false});
+ c.beginPath();c.moveTo(-40,12);c.quadraticCurveTo(0,-2,40,12);c.lineTo(40,34);c.lineTo(-40,34);c.closePath();fs(c,lingrad(c,0,34,'#FFC6E2','#F38BC4'),OL,2.6);c.fillStyle='rgba(255,255,255,.55)';for(const x of[-26,-8,10,28]){ell(c,x,20,3.4,3.4);c.fill()}
+ c.font='900 22px Nunito, sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=4;c.strokeStyle=OL;for(let i=0;i<hp;i++){const x=24+i*9,y=-30-i*11,sz=14+i*3;c.font=`900 ${sz}px Nunito, sans-serif`;c.strokeText('z',x,y);c.fillStyle='#fff';c.fillText('z',x,y)}}
+function drawFeedArt(c,hp){const fill=(4-hp)/4;ell(c,0,34,42,10);c.fillStyle='rgba(40,20,8,.25)';c.fill();
+ c.beginPath();c.moveTo(-42,-2);c.lineTo(42,-2);c.lineTo(32,30);c.lineTo(-32,30);c.closePath();fs(c,lingrad(c,-2,30,'#8CC8F5','#3F86C9'),OL,3);c.fillStyle='rgba(255,255,255,.35)';rr(c,-30,4,14,20,6);c.fill();
+ ell(c,0,-2,42,12);fs(c,'#2F5F8F',OL,3);
+ if(fill>0){c.save();ell(c,0,-2,38,10);c.clip();c.fillStyle='#A0602C';ell(c,0,8-fill*16,38,10+fill*6);c.fill();c.restore();const n=Math.round(fill*12);const R=srand(3);for(let i=0;i<n;i++){const x=(R()-.5)*60,y=-4-R()*fill*14;ell(c,x,y,6,4.5,R()*3);fs(c,R()<.5?'#B8763A':'#8A5228',OL,1.4)}}
+ const bx=30,by=-30;ell(c,bx,by,13,13);fs(c,'#FFFFFF',OL,2.4);c.fillStyle=OL;c.font='900 16px Nunito, sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(String(hp),bx,by+1)}
+const NEWSPR={};
+function sleepySpr(d,hp){const s=Math.round((G.cs||40)*APP.DPR),key='s'+d+hp+'_'+s;if(NEWSPR[key])return NEWSPR[key];const cv=mkCanvas(s,s),c=cv.getContext('2d');c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';drawSleepyArt(c,d<0?1:d,hp);return NEWSPR[key]=cv}
+function feedSpr(hp){const s=Math.round((G.cs||40)*APP.DPR),key='f'+hp+'_'+s;if(NEWSPR[key])return NEWSPR[key];const cv=mkCanvas(s,s),c=cv.getContext('2d');c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';drawFeedArt(c,hp);return NEWSPR[key]=cv}
+function wakeSleepy(r,c,t){const sp=pick(['row','col','fris']);t.k='dog';t.d=pick(G.cols);t.sp=sp;t.hp=0;t.s=1.5;tween(t,{s:1},420,E.back);
+ addP({type:'shock',x:cx(c),y:cy(r),size:G.cs*1.6,color:'#C9A3FF',max:420});burst(cx(c),cy(r),['#FFFFFF','#C9A3FF','#FFD23F'],12,{type:'star'});dogBark(t.d,true);
+ addP({type:'text',text:'Проснулась!',x:cx(c),y:cy(r)-G.cs*.3,size:18,max:900,rise:34,c1:'#FFFFFF',c2:'#9C7FE0'});goalAdd('sleepy',0,r,c)}
+async function feedPost(){let any=false;while(G.feeds&&G.feeds.length){const[r,c]=G.feeds.shift();any=true;burst(cx(c),cy(r),['#A0602C','#C98A44','#7A4A26','#FFD23F'],18,{v:1.6});addP({type:'shock',x:cx(c),y:cy(r),size:G.cs*3,color:'#FFB25A',max:520});SFX.boom&&SFX.boom();
+ const ks=[];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)if((a||b)&&cellAt(r+a,c+b)&&cellAt(r+a,c+b).on)ks.push(K(r+a,c+b));await wait(160);if(ks.length)await blast(ks)}
+ if(any)await gravity();return any}
+/* ===== first-encounter cards ===== */
+const NEWK={ice:['❄️ Лёд','Собачку во льду нельзя двигать. Собери её в ряд с такими же — лёд треснет. Двойной лёд ломается за два раза.'],
+ box:['📦 Препятствие','Стоит на месте и мешает. Собирай собачек рядом — оно разрушится. Некоторые нужно бить несколько раз.'],
+ wool:['🧶 Клубок','Запутанная пряжа. Собирай собачек рядом, чтобы распутать.'],
+ mud:['🐾 Грязные лапки','Если в ход не задеть грязь, она расползётся на соседнюю собачку! Убирай её поскорее совпадениями рядом.'],
+ comb:['🍯 Пчелиные соты','Ломаются за два удара. Из разбитых сот вылетает пчела-помощница и бьёт самую нужную цель.'],
+ shell:['🐚 Ракушка','Первый удар её раскрывает, второй забирает жемчужину: +5 🦴.'],
+ lantern:['🎃 Тыква-фонарь','Когда ломается, вспыхивает и бьёт соседей крестом — может запустить цепочку!'],
+ sleepy:['💤 Соня','Собачка сладко спит. Разбуди её тремя совпадениями рядом — проснётся бонусом!'],
+ feed:['🥣 Миска с кормом','Каждое совпадение рядом насыпает корм. Наполнишь — миска взорвётся и разбросает всё вокруг!'],
+ floor:['✨ Подложка','Под собачками клетки со снегом, травкой, песком или листьями. Собирай совпадения прямо на них, чтобы очистить.'],
+ treat:['🍪 Вкусняшка','Её нельзя собрать — её надо довести до самого низа поля. Убирай собачек под ней.']};
+function kindsOf(L){const ks=new Set(L.goals.map(g=>g.type==='dog'||g.type==='cat'||g.type==='raccoon'?null:g.type).filter(Boolean));return[...ks].filter(k=>NEWK[k])}
+function seenInit(){if(S.seenK)return;S.seenK={};const upto=Math.min((S.lvl||1)-1,90);try{for(let n=1;n<=upto;n++)for(const k of kindsOf(genLevel(n)))S.seenK[k]=1}catch(e){}save()}
+async function introNew(L){seenInit();const fresh=kindsOf(L).filter(k=>!S.seenK[k]);for(const k of fresh){S.seenK[k]=1;save();const[n,d]=NEWK[k];
+  await ask(`<div class="center"><div class="ribbon lob">Новое!</div><img class="bicimg" src="${iconImg(k,80)}" alt=""><h2 class="lob">${n}</h2><p>${d}</p></div>`,[{t:'Понятно!',c:'green',v:1}]);
+  G.introHi={k,until:performance.now()+2600}}}
+function drawIntroHi(c,now){const h=G.introHi;if(!h)return;if(now>h.until){G.introHi=null;return}const cs=G.cs,p=.5+.5*Math.sin(now*.012);c.save();c.strokeStyle=`rgba(255,226,122,${.6+.4*p})`;c.lineWidth=3.5;
+ for(let r=0;r<G.R;r++)for(let k=0;k<G.C;k++){const e=G.grid[r]&&G.grid[r][k];if(!e||!e.on)continue;const t=e.t;const hit=h.k==='floor'?e.fl>0:h.k==='ice'?t&&t.ice:t&&t.k===h.k;if(!hit)continue;const x=G.ox+k*cs,y=G.oy+r*cs,g=cs*.06*p;rr(c,x+2-g,y+2-g,cs-4+2*g,cs-4+2*g,cs*.25);c.stroke()}c.restore()}
+/* ===== settings ===== */
+function setRow(id,label,on){return`<label class="setrow"><span>${label}</span><input type="checkbox" data-set="${id}" ${on?'checked':''}><i class="sw"></i></label>`}
+function showSettings(){const vol=S.vol==null?.5:S.vol;const p=ask(`<div class="center"><h2 class="lob">Настройки</h2></div><div class="sets">${setRow('music','🎵 Музыка',S.music)}${setRow('sound','🔔 Звуки',S.sound)}<label class="setrow col"><span>🔊 Громкость</span><input type="range" min="0" max="100" value="${Math.round(vol*100)}" data-set="vol"></label>${setRow('vib','📳 Вибрация',S.vib!==false)}</div>`,[{t:'Готово',c:'green',v:1}]);
+ const m=APP.mods.lastElementChild;m.querySelectorAll('[data-set]').forEach(inp=>inp.addEventListener(inp.type==='range'?'input':'change',()=>{const k=inp.dataset.set;auInit();
+  if(k==='music'){S.music=inp.checked;musicSet()}else if(k==='sound'){S.sound=inp.checked;if(S.sound)SFX.tap()}else if(k==='vib'){S.vib=inp.checked;if(S.vib)vib(30)}else if(k==='vol'){S.vol=inp.value/100;try{AU.m.gain.setTargetAtTime(S.vol,AU.c.currentTime,.05)}catch(e){}}save()}));return p}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3198,7 +3249,7 @@ const empty=t=>`<div class="empty"><img src="${dogImg(0,60,true)}" alt=""><p>${t
 /* ===== menu ===== */
 function showMenu(noGifts){if(!S.tipLife&&S.welcomed){S.tipLife=1;save();setTimeout(()=>{if(APP.scr==='menu')toast('Нажми на Сашу, Диму или собачку — они что-нибудь сделают 💛')},2600)}APP.scr='menu';APP.move.on=false;G.over=true;G.grid=[];G.target=null;APP.roomDirty=true;tween(APP.view,{x:0,y:0,s:1},450,E.inOut);
  const nc=S.coupons.filter(c=>c.nw).length;
- APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="whistle" aria-label="Позвать собак">📣</button><button class="ico" data-a="sound" aria-label="Звук">${S.sound?'🔊':'🔈'}</button></div>
+ APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="whistle" aria-label="Позвать собак">📣</button><button class="ico" data-a="sound" aria-label="Настройки">⚙️</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
  <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()})()}</div>
  <div class="nav">${[['rooms','🏡','Дом',0],['decor','🛋️','Уют',0],['hearts','💗','Лавка',0],['advent','🎄','Адвент',advAvail()],['coupons','🎴','Купоны',nc],['dogs','🐾','Семья',0]].map(([a,i,n,b])=>`<button class="navb" data-a="${a}"><span class="ni">${i}</span><span>${n}</span>${b?`<i class="dot">${b}</i>`:''}</button>`).join('')}</div></div>`;
@@ -3228,7 +3279,7 @@ async function startLevel(){const run=S.run;if(!run){showMenu();return}
  const preB=await levelIntro(L,true);if(APP.scr!=='game'||G.lv!==L)return;
  const ps=[];for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){const t=T(r,c);if(t)ps.push(tween(t,{y:r},560,E.land,c*28+(G.R-r)*20))}SFX.whoosh();await Promise.all(ps);
  if(preB&&preB.length){applyPreBoosts(preB);await wait(900)}
- if(!findMove())await reshuffle();G.busy=false;G.idle=0;save()}
+ if(!findMove())await reshuffle();await introNew(L);G.busy=false;G.idle=0;save()}
 function levelIntro(L,pre){const goals=G.goals.map(g=>`<div class="ig"><img src="${goalImg(g)}" alt=""><b>${g.need}</b></div>`).join('');const muts=L.muts.map(id=>`<div class="mut"><span>${MUT[id].ic}</span><div><b>${MUT[id].n}</b><small>${MUT[id].d}</small></div></div>`).join('');
  const p0=ask(`<div class="center"><div class="seasontag s-${L.se.id}">${L.se.ic} ${L.se.n} · ${L.idx+1} из ${SEASON_LEN}</div>${L.boss?'<div class="bosstag">Босс-уровень</div>':L.hard?'<div class="bosstag hard">Сложный уровень</div>':''}<h2 class="lob">${esc(L.title)}</h2>${L.shapeN?`<p class="shapetag">Поле: ${L.shapeN}</p>`:''}${L.boss?`<p class="soft">Уровень ${L.n}</p><p class="streak">🎴 За победу — купон-сюрприз!</p>`:''}<p class="soft">Собери:</p><div class="igoals">${goals}</div><p>Ходов: <b>${G.moves}</b></p>${muts}${S.mercy?`<p class="soft small">💛 +${S.mercy*2} хода в подарок за старания</p>`:''}${pre?preBoostHtml():''}</div>`,[{t:'Поехали!',c:'green',v:1}]);if(!pre)return p0;const m=APP.mods.lastElementChild;bindPreBoost(m);return p0.then(()=>takePreBoost(m))}
 function showGameUI(){const L=G.lv;APP.scrEl.innerHTML=`<div class="layer" id="game"><div class="hud"><button class="ico" data-a="pause" aria-label="Пауза">⏸</button><div class="hudbox goalsBox"><div class="lvl" data-a="lvinfo">${L.se.ic} ${esc(L.title)}${L.boss?' · ур. '+L.n:''}${L.hard?' · сложный':''}${L.muts.map(m=>' · '+MUT[m].ic+' '+MUT[m].n).join('')}</div><div class="goals" id="goals"></div></div><div class="hudbox movesBox"><b id="moves">0</b><small>ходов</small></div></div>
@@ -3260,8 +3311,8 @@ function choosePerk(){const avail=PERKS.filter(p=>p.stack||!S.run.perks[p.id]);c
  return new Promise(res=>{const m=el('div','modal');m.innerHTML=`<div class="panel center"><h2 class="lob">Выбери улучшение</h2><p class="soft">Действует до конца забега</p><div class="perks">${opts.map(p=>`<button class="perk" data-p="${p.id}"><span class="pi">${p.ic}</span><b>${p.n}</b><small>${p.d}</small>${S.run.perks[p.id]?`<i>×${S.run.perks[p.id]+1}</i>`:''}</button>`).join('')}</div></div>`;
   m.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;const id=b.dataset.p;S.run.perks[id]=(S.run.perks[id]||0)+1;if(id==='paw')S.run.freePaw+=2;SFX.chime(2);save();m.remove();res()});APP.mods.appendChild(m)})}
 async function pause(){if(G.busy||G.over)return;const perks=Object.keys(S.run.perks).map(id=>PERKS.find(p=>p.id===id)).filter(Boolean).map(p=>`${p.ic} ${p.n}${S.run.perks[p.id]>1?' ×'+S.run.perks[p.id]:''}`).join(', ');
- const v=await ask(`<div class="center"><h2 class="lob">Пауза</h2><p class="soft">${G.lv?G.lv.se.ic+' '+G.lv.se.n+' · ':''}уровень ${S.run.n}</p></div>`,[{t:'Продолжить',c:'green',v:'c'},{t:'Как играть',v:'h'},{t:S.sound?'🔊 Звук: вкл':'🔈 Звук: выкл',v:'s'},{t:S.music?'🎵 Музыка: вкл':'🎵 Музыка: выкл',v:'m'},{t:'В меню',c:'ghost',v:'menu'},{t:'Сдаться',c:'ghost',v:'quit'}]);
- if(v==='h'){await howTo();return pause()}if(v==='s'){S.sound=!S.sound;save();return pause()}if(v==='m'){S.music=!S.music;musicSet();save();return pause()}
+ const v=await ask(`<div class="center"><h2 class="lob">Пауза</h2><p class="soft">${G.lv?G.lv.se.ic+' '+G.lv.se.n+' · ':''}уровень ${S.run.n}</p></div>`,[{t:'Продолжить',c:'green',v:'c'},{t:'Как играть',v:'h'},{t:'⚙️ Настройки',v:'set'},{t:'В меню',c:'ghost',v:'menu'},{t:'Сдаться',c:'ghost',v:'quit'}]);
+ if(v==='h'){await howTo();return pause()}if(v==='set'){await showSettings();return pause()}if(v==='s'){S.sound=!S.sound;save();return pause()}if(v==='m'){S.music=!S.music;musicSet();save();return pause()}
  if(v==='menu')showMenu();
  if(v==='quit'){const ok=await ask('<div class="center"><h2 class="lob">Точно сдаться?</h2><p class="soft">Уровень можно будет пройти заново, прогресс сохранится.</p></div>',[{t:'Нет, играю!',c:'green',v:0},{t:'Да, сдаюсь',c:'ghost',v:1}]);if(ok)await runOver()}}
 
@@ -3454,7 +3505,7 @@ function act(a,b){
  case'play':SFX.tap();showMap();break;case'mapplay':mapPlay();break;
  case'cont':SFX.tap();startLevel();break;
  case'newrun':ask('<div class="center"><h2 class="lob">Начать заново?</h2><p class="soft">Текущий забег закончится.</p></div>',[{t:'Да',c:'green',v:1},{t:'Нет',c:'ghost',v:0}]).then(v=>{if(v){S.run=null;startRun()}});break;
- case'sound':S.sound=!S.sound;S.music=S.sound;musicSet();save();showMenu(true);break;
+ case'sound':SFX.tap();showSettings().then(()=>showMenu(true));break;
  case'rooms':SFX.tap();APP.htab=null;showHouse();break;case'hearts':SFX.tap();showHearts();break;case'tasks':SFX.tap();showTasks();break;case'tdo':SFX.tap();doTask();break;case'tplay':SFX.tap();$$('.modal.page',APP.mods).forEach(m=>m.remove());startRun();break;case'hroom':houseTap(b.dataset.id);break;case'htab':SFX.tap();APP.htab=b.dataset.id;showHouse();break;case'whistle':SFX.tap();showWhistle();break;case'wcall':whistleCall(+b.dataset.id);break;case'wcallall':whistleAll();break;case'hsx':case'hsc':case'hsput':case'hsf':case'hsput2':case'hsch':heartAct(a,b);break;case'decor':SFX.tap();showDecor();break;case'coupons':SFX.tap();showCoupons('w');break;case'dogs':SFX.tap();showDogs();break;
  case'pause':pause();break;case'boost':boostClick(b.dataset.id);break;case'lvinfo':if(!G.busy&&G.lv)levelIntro(G.lv,false);break;
  case'close':SFX.tap();closeTop();break;
@@ -3503,7 +3554,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 08:24';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 08:46';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
