@@ -4115,7 +4115,9 @@ function act(a,b){
 
 /* ===== loop ===== */
 function renderRoomCache(){const D=APP.DPR,W=APP.W,H=APP.H;if(!APP.rc)APP.rc=mkCanvas(1,1);const rc=APP.rc;rc.width=Math.round(W*D);rc.height=Math.round(H*D);const c=rc.getContext('2d');const sc=W/400;c.setTransform(D*sc,0,0,D*sc,0,0);const rid=roomId();APP.L=drawRoomStatic(c,H/sc,ROOM[rid],curDeco());APP.roomDirty=false;if(typeof renderGlassMask==='function')renderGlassMask()}
-function frame(now){try{const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
+function frame(now){try{if(APP.scr!=='game'){const pg=APP.mods&&APP.mods.querySelector('.modal.page');if(pg&&!APP.roomDirty){if(now-(APP.idleT||0)<400){requestAnimationFrame(frame);return}APP.idleT=now}
+ else if(!TW.length&&!PT.length&&!APP.rslide&&!PD&&!APP.roomDirty&&!(APP.pz&&APP.pz.on)){APP.skip=!APP.skip;if(APP.skip){requestAnimationFrame(frame);return}}}
+ const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
  const c=APP.ctx,D=APP.DPR,W=APP.W,H=APP.H;if(APP.curtAnim)APP.roomDirty=true;{const ph=dayPhase();if(APP.ph!==ph){APP.ph=ph;APP.roomDirty=true}}if(APP.roomDirty||!APP.rc)renderRoomCache();ensureWalkers(APP.L,roomId());updWalkers(dt,APP.L,curDeco());ensurePeople(APP.L,roomId(),curDeco());updPeople(dt,APP.L,curDeco());updCouple(dt);if(RS.fw>0)RS.fw-=dt;
  c.setTransform(D,0,0,D,0,0);c.fillStyle='#1d120b';c.fillRect(0,0,W,H);
  const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu'){drawPieTarget(c,now);drawActivity(c,now)}if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
@@ -4137,7 +4139,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:27';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:36';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
