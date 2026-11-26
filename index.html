@@ -388,7 +388,18 @@ button.chip{cursor:pointer;font-family:inherit}
 
 .shapetag{display:inline-block;margin:2px 0 6px;padding:3px 12px;border-radius:12px;background:rgba(255,201,58,.25);font-weight:800;font-size:14px}
 .mgm{padding:0!important;background:#000!important;backdrop-filter:none!important}.mgcv{display:block;touch-action:none}
+
+.boost .bi{width:84%;height:84%;object-fit:contain;display:block;margin:auto;pointer-events:none}.pb .pbi{width:40px;height:40px}.bicimg{width:80px;height:80px;display:block;margin:0 auto 4px}
+.wipe{position:absolute;inset:0;z-index:200;pointer-events:none;background:radial-gradient(circle at 50% 45%,#5a3519,#1e1009);clip-path:circle(0% at 50% 45%);transition:clip-path .3s cubic-bezier(.6,0,.4,1)}
+.wipe.in{clip-path:circle(150% at 50% 45%);pointer-events:auto}.wipe.out{clip-path:circle(0% at 50% 45%);transition-duration:.42s}
+#splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#6b4022,#2a1a10);color:#FFE7B0;transition:opacity .5s}
+#splash.out{opacity:0;pointer-events:none}#splash b{font-family:'Lobster',Georgia,serif;font-size:46px;font-weight:400;text-shadow:0 3px 0 #3b2416;letter-spacing:.5px}#splash small{font-family:'Nunito',sans-serif;font-weight:800;opacity:.8;margin-top:6px}
+#splash .paws{display:flex;gap:10px;margin-top:22px}#splash .paws i{width:14px;height:14px;border-radius:50%;background:#FFC93A;animation:spb 1s infinite ease-in-out}#splash .paws i:nth-child(2){animation-delay:.15s}#splash .paws i:nth-child(3){animation-delay:.3s}
+@keyframes spb{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-10px);opacity:1}}
+.boost{transition:transform .12s}.boost:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 #5b3519,0 2px 6px rgba(0,0,0,.35)}
+.pb{transition:transform .12s,border-color .15s}.pb:active{transform:scale(.95)}.ico{transition:transform .12s}.ico:active{transform:scale(.92)}
 </style></head><body>
+<div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
 <script>{
 'use strict';
@@ -613,7 +624,7 @@ function buildSprites(cs){const D=APP.DPR;const s=Math.round(cs*D);const hat=isS
   if(l>1){c.fillStyle='rgba(255,255,255,.9)';for(const[x,y]of[[.14,.86],[.86,.14],[.86,.86],[.14,.14]]){ell(c,s*x,s*y,s*.09,s*.09);c.fill()}c.strokeStyle='#fff';c.lineWidth=s*.03;c.save();c.translate(s*.74,s*.74);for(let k=0;k<3;k++){c.rotate(Math.PI/3);c.beginPath();c.moveTo(-s*.09,0);c.lineTo(s*.09,0);c.stroke()}c.restore()}
   else{c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=s*.022;c.beginPath();c.moveTo(s*.72,s*.5);c.lineTo(s*.62,s*.62);c.lineTo(s*.74,s*.7);c.lineTo(s*.66,s*.84);c.stroke()}
   SPR.ice[l-1]=cv}}
-function dogImg(i,size=96,closed=false){const k=i+'_'+size+'_'+closed+'_'+isSeason()+wearKey();if(DOGIMG[k])return DOGIMG[k];const cv=mkCanvas(size*2,size*2),c=cv.getContext('2d');tileBg(c,size*2,DOGS[i].bg);drawDog(c,i,size,size*1.05,size*1.52,{closed,hat:isSeason()});return DOGIMG[k]=cv.toDataURL()}
+function dogImg(i,size=96,closed=false){const k=i+'_'+size+'_'+closed+'_'+isSeason()+wearKey();if(DOGIMG[k])return DOGIMG[k];const cv=mkCanvas(size*2,size*2),c=cv.getContext('2d');drawBadge(c,size*2,i);drawDog(c,i,size,size*1.08,size*1.36,{closed,hat:isSeason()});return DOGIMG[k]=cv.toDataURL()}
 function iconImg(kind,size=64){const sid=(G.se||SEASONS[0]).id;const k=kind+size+(['floor','box'].includes(kind)?sid:'');if(DOGIMG[k])return DOGIMG[k];const s=size*2,cv=mkCanvas(s,s),c=cv.getContext('2d');
  if(kind==='ice'){tileBg(c,s,['#E8F6FF','#9DD0F5']);c.save();c.translate(s/2,s/2);c.strokeStyle='#fff';c.lineWidth=s*.07;c.lineCap='round';for(let a=0;a<3;a++){c.rotate(Math.PI/3);c.beginPath();c.moveTo(-s*.3,0);c.lineTo(s*.3,0);c.stroke()}c.restore()}
  else if(kind==='wool'){const o=SPR.wool[0];if(o)c.drawImage(o,0,0,s,s)}
@@ -2799,9 +2810,9 @@ async function tapActivate(r,c){if(G.busy||G.over)return;const t=T(r,c);if(!t||!
 function tipSpecialOnce(){if(S.tipSp)return;S.tipSp=1;save();setTimeout(()=>toast('💥 Бонус можно нажать дважды!'),700)}
 
 /* pre-level boosters & win streak */
-const PB=[{id:'rocket',ic:'🦴',n:'Ракета',p:180},{id:'bomb',ic:'🥣',n:'Бомба',p:240},{id:'ball',ic:'🎾',n:'Мячик',p:360}];
+const PB=[{id:'rocket',ic:'🦴',n:'Косточка',p:180},{id:'bomb',ic:'🥣',n:'Миска',p:240},{id:'ball',ic:'🎾',n:'Мячик',p:360}];
 function streakFree(){return PB.slice(0,Math.min(3,S.streak||0)).map(b=>b.id)}
-function preBoostHtml(){const fr=streakFree();return`<div class="pbs"><p class="soft small">Бонусы на старте:</p><div class="pbrow">${PB.map(b=>{const free=fr.includes(b.id);return`<button class="pb ${free?'on free':''}" data-pb="${b.id}" ${free?'data-free="1"':''}><span>${b.ic}</span><small>${b.n}</small><i>${free?'🔥 даром':b.p+' 🦴'}</i></button>`}).join('')}</div>
+function preBoostHtml(){const fr=streakFree();return`<div class="pbs"><p class="soft small">Бонусы на старте:</p><div class="pbrow">${PB.map(b=>{const free=fr.includes(b.id);return`<button class="pb ${free?'on free':''}" data-pb="${b.id}" ${free?'data-free="1"':''}><img class="pbi" src="${uiIcon(b.id=='bomb'?'bowl':b.id)}" alt=""><small>${b.n}</small><i>${free?'🔥 даром':b.p+' 🦴'}</i></button>`}).join('')}</div>
  ${S.streak?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b>${S.streak<3?' — ещё победа, и бесплатных бонусов станет больше':''}</p>`:`<p class="soft small">Выигрывай подряд — и бонусы станут бесплатными 🔥</p>`}</div>`}
 function bindPreBoost(m){m.addEventListener('click',e=>{const b=e.target.closest('[data-pb]');if(!b||b.dataset.free)return;const p=PB.find(x=>x.id===b.dataset.pb);const on=b.classList.contains('on');const sel=[...m.querySelectorAll('.pb.on:not(.free)')].map(x=>PB.find(y=>y.id===x.dataset.pb).p).reduce((a,x)=>a+x,0);
  if(!on&&S.bones<sel+p.p){toast('Не хватает косточек 🦴');return}b.classList.toggle('on');SFX.tap()})}
@@ -2994,7 +3005,7 @@ function drawMap(cv,now){const D=APP.DPR,w=cv.clientWidth,h=cv.clientHeight;if(!
 function showMap(){const lv=S.lvl||1;openPage('map',`Карта сезона`,`<canvas id="mapcv" class="mapcv"></canvas><button class="btn green big mapgo" data-a="mapplay">Играть: уровень ${lv} ▶</button>`);const cv=$('#mapcv');if(!cv)return;
  const loop=()=>{if(!cv.isConnected)return;drawMap(cv,performance.now());requestAnimationFrame(loop)};loop();
  cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),N=mapNodes(cv.clientWidth,cv.clientHeight),i=(lv-1)%SEASON_LEN,p=N[i],mx=e.clientX-r.left,my=e.clientY-r.top;if(Math.hypot(mx-p.x,my-p.y)<34||Math.hypot(mx-p.x,my-(p.y-50))<24)mapPlay();else{const j=N.findIndex(q=>Math.hypot(mx-q.x,my-q.y)<24);if(j>i)toast(j===9?'Здесь живёт босс 🐾 За победу — купон!':j===SEASON_LEN-1?'Финал сезона 🏆':'Сначала пройди предыдущие уровни 🔒');else if(j>=0&&j<i)toast('Уже пройдено ⭐')}})}
-function mapPlay(){$$('.modal.page',APP.mods).forEach(m=>m.remove());SFX.tap();if(!S.seen){S.seen=true;save();howTo().then(startRun)}else startRun()}
+function mapPlay(){$$('.modal.page',APP.mods).forEach(m=>m.remove());SFX.tap();if(!S.seen){S.seen=true;save();howTo().then(()=>iris(startRun))}else iris(startRun)}
 /* ===== gem-like dog badges ===== */
 function badgePath(c,i){c.beginPath();
  if(i===0){c.arc(0,0,45,0,Math.PI*2)}
@@ -3060,6 +3071,19 @@ function iceSpr(d,l){const s=SPR.s||64,key=s+'|'+d+'|'+l;if(ICES[key])return ICE
  if(l>1){c.fillStyle='rgba(255,255,255,.85)';for(const[x,y]of[[-28,30],[28,-6],[0,36],[-38,4]]){star4(c,x,y,5);c.fill()}}c.restore();
  c.save();c.scale(grow,grow);badgePath(c,d);c.restore();c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=l>1?5:3.5;c.stroke();c.strokeStyle='rgba(90,150,210,.7)';c.lineWidth=1.5;c.stroke();
  return ICES[key]=cv}
+/* ===== drawn UI icons instead of emoji ===== */
+const UIIC={};
+function uiIcon(id,size=56){const k=id+size;if(UIIC[k])return UIIC[k];const s=size*2,cv=mkCanvas(s,s),c=cv.getContext('2d');c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';c.lineCap='round';
+ const disc=(a,b)=>{ell(c,0,3,44,44);c.fillStyle='rgba(40,20,8,.25)';c.fill();ell(c,0,0,44,44);const g=c.createRadialGradient(-14,-18,4,0,0,50);g.addColorStop(0,a);g.addColorStop(1,b);fs(c,g,OL,3.5);c.fillStyle='rgba(255,255,255,.45)';ell(c,-12,-26,20,8,-.3);c.fill()};
+ if(id==='rocket'){disc('#FFF3B0','#F2B21F');c.fillStyle='#fff';boneShape(c,0,2,56,0);c.fill();c.strokeStyle=OL;c.lineWidth=3;boneShape(c,0,2,56,0);c.stroke();c.fillStyle='#fff';for(const sx of[-1,1]){c.beginPath();c.moveTo(sx*40,2);c.lineTo(sx*30,-7);c.lineTo(sx*30,11);c.closePath();fs(c,'#fff',OL,2.4)}}
+ else if(id==='bomb'||id==='bowl'){disc('#FFD9B0','#F08A3C');c.beginPath();c.moveTo(-30,-2);c.lineTo(30,-2);c.lineTo(22,22);c.lineTo(-22,22);c.closePath();fs(c,'#E0565B',OL,3);c.fillStyle='#A0602C';for(const[a,b]of[[-14,-4],[0,-7],[13,-4],[-6,-9],[7,-10]]){ell(c,a,b,7,5);fs(c,'#A0602C',OL,1.6)}if(id==='bomb'){c.fillStyle='#FFE27A';for(const[a,b,r]of[[-26,-26,6],[24,-28,7],[0,-36,5]]){star4(c,a,b,r);c.fill()}}}
+ else if(id==='ball'){ell(c,0,3,40,40);c.fillStyle='rgba(40,20,8,.25)';c.fill();ell(c,0,0,40,40);const g=c.createRadialGradient(-12,-14,4,0,0,44);g.addColorStop(0,'#F7FFA8');g.addColorStop(1,'#A9CF1F');fs(c,g,OL,3.5);c.save();ell(c,0,0,40,40);c.clip();c.strokeStyle='#fff';c.lineWidth=5;c.beginPath();c.arc(-48,0,32,-1.2,1.2);c.stroke();c.beginPath();c.arc(48,0,32,Math.PI-1.2,Math.PI+1.2);c.stroke();c.restore();c.fillStyle='rgba(255,255,255,.55)';ell(c,-13,-18,9,5,-.5);c.fill()}
+ else if(id==='paw'){disc('#FFF1DC','#E9C99A');c.fillStyle='#7A4A26';ell(c,0,12,17,14);c.fill();for(const[a,b]of[[-19,-8],[-7,-19],[7,-19],[19,-8]]){ell(c,a,b,7,9);c.fill()}}
+ else if(id==='shuffle'){disc('#DDF1FF','#6FB3EE');c.strokeStyle='#fff';c.lineWidth=7;for(const r of[0,Math.PI]){c.save();c.rotate(r);c.beginPath();c.arc(0,0,22,Math.PI*1.1,Math.PI*1.85);c.stroke();const a=Math.PI*1.85,x=Math.cos(a)*22,y=Math.sin(a)*22;c.beginPath();c.moveTo(x+9,y-4);c.lineTo(x-2,y-10);c.lineTo(x+1,y+6);c.closePath();c.fillStyle='#fff';c.fill();c.restore()}}
+ else if(id==='plus'){disc('#DDF7C9','#5FBF4A');c.fillStyle='#fff';c.strokeStyle=OL;c.lineWidth=3;c.font='900 40px Nunito, sans-serif';c.textAlign='center';c.textBaseline='middle';c.strokeText('+5',0,3);c.fillText('+5',0,3)}
+ return UIIC[k]=cv.toDataURL()}
+/* ===== screen transition ===== */
+function iris(fn){return new Promise(res=>{let w=document.getElementById('wipe');if(!w){w=el('div','wipe');w.id='wipe';APP.root.appendChild(w)}w.className='wipe in';setTimeout(()=>{try{fn()}catch(e){console.error(e)}setTimeout(()=>{w.className='wipe out';setTimeout(()=>{w.className='wipe';res()},420)},140)},300)})}
 /* ===== mini-games every 5 levels ===== */
 const MG=[{id:'catch',n:'Лови вкусняшки',ic:'🦴',d:'Води Тео пальцем влево-вправо и лови косточки и печеньки. Золотая косточка — сразу +5! Мыло не лови — Тео не любит купаться 🫧'},
  {id:'fetch',n:'Брось мячик Тео',ic:'🎾',d:'Нажми, когда полоска силы дойдёт до нужного места, — мячик должен упасть прямо в мишень. Три броска!'},
@@ -3210,7 +3234,7 @@ async function startLevel(){const run=S.run;if(!run){showMenu();return}
 function levelIntro(L,pre){const goals=G.goals.map(g=>`<div class="ig"><img src="${goalImg(g)}" alt=""><b>${g.need}</b></div>`).join('');const muts=L.muts.map(id=>`<div class="mut"><span>${MUT[id].ic}</span><div><b>${MUT[id].n}</b><small>${MUT[id].d}</small></div></div>`).join('');
  const p0=ask(`<div class="center"><div class="seasontag s-${L.se.id}">${L.se.ic} ${L.se.n} · ${L.idx+1} из ${SEASON_LEN}</div>${L.boss?'<div class="bosstag">Босс-уровень</div>':L.hard?'<div class="bosstag hard">Сложный уровень</div>':''}<h2 class="lob">${esc(L.title)}</h2>${L.shapeN?`<p class="shapetag">Поле: ${L.shapeN}</p>`:''}${L.boss?`<p class="soft">Уровень ${L.n}</p><p class="streak">🎴 За победу — купон-сюрприз!</p>`:''}<p class="soft">Собери:</p><div class="igoals">${goals}</div><p>Ходов: <b>${G.moves}</b></p>${muts}${S.mercy?`<p class="soft small">💛 +${S.mercy*2} хода в подарок за старания</p>`:''}${pre?preBoostHtml():''}</div>`,[{t:'Поехали!',c:'green',v:1}]);if(!pre)return p0;const m=APP.mods.lastElementChild;bindPreBoost(m);return p0.then(()=>takePreBoost(m))}
 function showGameUI(){const L=G.lv;APP.scrEl.innerHTML=`<div class="layer" id="game"><div class="hud"><button class="ico" data-a="pause" aria-label="Пауза">⏸</button><div class="hudbox goalsBox"><div class="lvl" data-a="lvinfo">${L.se.ic} ${esc(L.title)}${L.boss?' · ур. '+L.n:''}${L.hard?' · сложный':''}${L.muts.map(m=>' · '+MUT[m].ic+' '+MUT[m].n).join('')}</div><div class="goals" id="goals"></div></div><div class="hudbox movesBox"><b id="moves">0</b><small>ходов</small></div></div>
- <div class="boosters" id="boosters">${BOOST.map(b=>`<button class="boost" data-a="boost" data-id="${b.id}" aria-label="${b.n}"><span>${b.ic}</span><i class="bp"></i></button>`).join('')}</div></div>`;updHUD()}
+ <div class="boosters" id="boosters">${BOOST.map(b=>`<button class="boost" data-a="boost" data-id="${b.id}" aria-label="${b.n}"><img class="bi" src="${uiIcon(b.id)}" alt=""><i class="bp"></i></button>`).join('')}</div></div>`;updHUD()}
 function layoutBoard(){const hud=$('.hud');const top=hud?hud.getBoundingClientRect().bottom-APP.root.getBoundingClientRect().top+26:120;const cs=Math.floor(Math.min((APP.W-30)/G.C,(APP.H-top-118)/G.R,70));G.cs=Math.max(24,cs);G.ox=Math.round((APP.W-G.cs*G.C)/2);G.oy=Math.round(top);buildSprites(G.cs);buildBoardSprites(G.cs,G.se||SEASONS[0]);const b=$('#boosters');if(b)b.style.top=(G.oy+G.cs*G.R+22)+'px'}
 function updHUD(){const m=$('#moves');if(!m)return;m.textContent=G.moves;m.parentElement.classList.toggle('low',G.moves<=5);const gw=$('#goals');
  if(gw){if(gw.children.length!==G.goals.length)gw.innerHTML=G.goals.map((g,i)=>`<div class="goal" data-g="${i}"><img src="${goalImg(g)}" alt=""><b></b></div>`).join('');
@@ -3223,7 +3247,7 @@ async function levelDone(bonus){const n=S.run.n,L=G.lv;let bones=Math.round((12+
  const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
  if(n%5===0){try{await miniGame(n)}catch(e){console.error(e)}}
- if(v==='next'){showMenu(true);showMap()}else showMenu()}
+ if(v==='next')iris(()=>{showMenu(true);showMap()});else iris(()=>showMenu())}
 async function outOfMoves(){if(G.over)return;
  if(S.run.perks.life&&!S.run.lifeUsed){S.run.lifeUsed=true;G.moves+=5;updHUD();bigText('Вторая жизнь! ❤',undefined,undefined,40);SFX.chime(4);G.busy=false;return}
  if(!G.contUsed){const rem=G.goals.filter(g=>g.have<g.need).map(g=>`<div class="ig"><img src="${goalImg(g)}" alt=""><b>${g.need-g.have}</b></div>`).join('');
@@ -3232,7 +3256,7 @@ async function outOfMoves(){if(G.over)return;
  await runOver()}
 async function runOver(){G.over=true;G.busy=true;SFX.lose();S.runs++;const lostStreak=S.streak||0;S.streak=0;S.mercy=Math.min(3,S.mercy+1);const n=S.run?S.run.n:S.lvl;S.run=null;save();
  const v=await ask(`<div class="center"><h2 class="lob">Почти получилось!</h2><img class="bigdog" src="${dogImg(0,80,true)}" alt=""><p>Уровень <b>${n}</b> ждёт тебя</p><p class="soft small">Прогресс не пропадает 💛 В следующий раз будет на ${S.mercy*2} хода больше</p>${lostStreak>1?`<p class="soft small">🔥 Серия из ${lostStreak} побед начнётся заново</p>`:''}</div>`,[{t:'Ещё раз 🔄',c:'green',v:'again'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
- if(Math.random()<.5)await teoNote();if(v==='again')startRun();else showMenu()}
+ if(Math.random()<.5)await teoNote();if(v==='again')iris(startRun);else iris(()=>showMenu())}
 async function teoNote(){const note=fmt(pick(S.notes.length?S.notes:DEF_NOTES));await ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><p class="soft">Тео принёс тебе записку 💌</p><div class="note"><p>${esc(note)}</p><span>— ${esc(S.him)}</span></div>${voiceBtn('note')}</div>`,[{t:'💛 Обнять Тео',c:'pink',v:1}]);heartsAt(APP.W/2,APP.H/2,16);dogBark(0,true)}
 function choosePerk(){const avail=PERKS.filter(p=>p.stack||!S.run.perks[p.id]);const opts=shuffleArr(avail.slice()).slice(0,3);
  return new Promise(res=>{const m=el('div','modal');m.innerHTML=`<div class="panel center"><h2 class="lob">Выбери улучшение</h2><p class="soft">Действует до конца забега</p><div class="perks">${opts.map(p=>`<button class="perk" data-p="${p.id}"><span class="pi">${p.ic}</span><b>${p.n}</b><small>${p.d}</small>${S.run.perks[p.id]?`<i>×${S.run.perks[p.id]+1}</i>`:''}</button>`).join('')}</div></div>`;
@@ -3247,7 +3271,7 @@ async function pause(){if(G.busy||G.over)return;const perks=Object.keys(S.run.pe
 async function boostClick(id){if(G.busy||G.over)return;if(G.target){G.target=null;updBoosters();return}const b=BOOST.find(x=>x.id===id);
  if(id==='paw'&&S.run.freePaw>0){S.run.freePaw--;save();return useBoost(b)}
  const unpaid=S.debts.filter(d=>!d.paid).length;
- const v=await ask(`<div class="center"><div class="bic">${b.ic}</div><h2 class="lob">${b.n}</h2><p class="soft">${b.d}</p><p><b>Чем платим?</b></p></div>`,[{t:`${b.b} 🦴`,v:'b',dis:S.bones<b.b},{t:`${b.pay.ic} ${b.pay.t} ${esc(S.himDat)}`,c:'pink',v:'d',dis:unpaid>=8},{t:'Отмена',c:'ghost',v:null}],unpaid>=8?`<p class="soft small center">Сначала верни долги ${esc(S.himDat)} 😄</p>`:'');
+ const v=await ask(`<div class="center"><img class="bicimg" src="${uiIcon(b.id,80)}" alt=""><h2 class="lob">${b.n}</h2><p class="soft">${b.d}</p><p><b>Чем платим?</b></p></div>`,[{t:`${b.b} 🦴`,v:'b',dis:S.bones<b.b},{t:`${b.pay.ic} ${b.pay.t} ${esc(S.himDat)}`,c:'pink',v:'d',dis:unpaid>=8},{t:'Отмена',c:'ghost',v:null}],unpaid>=8?`<p class="soft small center">Сначала верни долги ${esc(S.himDat)} 😄</p>`:'');
  if(!v)return;if(v==='b')S.bones-=b.b;else addDebt(b.pay);save();useBoost(b)}
 function addDebt(pay){S.debts.push({id:'d'+Date.now().toString(36)+ri(10,99),ic:pay.ic,t:pay.t,h:pay.h,at:Date.now(),paid:false});toast(`${pay.ic} Записано в долговую книжечку`)}
 async function useBoost(b){updHUD();if(b.id==='paw'||b.id==='bomb'){G.target=b.id;updBoosters();toast(b.id==='paw'?'Нажми на собачку, лёд или клубок 🐾':'Нажми, где взорвать 💥');return}
@@ -3470,7 +3494,7 @@ function resize(){const r=APP.root.getBoundingClientRect();APP.W=Math.max(200,Ma
  if(APP.scr==='game'&&G.grid.length)layoutBoard();else buildSprites(40);if(APP.scr==='decor')Object.assign(APP.view,decorView(DS.slot))}
 async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getContext('2d');APP.fx=$('#fx');APP.fctx=APP.fx.getContext('2d');APP.uiEl=$('#ui');APP.scrEl=$('#scr');APP.mods=$('#mods');
  if(await idbRestore()){location.reload();return}backupInit();
- loadSave();loadPhotos();loadVoices();RS.curt=S.curt||0;RS.lampOn=S.lampOn!==false;RS.chOn=S.chOn!==false;resize();try{await Promise.race([document.fonts.load('40px Lobster'),sleep(1500)]);await Promise.race([document.fonts.ready,sleep(800)])}catch(e){}APP.roomDirty=true;
+ loadSave();loadPhotos();loadVoices();RS.curt=S.curt||0;RS.lampOn=S.lampOn!==false;RS.chOn=S.chOn!==false;resize();try{await Promise.race([document.fonts.load('40px Lobster'),sleep(1500)]);await Promise.race([document.fonts.ready,sleep(800)])}catch(e){}APP.roomDirty=true;setTimeout(()=>{const sp=document.getElementById('splash');if(sp){sp.classList.add('out');setTimeout(()=>sp.remove(),600)}},250);
  window.addEventListener('resize',()=>{clearTimeout(APP.rt);APP.rt=setTimeout(resize,120)});
  APP.cv.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('pointercancel',()=>{if(PD)clearTimeout(PD.long);PD=null});
  document.addEventListener('pointerdown',auInit,{passive:true});
@@ -3481,7 +3505,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 08:15';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 08:23';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
