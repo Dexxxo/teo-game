@@ -713,6 +713,18 @@ body.wide #app{max-width:none;left:0;transform:none}
 .cafe .crep button{max-width:270px;white-space:normal;line-height:1.15;padding:9px 12px}
 .cm-sw{display:flex;gap:3px;margin:4px 0}.cm-sw s{width:16px;height:16px;border-radius:5px;border:1.5px solid #8A5A48;display:block}
 .cm-th small{display:block;font-size:10.5px}
+
+/* ферма: перетаскивание и обучение */
+.fs{touch-action:pan-x}.ftools .btn.ft{touch-action:none}
+.fghost{position:fixed;left:0;top:0;width:64px;height:64px;z-index:95;pointer-events:none;filter:drop-shadow(0 8px 4px #0006);will-change:transform}.fghost img{width:100%;height:100%;display:block}
+.fdrag .fhint{opacity:1}
+.fglow{animation:fglow .9s ease-in-out infinite alternate}@keyframes fglow{from{box-shadow:0 3px 0 #0003,0 0 0 0 #FFD23F}to{box-shadow:0 3px 0 #0003,0 0 0 7px #FFD23Faa,0 0 22px #FFD23F}}
+.ftut{position:absolute;left:14px;right:14px;top:calc(env(safe-area-inset-top,0px) + 112px);z-index:8;background:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 #0003;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;color:#3a2a1a}
+.ftut span{flex:1}.ftut button{border:0;background:#EADFC4;border-radius:12px;padding:7px 10px;font-weight:800;font-size:12px;color:#6b5230}
+.fhand{position:fixed;left:0;top:0;z-index:96;pointer-events:none;font-size:40px;line-height:1;filter:drop-shadow(0 4px 3px #0005)}
+.fintro .ftut,.fintro .fhand{display:none}
+.farm img{-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}.fs img,.ft img,.fib{pointer-events:none}
+.ftools .btn.ft,.fs{-webkit-touch-callout:none;user-select:none}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -5130,7 +5142,7 @@ const FCROP={
  lavender:{n:'Лаванда',e:'💜',seed:80,sell:320,min:150,lv:10}};
 const FEX={egg:['🥚','Яйца',15,2],honey:['🍯','Мёд',40,3],fish:['🐟','Карась',35,2],roach:['🐟','Плотва',28,2],perch:['🐠','Окунь',55,3],bream:['🐟','Лещ',65,3],carp:['🐡','Карп',85,4],pike:['🐟','Щука',110,5],trout:['🐟','Форель',150,6],catfish:['🐟','Сом',180,7],gold:['✨','Золотая рыбка',250,8],sturgeon:['🐟','Осётр',400,12]};
 const FKEYS=Object.keys(FCROP),FPRICE=1500,FEGG=15,FPLOT=[0,0,0,0,300,500,800,1200,1600];
-function farmS(){if(!S.farm)S.farm={on:0,seeds:{},inv:{},pl:Array(9).fill(null),sel:'carrot',dg:0,tot:0};const f=S.farm;f.st=f.st||{};f.q=f.q||{i:0,b:0};if(f.q.v==null||f.q.v<3){if(f.q.v==null){if(f.q.i>=9)f.q.i+=1;if(f.q.i>=15)f.q.i+=1}if(f.q.i>=19)f.q.i+=9;f.q.v=3}if(f.q.v===3){f.q.v=4;const nq=FQ[f.q.i];if(nq&&f.q.i>=29)f.q.b=farmCnt(f,nq)}f.ac=f.ac||{};f.dec=f.dec||{};if(!f.pl||f.pl.length<9)f.pl=Array(9).fill(null).map((_,i)=>(f.pl&&f.pl[i])||null);return f}
+function farmS(){if(!S.farm)S.farm={on:0,seeds:{},inv:{},pl:Array(9).fill(null),sel:'carrot',dg:0,tot:0};const f=S.farm;f.st=f.st||{};f.q=f.q||{i:0,b:0};if(f.q.v==null||f.q.v<3){if(f.q.v==null){if(f.q.i>=9)f.q.i+=1;if(f.q.i>=15)f.q.i+=1}if(f.q.i>=19)f.q.i+=9;f.q.v=3}if(f.q.v===3){f.q.v=4;const nq=FQ[f.q.i];if(nq&&f.q.i>=29)f.q.b=farmCnt(f,nq)}f.ac=f.ac||{};f.dec=f.dec||{};if(f.tut==null)f.tut=(f.on&&((f.tot||0)>0||(f.st.pl||0)>0||(f.pl||[]).some(Boolean)))?3:0;if(!f.pl||f.pl.length<9)f.pl=Array(9).fill(null).map((_,i)=>(f.pl&&f.pl[i])||null);return f}
 function farmPlotOpen(f,i){return i<4||(f.u||[]).includes(i)}
 function farmPlotMs(p){return FCROP[p.c].min*60000}
 function farmState(p){if(!p)return'empty';if(!p.w)return'dry';const left=farmPlotMs(p)-(Date.now()-p.w);return left<=0?'ripe':'grow'}
@@ -5251,7 +5263,7 @@ function farmFrame(d){if(!d.isConnected)return;requestAnimationFrame(()=>farmFra
  c.setTransform(k,0,0,k,0,0);c.fillStyle='#6CBF47';c.fillRect(0,0,W,H);c.save();c.translate(ox,0);c.scale(sc,sc);c.drawImage(d._bg,0,0,FW,FH);
  for(let i=0;i<2;i++){const cx=((t*(9+i*5)+i*220)%(FW+260))-130;fEll(c,cx,200+i*260,90,34,'#00000010')}
  const pw=Math.sin(t*.7)*2;c.strokeStyle='#ffffff55';c.lineWidth=1.5;c.beginPath();c.ellipse(300,640,34+pw,14+pw/2,0,0,7);c.stroke();
- for(let i=0;i<9;i++)fDrawPlot(c,i,f,t);farmDecorDraw(c,t,f,ta,now);farmEvDraw(c,t,f,w,now);
+ for(let i=0;i<9;i++)fDrawPlot(c,i,f,t);farmGuideDraw(c,w,f,t);farmDecorDraw(c,t,f,ta,now);farmEvDraw(c,t,f,w,now);
  /* искры спелых */if(now-w.sp>260){w.sp=now;f.pl.forEach((p,i)=>{if(farmState(p)==='ripe'){const[x,y]=fPlotXY(i);farmPa({x:x+14+Math.random()*(FPS-28),y:y+14+Math.random()*(FPS-30),vy:-.5,life:1100,type:'star',col:'#FFE27A',size:4})}})}
  c.fillStyle='#E6C97A';fRR(c,34,598,168,84,12);c.fill();c.strokeStyle='#C9A752';c.lineWidth=2;for(let i=0;i<7;i++){c.beginPath();c.moveTo(40+i*23,602+(i%2)*3);c.lineTo(46+i*23,676);c.stroke()}fFence(c,28,208,588,6);fFence(c,28,208,690,6);
  fEll(c,60,654,26,12,'#D4AE55');for(let i=0;i<f.eg.n;i++){fEll(c,50+i*12,652+(i%2)*3,5,6.5,'#FFF4DD');fEll(c,48.5+i*12,650+(i%2)*3,1.6,2,'#fff')}
@@ -5287,22 +5299,22 @@ function farmXp(f,n){const d=farmD();f.xp=(f.xp||0)+n;f.lv=f.lv||1;let up=0;whil
 function farmOpen(intro){const old=$('#farm');if(old)old.remove();const f=farmS();const d=el('div','farm');d.id='farm';$('#app').appendChild(d);APP.farmOpen=true;
  farmDraw(d);if(!intro&&!farmS().q.seen)setTimeout(()=>{const f=farmS();f.q.seen=1;save();farmQuest(d)},700);
  if(intro){d.classList.add('fintro');d.insertAdjacentHTML('beforeend',`<div class="fi-t"><h1 class="lob">Поздравляем!</h1><p>Вы открыли ферму</p><small>Здесь растут овощи, цветы и счастье</small></div><button class="btn green big fi-go" data-f="enter">Войти на ферму</button>`);setTimeout(()=>{try{confetti(70);SFX.chime&&SFX.chime(5)}catch(e){}},900)}
- d.onclick=ev=>{if(ev.target.closest('#fcv'))return;const b=ev.target.closest('[data-f]');if(!b)return;farmClick(d,b.dataset.f,b.dataset.i)};
+ d.onclick=ev=>{if(d._noClick&&Date.now()-d._noClick<400){d._noClick=0;return}if(ev.target.closest('#fcv'))return;const b=ev.target.closest('[data-f]');if(!b)return;farmClick(d,b.dataset.f,b.dataset.i)};
  const cv=$('#fcv',d);let dr=null;
  cv.onpointerdown=e=>{dr={last:-1,mv:0};try{cv.setPointerCapture(e.pointerId)}catch(_){}};
  cv.onpointermove=e=>{if(!dr||d.classList.contains('fintro'))return;const q=farmXY(d,e),i=farmPlotAt(q.x,q.y);if(i<0||i===dr.last)return;dr.last=i;if(dr.start===undefined)dr.start=i;else dr.mv=1;if(dr.mv){const p=farmS().pl[i],st=farmState(p);if(farmPlotOpen(farmS(),i)&&(st==='dry'||st==='ripe'))farmClick(d,'plot',i)}};
  cv.onpointerup=e=>{const was=dr;dr=null;if(!was||was.mv)return;const q=farmXY(d,e);farmCanvasTap(d,q.x,q.y)};
- clearInterval(farmOpen.iv);farmOpen.iv=setInterval(()=>farmTick(d),1000);farmFrame(d)}
+ farmDragInit(d);clearInterval(farmOpen.iv);farmOpen.iv=setInterval(()=>farmTick(d),1000);farmFrame(d)}
 function farmXY(d,e){const r=$('#fcv',d).getBoundingClientRect(),sc=d._sc||1;return{x:(e.clientX-r.left-d._ox)/sc,y:(e.clientY-r.top)/sc}}
 function farmPlotAt(x,y){for(let i=0;i<9;i++){const[px,py]=fPlotXY(i);if(x>=px&&x<=px+FPS&&y>=py&&y<=py+FPS)return i}return-1}
 function farmClose(){const d=$('#farm');if(d)d.remove();APP.farmOpen=false;clearInterval(farmOpen.iv);try{refreshRoomNav()}catch(e){}}
 function farmDraw(d){const f=farmS();farmProd(f);
  const seeds=FKEYS.map(k=>`<button class="fs" data-f="sel" data-i="${k}"><img src="${farmIcon(k)}" alt=""><b></b><em></em></button>`).join('');
- d.innerHTML=`<canvas id="fcv"></canvas><div class="fhud"><button class="fh-b" data-f="home"><img src="${fIco('home')}" alt=""></button><span class="fh-p" id="fbn"></span><span class="fh-lv" id="fbl"><b></b></span><span class="fh-p" id="fbt"></span></div><button class="fgoal" id="fgoal" data-f="quest"></button><div class="fev" id="fev" hidden></div><div class="fside"><button data-f="quest" id="fsq"><img src="${fIco('book')}" alt=""></button><button data-f="ach" id="fsa"><img src="${fIco('cup')}" alt=""></button><button data-f="dec"><img src="${fIco('bow')}" alt=""></button><button data-f="fishing"><img src="${fIco('fish')}" alt=""></button><button data-f="kitchen"><img src="${fIco('pan')}" alt=""></button></div><div class="fhint" id="fhint">Выбери семена и нажми на грядку</div><div class="fbar"><div class="fseeds">${seeds}</div><div class="ftools"><button class="btn ft" data-f="water">${fBtn('can','Полить')}</button><button class="btn ft" data-f="reap">${fBtn('basket','Собрать')}</button><button class="btn ft" data-f="ord">${fBtn('box','Заказы')}</button><button class="btn ft" data-f="shop">${fBtn('stall','Лавка')}</button></div></div><div class="fshop" id="fshop" hidden></div>`;farmTick(d)}
+ d.innerHTML=`<canvas id="fcv"></canvas><div class="fhud"><button class="fh-b" data-f="home"><img src="${fIco('home')}" alt=""></button><span class="fh-p" id="fbn"></span><span class="fh-lv" id="fbl"><b></b></span><span class="fh-p" id="fbt"></span></div><button class="fgoal" id="fgoal" data-f="quest"></button><div class="fev" id="fev" hidden></div><div class="fside"><button data-f="quest" id="fsq"><img src="${fIco('book')}" alt=""></button><button data-f="ach" id="fsa"><img src="${fIco('cup')}" alt=""></button><button data-f="dec"><img src="${fIco('bow')}" alt=""></button><button data-f="fishing"><img src="${fIco('fish')}" alt=""></button><button data-f="kitchen"><img src="${fIco('pan')}" alt=""></button></div><div class="fhint" id="fhint">Тяни семена, лейку или корзинку на грядки</div><div class="fbar"><div class="fseeds">${seeds}</div><div class="ftools"><button class="btn ft" data-f="water">${fBtn('can','Полить')}</button><button class="btn ft" data-f="reap">${fBtn('basket','Собрать')}</button><button class="btn ft" data-f="ord">${fBtn('box','Заказы')}</button><button class="btn ft" data-f="shop">${fBtn('stall','Лавка')}</button></div></div><div class="fshop" id="fshop" hidden></div>`;farmTick(d)}
 function farmHint(t){const h=$('#fhint');if(h)h.textContent=t}
 function farmTick(d){if(!d.isConnected){clearInterval(farmOpen.iv);return}const f=farmS();farmGoalUi(d,f);farmProd(f);const w=farmWorld(d),now=Date.now();
  if(now>w.rain.b&&Math.random()<1/600)farmRain(d);
- const bn=$('#fbn',d),bt=$('#fbt',d),bl=$('#fbl',d);if(bn)bn.innerHTML='<img class="fpi" src="'+fIco('bone')+'" alt="">'+S.bones+(f.fert?' <span class="ffe"><img src="'+fIco('fert')+'" alt="">'+f.fert+'</span>':'');farmEvTick(d,f);const g=gtInfo();if(bt)bt.innerHTML='<img class="fpi" src="'+fIco(g.h>=20||g.h<6?'moon':'sun')+'" alt="">день '+g.d+' · '+String(g.h).padStart(2,'0')+':'+String(g.m).padStart(2,'0');
+ const bn=$('#fbn',d),bt=$('#fbt',d),bl=$('#fbl',d);if(bn)bn.innerHTML='<img class="fpi" src="'+fIco('bone')+'" alt="">'+S.bones+(f.fert?' <span class="ffe"><img src="'+fIco('fert')+'" alt="">'+f.fert+'</span>':'');farmEvTick(d,f);try{farmTut(d)}catch(e){}const g=gtInfo();if(bt)bt.innerHTML='<img class="fpi" src="'+fIco(g.h>=20||g.h<6?'moon':'sun')+'" alt="">день '+g.d+' · '+String(g.h).padStart(2,'0')+':'+String(g.m).padStart(2,'0');
  if(bl){bl.querySelector('b').textContent=farmLv(f);bl.style.setProperty('--p',Math.round((f.xp||0)/farmNeed(farmLv(f))*100)+'%')}
  d.querySelectorAll('.fs').forEach(b=>{const k=b.dataset.i,n=f.seeds[k]||0,op=farmOpenK(f,k);b.querySelector('b').textContent=op?n:'';b.querySelector('em').textContent=op?'':'🔒'+FCROP[k].lv;b.classList.toggle('on',f.sel===k);b.classList.toggle('no',!n||!op)})}
 function farmRain(d){const w=farmWorld(d),f=farmS(),n=Date.now();w.rain={a:n,b:n+45000};w.rb=n+45000;farmInc(f,'rn');let k=0;f.pl.forEach((p,i)=>{if(p&&!p.w){p.w=n;k++}});save();toast(k?'Пошёл дождик! Грядки политы 🌧':'Пошёл дождик 🌧')}
@@ -5317,6 +5329,7 @@ function farmCanvasTap(d,x,y){if(d.classList.contains('fintro'))return;const f=f
 function farmClick(d,a,i){const f=farmS();
  if(a==='enter'){d.classList.remove('fintro');d.querySelectorAll('.fi-t,.fi-go').forEach(e=>e.remove());if(!f.q.seen){f.q.seen=1;save();setTimeout(()=>farmQuest(d),500)}return}
  if(farmClick2(d,a,i))return;
+ if(a==='tutskip'){f.tut=3;save();farmTutUi(d);return}
  if(a==='home'){farmClose();return}
  if(a==='sel'){f.sel=i;save();farmTick(d);farmHint(farmOpenK(f,i)?FCROP[i].n+': растёт '+FCROP[i].min+' мин':'Откроется на уровне фермы '+FCROP[i].lv);SFX.tap&&SFX.tap();return}
  if(a==='plot'){const n=+i,[px,py]=fPlotXY(n),cx=px+FPS/2,cy=py+FPS/2;
@@ -5525,6 +5538,54 @@ function farmFinale(d,cb){const ov=el('div','ffin');ov.innerHTML='<canvas id="ff
   for(let i=pa.length-1;i>=0;i--){const q=pa[i],ag=(now-q.t)/1400;if(ag>=1){pa.splice(i,1);continue}q.x+=q.vx;q.y+=q.vy;q.vy+=.05;q.vx*=.99;c.globalAlpha=1-ag;fEll(c,q.x,q.y,2.6,2.6,q.col)}c.globalAlpha=1;
   if(Math.random()<.18)pa.push({x:100+Math.random()*190,y:520,vx:(Math.random()-.5)*.4,vy:-1.2,t:now,col:'#FF6FA5'});
   c.restore()})()}
+
+/* ===== перетаскивание инструментов и обучение ===== */
+function farmOkFor(tool,f,i){if(!farmPlotOpen(f,i))return false;const st=farmState(f.pl[i]);return tool==='seed'?st==='empty':tool==='can'?st==='dry':tool==='bask'?st==='ripe':false}
+function farmGuideDraw(c,w,f,t){
+ if(w.drag){for(let i=0;i<9;i++)if(farmOkFor(w.drag.tool,f,i)){const[x,y]=fPlotXY(i);c.save();c.globalAlpha=.55+.35*Math.sin(t*6+i);c.strokeStyle='#FFFFFF';c.lineWidth=3;c.setLineDash([9,7]);fRR(c,x+3,y+3,FPS-6,FPS-6,14);c.stroke();c.restore()}}
+ if(w.hl&&w.hl.i>=0){const[x,y]=fPlotXY(w.hl.i),ok=farmOkFor(w.hl.tool,f,w.hl.i);c.save();c.strokeStyle=ok?'#FFE27A':'#FFFFFF88';c.lineWidth=ok?5:3;fRR(c,x+2,y+2,FPS-4,FPS-4,15);c.stroke();if(ok){c.globalAlpha=.18;c.fillStyle='#FFE27A';c.fill()}c.restore()}
+ if(w.tutI!=null&&w.tutI>=0){const[x,y]=fPlotXY(w.tutI);c.save();c.globalAlpha=.6+.4*Math.sin(t*5);c.strokeStyle='#FFD23F';c.lineWidth=5;fRR(c,x+1,y+1,FPS-2,FPS-2,16);c.stroke();c.restore()}}
+function farmPt(d,e,dy){const r=$('#fcv',d).getBoundingClientRect(),sc=d._sc||1;return{x:(e.clientX-r.left-(d._ox||0))/sc,y:(e.clientY+(dy||0)-r.top)/sc}}
+function farmDragInit(d){let dg=null;
+ d.addEventListener('pointerdown',e=>{if(d.classList.contains('fintro'))return;const b=e.target.closest('.fs,.ft[data-f="water"],.ft[data-f="reap"]');if(!b)return;const f=farmS();let tool,k=null;if(b.classList.contains('fs')){tool='seed';k=b.dataset.i;if(!farmOpenK(f,k))return}else tool=b.dataset.f==='water'?'can':'bask';dg={b,tool,k,x0:e.clientX,y0:e.clientY,on:0,last:-1,pid:e.pointerId}});
+ d.addEventListener('pointermove',e=>{if(!dg||e.pointerId!==dg.pid)return;
+  if(!dg.on){const dx=e.clientX-dg.x0,dy=e.clientY-dg.y0;if(Math.hypot(dx,dy)<14)return;if(dg.tool==='seed'&&Math.abs(dx)>Math.abs(dy)*1.3){dg=null;return}dg.on=1;try{dg.b.setPointerCapture(e.pointerId)}catch(_){}farmDragStart(d,dg)}
+  farmDragMove(d,dg,e)});
+ const end=e=>{if(!dg||e.pointerId!==dg.pid)return;const g=dg;dg=null;if(g.on){farmDragEnd(d,g);d._noClick=Date.now()}};
+ d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end)}
+function farmDragStart(d,g){const f=farmS(),w=farmWorld(d);if(g.tool==='seed'){f.sel=g.k;if(!(f.seeds[g.k]>0))farmHint('Таких семян нет. Загляни в лавку или выиграй уровень');else farmHint(FCROP[g.k].n+': тяни на пустые грядки')}else farmHint(g.tool==='can'?'Лейка: тяни по сухим грядкам':'Корзинка: тяни по спелым грядкам');
+ const img=g.tool==='seed'?farmIcon(g.k):fIco(g.tool==='can'?'can':'basket');const gh=document.createElement('div');gh.className='fghost';gh.innerHTML='<img src="'+img+'" alt="">';d.appendChild(gh);g.gh=gh;w.drag={tool:g.tool};d.classList.add('fdrag');SFX.tap&&SFX.tap();vib(8)}
+function farmDragMove(d,g,e){const w=farmWorld(d);g.gh.style.transform='translate('+(e.clientX-32)+'px,'+(e.clientY-96)+'px) rotate('+(g.tool==='can'?-18:0)+'deg)';
+ const q=farmPt(d,e,-50),i=farmPlotAt(q.x,q.y);w.hl={i,tool:g.tool};
+ if(i<0){g.last=-1;return}
+ const f=farmS();if(g.tool==='can'&&farmOkFor('can',f,i)===false&&farmState(f.pl[i])==='grow'&&Math.random()<.2){const[px,py]=fPlotXY(i);farmPa({x:px+20+Math.random()*(FPS-40),y:py+24,vy:1.6,g:.12,type:'drop',col:'#7CC4F2',size:3,life:380})}
+ if(i===g.last)return;g.last=i;if(w.ev)return;
+ if(!farmPlotOpen(f,i)){farmHint('Грядка закрыта: нажми на неё, чтобы купить');return}
+ if(!farmOkFor(g.tool,f,i))return;
+ if(g.tool==='seed')f.sel=g.k;
+ farmClick(d,'plot',i);vib(10)}
+function farmDragEnd(d,g){const w=farmWorld(d);if(g.gh)g.gh.remove();w.drag=null;w.hl=null;d.classList.remove('fdrag');farmTick(d)}
+/* обучение */
+function farmTutUi(d){const o=$('#ftut',d),h=$('.fhand',d);const f=farmS();if(f.tut>=3||d.classList.contains('fintro')){if(o)o.remove();if(h){try{h._an&&h._an.cancel()}catch(e){}h.remove()}d.querySelectorAll('.fglow').forEach(b=>b.classList.remove('fglow'));farmWorld(d).tutI=-1;d._tutKey=null}}
+function farmTut(d){const f=farmS(),w=farmWorld(d);if(f.tut>=3){if(d._tutKey){farmTutUi(d)}return}
+ if(d.classList.contains('fintro'))return;const sh=$('#fshop',d);if(sh&&!sh.hidden)return;if(!f.q.seen)return;
+ const op=[0,1,2,3].filter(i=>farmPlotOpen(f,i));
+ if(f.tut===0&&f.pl.some(Boolean))f.tut=1;
+ if(f.tut===1&&!f.pl.some(p=>p&&!p.w))f.tut=2;
+ if(f.tut===2&&!d._t2)d._t2=Date.now();
+ if(f.tut===2&&Date.now()-d._t2>7000){f.tut=3;save();farmTutUi(d);farmHint('Когда созреет, тяни корзинку по грядкам. Удачи!');return}
+ let txt,srcSel,ti=-1;
+ if(f.tut===0){const sk=f.sel&&f.seeds[f.sel]>0?f.sel:Object.keys(f.seeds).find(k=>f.seeds[k]>0&&farmOpenK(f,k));if(!sk){f.tut=3;save();farmTutUi(d);return}f.sel=sk;txt='Перетащи мешочек семян на грядку 🌱';srcSel='.fs[data-i="'+sk+'"]';ti=op.find(i=>!f.pl[i]);if(ti==null)ti=-1}
+ else if(f.tut===1){txt='Теперь перетащи лейку на грядку 💧';srcSel='.ft[data-f="water"]';ti=f.pl.findIndex(p=>p&&!p.w)}
+ else{txt='Растёт! Загляни позже. Когда созреет, тяни по грядкам корзинку 🧺';srcSel='.ft[data-f="reap"]';ti=f.pl.findIndex(Boolean)}
+ if(ti<0){farmTutUi(d);return}
+ let o=$('#ftut',d);if(!o){o=document.createElement('div');o.id='ftut';o.className='ftut';o.innerHTML='<span></span><button data-f="tutskip">Пропустить</button>';d.appendChild(o)}
+ o.firstChild.textContent=txt;w.tutI=ti;
+ const key=f.tut+':'+ti+':'+srcSel;if(d._tutKey===key)return;d._tutKey=key;
+ d.querySelectorAll('.fglow').forEach(b=>b.classList.remove('fglow'));const sb=$(srcSel,d);if(sb)sb.classList.add('fglow');
+ let h=$('.fhand',d);if(!h){h=document.createElement('div');h.className='fhand';h.textContent='👆';d.appendChild(h)}try{h._an&&h._an.cancel()}catch(e){}
+ if(sb){const r=sb.getBoundingClientRect(),cr=$('#fcv',d).getBoundingClientRect(),sc=d._sc||1,[px,py]=fPlotXY(ti);const sx=r.left+r.width/2-8,sy=r.top+r.height/2-6,tx=cr.left+(d._ox||0)+(px+FPS/2)*sc-8,ty=cr.top+(py+FPS/2)*sc+8;
+  h._an=h.animate([{transform:`translate(${sx}px,${sy}px) scale(1)`,opacity:0},{transform:`translate(${sx}px,${sy}px) scale(.85)`,opacity:1,offset:.12},{transform:`translate(${tx}px,${ty}px) scale(.85)`,opacity:1,offset:.7},{transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1,offset:.85},{transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-in-out'})}}
 /* ===== Кофейня «Тео»: горизонтальный бариста-режим ===== */
 const BW=900,BH=390,CW=BW,CH=BH,CO='#7A4A38';
 const CSY={van:{n:'Ваниль',c:'#F2D49B'},car:{n:'Карамель',c:'#C98A3A'},choc:{n:'Шоколад',c:'#5C2E14'},str:{n:'Клубника',c:'#F07A9A'}};
@@ -6558,7 +6619,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 20:20';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 20:25';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'||!!APP.cafeOpen||!!APP.farmOpen||!!document.getElementById('cafe')||!!document.querySelector('.farm')}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
