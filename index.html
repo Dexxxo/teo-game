@@ -3,10 +3,9 @@
 <meta name="theme-color" content="#2a1a10"><title>Тео и друзья</title><meta http-equiv="Cache-Control" content="no-cache"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Тео и друзья">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" type="image/png" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@600;700;800;900&display=swap&subset=cyrillic" rel="stylesheet">
+<link rel="preload" href="fonts/nunito-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-/*
+@font-face{font-family:'Nunito';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/nunito-cyrillic-600-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Nunito';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/nunito-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Nunito';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/nunito-cyrillic-700-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Nunito';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/nunito-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Nunito';font-style:normal;font-weight:800;font-display:swap;src:url(fonts/nunito-cyrillic-800-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Nunito';font-style:normal;font-weight:800;font-display:swap;src:url(fonts/nunito-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url(fonts/nunito-cyrillic-900-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url(fonts/nunito-latin-900-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Lobster';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/lobster-cyrillic-400-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Lobster';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/lobster-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}/*
 VOICE: тёплый, нежный, игривый — подарок от любимого человека
 IDEA: уютная деревянная таверна-гостиная, где поле — резной игровой стол
 PICTURE: живая комната с камином, лампой, Тео на лежанке и Марсой на ковре
@@ -455,7 +454,7 @@ function fixSave(){const D=defSave();for(const k in D)if(S[k]==null)S[k]=D[k];if
  for(const r of S.rooms.un)ensureDeco(r)}
 function ensureDeco(rid){if(!S.deco[rid]){const d={};for(const sl of SLOTS)d[sl.id]=sl.opt?null:{id:sl.id+'_basic',c:-1};if(rid==='living'){d.rug={id:'rug_rustic',c:0};d.garland={id:'garland_rustic',c:2}}S.deco[rid]=d}if(typeof addSigs==='function')addSigs(rid);if(typeof archInit==='function')archInit(rid)}
 let saveT=null;
-function save(){S.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}cloudSave()}
+function save(){S.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}cloudSave();clearTimeout(save.bt);save.bt=setTimeout(idbBackup,3000)}
 const CLOUD={ref:null,timer:null};
 async function cloudInit(){try{if(!window.claude||typeof window.claude.use!=='function')return;const db=await window.claude.use('db');const user=await window.claude.use('user');if(!db||!user)return;
  const id=typeof user.id==='function'?await user.id():user.id;if(!id)return;const ref=db.collection('data/users/'+id).doc('save');
@@ -496,10 +495,30 @@ const SFX={
 };
 const DOG_F=[330,560,170,420,260,640];
 function dogBark(d,twice){const f=DOG_F[d]||300;if(d===4&&Math.random()<.4){osc(500,.6,'sine',.12,900);return}bark(f);if(twice)bark(f,.17)}
-const CH=[[60,64,67,71],[57,60,64,67],[53,57,60,64],[55,59,62,65]];let musI=0,musTimer=null;
-const mtof=m=>440*2**((m-69)/12);
-function musicTick(){if(!AU.c||!S.music)return;const ch=CH[musI++%4];ch.forEach((m,i)=>osc(mtof(m-12),2.6,'triangle',.03,0,i*.03,AU.mus));const pent=[72,74,76,79,81,84];for(let i=0;i<3;i++)if(Math.random()<.55)osc(mtof(pick(pent)),.8,'sine',.04,0,.3+i*.6,AU.mus)}
-function musicSet(){if(!AU.c)return;try{AU.mus.gain.setTargetAtTime(S.music?1:0,AU.c.currentTime,.5)}catch(e){}if(S.music&&!musTimer){musicTick();musTimer=setInterval(musicTick,2400)}if(!S.music&&musTimer){clearInterval(musTimer);musTimer=null}}
+const SONGS={
+ winter:{st:.3,ch:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],mel:[76,0,79,0,81,79,76,0,72,0,76,0,79,0,76,74,72,0,74,76,77,0,76,74,74,0,71,0,74,76,79,0],ins:'bell',perc:'bells'},
+ spring:{st:.27,ch:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],mel:[72,74,76,0,79,0,76,74,72,0,69,72,76,0,74,0,72,74,77,0,81,79,77,76,74,0,79,0,77,76,74,71],ins:'pluck',perc:'tick'},
+ summer:{st:.25,ch:[[60,64,67],[53,57,60],[57,60,64],[55,59,62]],mel:[79,0,79,76,0,79,81,0,76,0,72,0,76,79,0,76,77,0,77,81,0,84,81,77,79,0,74,0,77,0,76,74],ins:'uke',perc:'shaker'},
+ autumn:{st:.34,ch:[[57,60,64],[53,57,60],[60,64,67],[55,59,62]],mel:[76,0,72,0,69,0,72,74,72,0,69,0,65,0,69,72,67,0,72,76,79,0,76,72,74,0,71,0,67,0,74,0],ins:'piano',perc:''}};
+let musI=0,musTimer=null,musT=0;const mtof=m=>440*2**((m-69)/12);
+function mnote(t,f,d,type,v,att=.01,cut=0){const c=AU.c;try{const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+d);let n=o;if(cut){const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=cut;o.connect(fl);n=fl}n.connect(g);g.connect(AU.mfx||AU.mus);o.start(t);o.stop(t+d+.05)}catch(e){}}
+function mperc(t,kind){const c=AU.c;try{const s=c.createBufferSource();s.buffer=noiseBuf();const f=c.createBiquadFilter(),g=c.createGain();f.type='highpass';f.frequency.value=kind==='bells'?7000:kind==='shaker'?5000:3000;const v=kind==='bells'?.05:kind==='shaker'?.025:.02,d=kind==='bells'?.12:.05;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(AU.mus);s.start(t);s.stop(t+d+.02)}catch(e){}}
+function musSong(){const se=(APP.scr==='game'&&G.se)?G.se:seasonOf(S.lvl||1);return SONGS[se.id]||SONGS.winter}
+function musicTick(){const c=AU.c;if(!c||!S.music)return;if(!AU.mfx){try{const d=c.createDelay(1),fb=c.createGain(),lp=c.createBiquadFilter(),dry=c.createGain();AU.mfx=c.createGain();d.delayTime.value=.33;fb.gain.value=.28;lp.type='lowpass';lp.frequency.value=2200;AU.mfx.connect(AU.mus);AU.mfx.connect(d);d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(AU.mus)}catch(e){AU.mfx=null}}
+ const now=c.currentTime;if(musT<now)musT=now+.05;while(musT<now+.35){const sg=musSong(),st=sg.st,i=musI%32,ch=sg.ch[Math.floor(i/8)],t=musT;
+  if(i%8===0)ch.forEach((m,k)=>mnote(t+k*.02,mtof(m-12),st*8,'triangle',.016,.25));
+  if(i%4===0)mnote(t,mtof(ch[0]-24),st*3.6,'sine',.07,.02);
+  const m=sg.mel[i];if(m){const f=mtof(m);if(sg.ins==='bell'){mnote(t,f,1.1,'sine',.045,.005);mnote(t,f*2.76,.4,'sine',.012,.005)}else if(sg.ins==='pluck')mnote(t,f,.42,'triangle',.06,.005);else if(sg.ins==='uke')mnote(t,f,.35,'square',.03,.005,1800);else{mnote(t,f,1.3,'triangle',.05,.008);mnote(t,f*2,.6,'sine',.012,.008)}}
+  if(sg.perc&&(sg.perc==='shaker'||i%2===0))mperc(t,sg.perc);
+  musI++;musT+=st}}
+function musicSet(){if(!AU.c)return;try{AU.mus.gain.setTargetAtTime(S.music?1:0,AU.c.currentTime,.5)}catch(e){}if(S.music&&!musTimer){musicTick();musTimer=setInterval(musicTick,100)}if(!S.music&&musTimer){clearInterval(musTimer);musTimer=null}}
+document.addEventListener('visibilitychange',()=>{if(!AU.c)return;try{if(document.hidden)AU.c.suspend();else AU.c.resume()}catch(e){}});
+/* ===== backup mirror: IndexedDB copy of every teo* key ===== */
+function idbOpen(){return new Promise((ok,no)=>{try{const r=indexedDB.open('teo_backup',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}})}
+function lsSnapshot(){const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('teo'))o[k]=localStorage.getItem(k)}}catch(e){}return o}
+async function idbBackup(){try{const snap=lsSnapshot();if(!snap[KEY])return;const db=await idbOpen();await new Promise(ok=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put({t:Date.now(),snap},'last');tx.oncomplete=ok;tx.onerror=ok;tx.onabort=ok});db.close()}catch(e){}}
+async function idbRestore(){try{if(localStorage.getItem(KEY))return false;const db=await Promise.race([idbOpen(),sleep(1500).then(()=>null)]);if(!db)return false;const v=await new Promise(ok=>{const r=db.transaction('kv').objectStore('kv').get('last');r.onsuccess=()=>ok(r.result);r.onerror=()=>ok(null)});db.close();if(!v||!v.snap||!v.snap[KEY])return false;for(const k in v.snap)localStorage.setItem(k,v.snap[k]);return true}catch(e){return false}}
+function backupInit(){try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}setInterval(idbBackup,60000);document.addEventListener('visibilitychange',()=>{if(document.hidden)idbBackup()});setTimeout(idbBackup,5000)}
 /* ===== shapes ===== */
 const OL='#3b2416';
 function rr(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
@@ -2737,7 +2756,7 @@ function drawTile(c,t,now){const cs=G.cs;const x=G.ox+t.x*cs+cs/2,y=G.oy+t.y*cs+
  if(isSp(t))drawAura(c,t,now,cs);
  let img;if(t.k==='ball'){c.rotate(now*.002);img=SPR.ball}else if(t.k==='wool')img=SPR.wool[t.hp>1?1:0];else if(t.k==='mud')img=mudSpr();else if(t.k==='comb'||t.k==='shell'||t.k==='lantern')img=blockSpr(t.k,t.hp);else if(t.k==='box')img=SPR.box[Math.min(3,t.hp)-1];else if(t.k==='treat'){c.translate(0,Math.sin(now*.004+t.id)*cs*.03);img=SPR.treat}else img=(t.blink>now||t.sleep)?SPR.dogC[t.d]:SPR.dog[t.d];
  if(img){if(t.a>.5&&!t.dead){c.fillStyle='rgba(0,0,0,.2)';ell(c,0,cs*.4,cs*.34,cs*.07);c.fill()}c.drawImage(img,-cs/2,-cs/2,cs,cs)}
- if(t.k==='ball')c.rotate(-now*.002);if(t.sp)drawSpecialMark(c,t,now,cs);if(t.ice)c.drawImage(SPR.ice[t.ice>1?1:0],-cs/2,-cs/2,cs,cs);
+ if(t.k==='ball')c.rotate(-now*.002);if(t.sp)drawSpecialMark(c,t,now,cs);if(t.ice)c.drawImage(t.k==='dog'&&t.d>=0?iceSpr(t.d,t.ice>1?2:1):SPR.ice[t.ice>1?1:0],-cs/2,-cs/2,cs,cs);
  if(G.sel===t){c.strokeStyle='#fff';c.lineWidth=3;rr(c,-cs*.47,-cs*.47,cs*.94,cs*.94,cs*.24);c.stroke()}
  c.restore()}
 function drawBoard(c,now){const cs=G.cs,ox=G.ox,oy=G.oy,bw=cs*G.C,bh=cs*G.R;const se=G.se||SEASONS[0];c.save();if(G.shake>.3){c.translate(rnd(-1,1)*G.shake,rnd(-1,1)*G.shake)}
@@ -3032,6 +3051,15 @@ function drawComboLinks(c,now){if(G.busy||G.over)return;const ps=comboPairs();if
   const g=c.createLinearGradient(x1,y1,x2,y2);g.addColorStop(0,'rgba(255,214,90,0)');g.addColorStop(.5,`rgba(255,240,170,${.55+.4*p})`);g.addColorStop(1,'rgba(255,214,90,0)');c.strokeStyle=g;c.lineWidth=cs*.32;c.lineCap='round';c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
   for(let q=0;q<3;q++){const t=((now*.0012)+q/3)%1,x=x1+(x2-x1)*t,y=y1+(y2-y1)*t;c.fillStyle=`rgba(255,255,255,${Math.sin(t*Math.PI)})`;star4(c,x,y,cs*.12);c.fill()}}
  c.restore()}
+/* ===== ice shaped like the badge ===== */
+const ICES={};
+function iceSpr(d,l){const s=SPR.s||64,key=s+'|'+d+'|'+l;if(ICES[key])return ICES[key];const cv=mkCanvas(s,s),c=cv.getContext('2d');c.translate(s/2,s/2);c.scale(s/100,s/100);c.lineJoin='round';
+ const grow=l>1?1.12:1.05;c.save();c.scale(grow,grow);badgePath(c,d);c.restore();const g=c.createLinearGradient(-40,-50,40,50);g.addColorStop(0,`rgba(240,251,255,${l>1?.78:.5})`);g.addColorStop(.5,`rgba(190,228,255,${l>1?.62:.34})`);g.addColorStop(1,`rgba(140,200,250,${l>1?.75:.48})`);c.fillStyle=g;c.fill('nonzero');
+ c.save();c.save();c.scale(grow,grow);badgePath(c,d);c.restore();c.clip('nonzero');c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=2.2;c.beginPath();c.moveTo(-30,-12);c.lineTo(-12,-4);c.lineTo(-18,14);c.moveTo(-12,-4);c.lineTo(6,-20);c.moveTo(18,8);c.lineTo(30,22);c.moveTo(18,8);c.lineTo(34,0);c.stroke();
+ c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.moveTo(-36,-30);c.lineTo(-10,-46);c.lineTo(-4,-40);c.lineTo(-30,-22);c.closePath();c.fill();ell(c,22,-26,5,3,-.5);c.fill();
+ if(l>1){c.fillStyle='rgba(255,255,255,.85)';for(const[x,y]of[[-28,30],[28,-6],[0,36],[-38,4]]){star4(c,x,y,5);c.fill()}}c.restore();
+ c.save();c.scale(grow,grow);badgePath(c,d);c.restore();c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=l>1?5:3.5;c.stroke();c.strokeStyle='rgba(90,150,210,.7)';c.lineWidth=1.5;c.stroke();
+ return ICES[key]=cv}
 /* ===== mini-games every 5 levels ===== */
 const MG=[{id:'catch',n:'Лови вкусняшки',ic:'🦴',d:'Води Тео пальцем влево-вправо и лови косточки и печеньки. Золотая косточка — сразу +5! Мыло не лови — Тео не любит купаться 🫧'},
  {id:'fetch',n:'Брось мячик Тео',ic:'🎾',d:'Нажми, когда полоска силы дойдёт до нужного места, — мячик должен упасть прямо в мишень. Три броска!'},
@@ -3441,6 +3469,7 @@ function frame(now){try{const dt=Math.min(50,now-(APP.last||now));APP.last=now;u
 function resize(){const r=APP.root.getBoundingClientRect();APP.W=Math.max(200,Math.round(r.width));APP.H=Math.max(300,Math.round(r.height));APP.DPR=Math.min(2,window.devicePixelRatio||1);for(const cv of[APP.cv,APP.fx]){cv.width=Math.round(APP.W*APP.DPR);cv.height=Math.round(APP.H*APP.DPR)}APP.roomDirty=true;SPR.s=0;
  if(APP.scr==='game'&&G.grid.length)layoutBoard();else buildSprites(40);if(APP.scr==='decor')Object.assign(APP.view,decorView(DS.slot))}
 async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getContext('2d');APP.fx=$('#fx');APP.fctx=APP.fx.getContext('2d');APP.uiEl=$('#ui');APP.scrEl=$('#scr');APP.mods=$('#mods');
+ if(await idbRestore()){location.reload();return}backupInit();
  loadSave();loadPhotos();loadVoices();RS.curt=S.curt||0;RS.lampOn=S.lampOn!==false;RS.chOn=S.chOn!==false;resize();try{await Promise.race([document.fonts.load('40px Lobster'),sleep(1500)]);await Promise.race([document.fonts.ready,sleep(800)])}catch(e){}APP.roomDirty=true;
  window.addEventListener('resize',()=>{clearTimeout(APP.rt);APP.rt=setTimeout(resize,120)});
  APP.cv.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('pointercancel',()=>{if(PD)clearTimeout(PD.long);PD=null});
@@ -3452,10 +3481,10 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 07:53';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 08:15';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
-setTimeout(chk,1200);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
+setTimeout(chk,1200);try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')}catch(e){}document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
 setInterval(function(){if(window.__upd&&!inGame()){window.__upd=0;chk()}},2500);setInterval(chk,10*60*1000);
 setTimeout(function(){try{if(localStorage.getItem('teo_updated')){localStorage.removeItem('teo_updated');toast('Игра обновилась ✨ версия '+V)}}catch(e){}},2500)})()</script></body></html>
