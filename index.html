@@ -487,6 +487,17 @@ button.chip{cursor:pointer;font-family:inherit}
 .rwhere{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 138px);border:0;border-radius:16px;padding:8px 14px;background:rgba(255,248,230,.95);color:#5A3A1A;font:800 12px 'Nunito',sans-serif;box-shadow:0 2px 0 #C9A26A;pointer-events:auto;white-space:nowrap;max-width:94%}
 .hnews{margin:6px 0 0;font:700 13px 'Nunito',sans-serif;color:#5A3A1A;background:#FFF3D6;border-radius:12px;padding:6px 10px}.hnews.ev{background:#E9F7E0;color:#2F5A2A}
 .stylebtn{display:block;margin:2px auto 6px;font-size:13px}
+
+.phview{position:absolute;left:0;right:0;pointer-events:none;box-shadow:0 0 0 2000px rgba(10,5,2,.4);border:2px solid rgba(255,255,255,.8);z-index:2}
+.phview i{position:absolute;width:22px;height:22px;border:4px solid #fff;border-radius:4px}.phview i:nth-child(1){left:8px;top:8px;border-right:0;border-bottom:0}.phview i:nth-child(2){right:8px;top:8px;border-left:0;border-bottom:0}.phview i:nth-child(3){left:8px;bottom:8px;border-right:0;border-top:0}.phview i:nth-child(4){right:8px;bottom:8px;border-left:0;border-top:0}
+.phflash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:6}.phflash.go{animation:phfl .55s ease-out}@keyframes phfl{0%{opacity:.95}100%{opacity:0}}
+.phbot{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;gap:16px;z-index:4}
+.shutter{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:radial-gradient(#ffd9e6,#ff8fb6);box-shadow:0 0 0 4px rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.4);cursor:pointer}.shutter:active{transform:scale(.92)}
+.phhint{position:absolute;bottom:92px;font:700 12.5px 'Nunito',sans-serif;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);z-index:4}
+.phcard img{width:100%;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.3)}.phcard p{text-align:center;margin:6px 0 0}
+.phgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}.phth{border:0;background:none;padding:0;cursor:pointer;text-align:center;font:700 11px 'Nunito',sans-serif;color:#5A3A1A}.phth img{width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.shutter{pointer-events:auto}
+.phflash,.phview{pointer-events:none!important}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -812,12 +823,14 @@ function drawRoomStatic(c,VH,room,deco){const L=roomLayout(VH,deco);if(typeof ar
  // window light on floor
  c.save();c.globalAlpha=.09*(1-(RS.curt||0));c.fillStyle='#FFF6D8';c.beginPath();c.moveTo(L.win.x+6,L.fl);c.lineTo(L.win.x+L.win.w-6,L.fl);c.lineTo(L.win.x+L.win.w+70,L.fl+150);c.lineTo(L.win.x-30,L.fl+150);c.closePath();c.fill();c.restore();
  if(deco.rug)glowWrap(c,deco.rug,()=>drawRug(c,L.rug.x,L.rug.y,stOf(deco.rug),colOf(deco.rug,'#C0504D')));
+ try{if(typeof drawEdgeDoors==='function')drawEdgeDoors(c,L,room)}catch(e){}
  const DRAW={fire:()=>{FIRE_NOPOT=!!deco.mantel;drawFireBody(c,L.fire.x,L.fire.y,stOf(deco.fire),deco.fire);if(deco.mantel)drawMantel(c,L.fire.x,L.fire.y,stOf(deco.mantel),colOf(deco.mantel,'#E46F6F'),deco.mantel)},plant:()=>{const g=((S.plantG||{})[room.id]||0)*.07;c.save();c.translate(L.plant.x,L.plant.y);c.scale(1+g,1+g);c.translate(-L.plant.x,-L.plant.y);drawPlant(c,L.plant.x,L.plant.y,stOf(deco.plant),colOf(deco.plant,'#F2EFE9'));c.restore()},sofa:()=>drawSofa(c,L.sofa.x,L.sofa.y,stOf(deco.sofa),colOf(deco.sofa,'#B5764B')),lamp:()=>{L.lampPt=drawLamp(c,L.lamp.x,L.lamp.y,stOf(deco.lamp),colOf(deco.lamp,'#F2A65A'))},bed:()=>drawBed(c,L.bed.x,L.bed.y,stOf(deco.bed),colOf(deco.bed,'#9C6B4A'))};
- const items=['fire','plant','sofa','lamp','bed'].filter(k=>deco[k]).map(k=>({y:L[k].y,f:()=>glowWrap(c,deco[k],DRAW[k])}));for(const e of EXL)if(!EXI[e.id].wall)items.push({y:L.fl+e.fy,f:()=>drawExtra(c,e,L)});items.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
+ const items=['fire','plant','sofa','lamp','bed'].filter(k=>deco[k]).map(k=>({y:L[k].y,f:()=>flipWrap(c,deco,L,k,()=>glowWrap(c,deco[k],DRAW[k]))}));for(const e of EXL)if(!EXI[e.id].wall)items.push({y:L.fl+e.fy,f:()=>drawExtra(c,e,L)});items.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
  if(deco.garland)drawGarlandWire(c,L,stOf(deco.garland),deco.garland);
  // vignette
  const g=c.createRadialGradient(200,VH*.45,VH*.25,200,VH*.5,VH*.85);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(30,12,0,.5)');c.fillStyle=g;c.fillRect(0,0,400,VH);
  return L}
+function flipWrap(c,deco,L,k,fn){if(deco.flip&&deco.flip[k]&&k!=='fire'){c.save();c.translate(L[k].x,0);c.scale(-1,1);c.translate(-L[k].x,0);fn();c.restore()}else fn()}
 function glowWrap(c,e,fn){const s=starsOf(e.id);c.save();if(s>=5){c.shadowColor='#FFD34D';c.shadowBlur=22}else if(s>=4){c.shadowColor='rgba(255,220,120,.8)';c.shadowBlur=12}fn();c.restore()}
 
 function drawWall(c,L,room,e){if(GLASSMASK)return;const W=400,fl=L.fl,st=stOf(e)||'basic';if(st==='basic'&&typeof archOf==='function'){const A=archOf(room.id);if(A.wall&&WALL2[A.wall]){WALL2[A.wall](c,L,room);return}}if(NWS.has(st))return NW.wall(c,L,room,st,colOf(e,'#E46F6F'));let a,b;
@@ -1014,7 +1027,7 @@ function drawRoomDyn(c,L,room,deco,t,still){
  const darkNow=!still&&!RS.lampOn;if(still||!(darkNow||glassLayer(c,L,room,t,false))){if(!darkNow){sceneFx(c,L.win,room.scene,t);if(!still)windowTint(c,L.win,room.scene,t)}}
  if(!still)drawCelebration(c,L,t);
  const dark=!still&&!RS.lampOn;let dk=0;
- if(deco.fire){const st=stOf(deco.fire);drawFlames(c,L.fire.x,L.fire.y,t,st==='legend',still?0:RS.fireBoost);for(const e of(deco.extra||[])){const d=EXI[e.id];if(!d||d.wall||e.sp)continue;const p=xpos(e,L);if(Math.abs(p.x-L.fire.x)<64+d.sz[0]/2&&p.y-d.sz[1]<L.fire.y)drawExtra(c,e,L)}const near=(k,hw)=>deco[k]&&L[k]&&Math.abs(L[k].x-L.fire.x)<64+hw;if(near('plant',30)){const g=((S.plantG||{})[room.id]||0)*.07;c.save();c.translate(L.plant.x,L.plant.y);c.scale(1+g,1+g);c.translate(-L.plant.x,-L.plant.y);drawPlant(c,L.plant.x,L.plant.y,stOf(deco.plant),colOf(deco.plant,'#F2EFE9'));c.restore()}if(near('lamp',24)){c.save();drawLamp(c,L.lamp.x,L.lamp.y,stOf(deco.lamp),colOf(deco.lamp,'#F2A65A'));c.restore()}if(near('sofa',110)){c.save();drawSofa(c,L.sofa.x,L.sofa.y,stOf(deco.sofa),colOf(deco.sofa,'#B5764B'));c.restore()}}
+ if(deco.fire){const st=stOf(deco.fire);drawFlames(c,L.fire.x,L.fire.y,t,st==='legend',still?0:RS.fireBoost);for(const e of(deco.extra||[])){const d=EXI[e.id];if(!d||d.wall||e.sp)continue;const p=xpos(e,L);if(Math.abs(p.x-L.fire.x)<64+d.sz[0]/2&&p.y-d.sz[1]<L.fire.y)drawExtra(c,e,L)}const near=(k,hw)=>deco[k]&&L[k]&&Math.abs(L[k].x-L.fire.x)<64+hw;if(near('plant',30)){const g=((S.plantG||{})[room.id]||0)*.07;c.save();c.translate(L.plant.x,L.plant.y);c.scale(1+g,1+g);c.translate(-L.plant.x,-L.plant.y);drawPlant(c,L.plant.x,L.plant.y,stOf(deco.plant),colOf(deco.plant,'#F2EFE9'));c.restore()}if(near('lamp',24)){flipWrap(c,deco,L,'lamp',()=>{c.save();drawLamp(c,L.lamp.x,L.lamp.y,stOf(deco.lamp),colOf(deco.lamp,'#F2A65A'));c.restore()})}if(near('sofa',110)){flipWrap(c,deco,L,'sofa',()=>{c.save();drawSofa(c,L.sofa.x,L.sofa.y,stOf(deco.sofa),colOf(deco.sofa,'#B5764B'));c.restore()})}}
  drawPlaced(c,L,deco,t,still);
  if(!still){try{roomLightFx(c,L,room,deco,t)}catch(e){}roomNightTint(c,L,room);if(dark){const w=L.win,k=RS.curt||0,op=1-k;const E=winEdges(w),inL=E[-1].inner,inR=E[1].inner;{const ph=dayPhase(),base=ph==='night'?.55:ph==='evening'||ph==='sunset'?.45:ph==='dawn'?.35:.24;dk=deco.ceil&&chOn()?base*.38:base}
   c.save();c.fillStyle=`rgba(10,5,28,${dk})`;c.fillRect(0,0,400,L.VH);c.restore();
@@ -1313,7 +1326,13 @@ const DRXA={
 function exPos(e,L){if(e.sp){const q=spPoint(e,L);if(q)return q}return{x:e.x,y:L.fl+e.fy}}
 function exBox(e,L){const d=EXI[e.id];const[w,h]=d.sz;const p=exPos(e,L);return d.wall?{x:p.x-w/2,y:p.y-h/2,w,h}:{x:p.x-w/2,y:p.y-h,w,h}}
 function exLimits(d,L){return d.wall?[d.sz[0]/2+4,400-d.sz[0]/2-4,-(L.fl-d.sz[1]/2-36),-50]:[d.sz[0]/2,400-d.sz[0]/2,16,L.VH-L.fl-14]}
-function drawExtra(c,e,L){const d=EXI[e.id];if(!d||!DRX[e.id])return;const p=exPos(e,L);const[x0,x1,y0,y1]=exLimits(d,L);const x=e.sp?p.x:clamp(p.x,x0,x1),y=e.sp?p.y:L.fl+clamp(e.fy,y0,y1);c.save();c.lineJoin='round';DRX[e.id](c,x,y,e);c.restore()}
+function drawExtra(c,e,L){const d=EXI[e.id];if(!d||!DRX[e.id])return;const p=exPos(e,L);const[x0,x1,y0,y1]=exLimits(d,L);const x=e.sp?p.x:clamp(p.x,x0,x1),y=e.sp?p.y:L.fl+clamp(e.fy,y0,y1);c.save();c.lineJoin='round';if(e.hue)exHue(c,e,d,x,y);else if(e.f&&!d.wall){c.translate(x,0);c.scale(-1,1);c.translate(-x,0);DRX[e.id](c,x,y,e)}else DRX[e.id](c,x,y,e);c.restore()}
+const HUEC={};
+function exHue(c,e,d,x,y){const key=e.id+'|'+e.hue+'|'+(e.f?1:0)+'|'+(d.wall?1:0)+'|'+(e.sp?1:0),w=d.sz[0]+120,h=d.sz[1]*2+100,ox=w/2,oy=d.sz[1]+50;let cv=HUEC[key];
+ if(!cv||(cv._t&&performance.now()-cv._t>45000)){cv=document.createElement('canvas');cv.width=w;cv.height=h;const o=cv.getContext('2d');o.lineJoin='round';if(e.f&&!d.wall){o.translate(ox,0);o.scale(-1,1);o.translate(-ox,0)}DRX[e.id](o,ox,oy,e);
+  const im=o.getImageData(0,0,w,h),p=im.data,a=e.hue*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a);const m=[.213+cs*.787-sn*.213,.715-cs*.715-sn*.715,.072-cs*.072+sn*.928,.213-cs*.213+sn*.143,.715+cs*.285+sn*.140,.072-cs*.072-sn*.283,.213-cs*.213-sn*.787,.715-cs*.715+sn*.715,.072+cs*.928+sn*.072];
+  for(let i=0;i<p.length;i+=4){if(!p[i+3])continue;const r=p[i],g=p[i+1],b=p[i+2];p[i]=Math.max(0,Math.min(255,r*m[0]+g*m[1]+b*m[2]));p[i+1]=Math.max(0,Math.min(255,r*m[3]+g*m[4]+b*m[5]));p[i+2]=Math.max(0,Math.min(255,r*m[6]+g*m[7]+b*m[8]))}o.putImageData(im,0,0);cv._t=performance.now();if(Object.keys(HUEC).length>40)for(const k in HUEC){delete HUEC[k];break}HUEC[key]=cv}
+ c.drawImage(cv,x-ox,y-oy)}
 function drawExtraAnim(c,e,L,t){const f=DRXA[e.id];if(!f)return;const d=EXI[e.id];const[x0,x1,y0,y1]=exLimits(d,L);f(c,clamp(e.x,x0,x1),L.fl+clamp(e.fy,y0,y1),t,e)}
 function exUyut(rid){const ex=(S.deco[rid]&&S.deco[rid].extra)||[];return ex.reduce((a,e)=>a+((EXI[e.id]&&EXI[e.id].u)||0),0)}
 function placeExtra(id,rid){const d=EXI[id];const sc=APP.W/400;const deco=S.deco[rid];deco.extra=deco.extra||[];const L=roomLayout(APP.H/sc,deco);
@@ -3547,7 +3566,7 @@ function pzFixAll(){const d=curDeco(),sc=APP.W/400,L=roomLayout(APP.H/sc,d);let 
 function showPlace(){APP.scr='decor';APP.move.on=false;APP.pz={on:true,sel:null,fsel:null,cat:APP.pz&&APP.pz.cat||'wall'};DS.room=S.rooms.cur;ensureDeco(DS.room);const pzs=Math.min(1,(APP.H-250)/APP.H);tween(APP.view,{x:APP.W*(1-pzs)/2,y:8,s:pzs},450,E.inOut);APP.roomDirty=true;try{pzFixAll()}catch(e){}
  APP.scrEl.innerHTML=`<div class="layer" id="decor"><div class="dtop"><button class="btn small green" data-a="pzoff">Готово ✓</button><button class="btn small ghost" data-a="mvreset">↺ Мебель как было</button><span class="sp"></span><span class="pzuy">🏡 уют +${placedUyut(DS.room)}</span></div><div class="pzbar" id="pzbar"></div></div>`;pzBar()}
 function pzBar(){const b=$('#pzbar');if(!b)return;const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);
- const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);const tool=APP.pz.fsel?`<div class="pztool"><b>${esc(MOVN[APP.pz.fsel]||'Мебель')}</b><small>Тащи пальцем. Другая мебель — в разделе «Уют»</small></div>`:xs?`<div class="pztool"><b>${esc(EXI[xs.id].n)}</b><div class="irow"><button class="btn small ghost2" data-a="pzxdel">📦 Убрать в запас</button></div></div>`:sel?`<div class="pztool"><b>${esc(PZ[sel.id].n)}</b><div class="irow"><button class="btn small blue" data-a="pzflip">↔ Отразить</button><button class="btn small pink" data-a="pzcol">🎨 Цвет</button><button class="btn small ghost2" data-a="pzdel">📦 Убрать</button></div></div>`:`<div class="pzhint">Любую вещь и мебель в комнате можно взять пальцем и перенести. Пока держишь вещь, зелёным показано, куда её можно поставить. Новые вещи — в каталоге ниже.</div>`;
+ const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);const tool=APP.pz.fsel?`<div class="pztool"><b>${esc(MOVN[APP.pz.fsel]||'Мебель')}</b><small>Тащи пальцем. Другая мебель — в разделе «Уют»</small>${['sofa','lamp','bed','plant'].includes(APP.pz.fsel)?'<div class="irow"><button class="btn small blue" data-a="pzsflip">↔ Отразить</button></div>':''}</div>`:xs?`<div class="pztool"><b>${esc(EXI[xs.id].n)}</b><div class="irow"><button class="btn small pink" data-a="pzxcol">🎨 Цвет</button>${EXI[xs.id].wall?'':'<button class="btn small blue" data-a="pzxflip">↔ Отразить</button>'}<button class="btn small ghost2" data-a="pzxdel">📦 Убрать в запас</button></div></div>`:sel?`<div class="pztool"><b>${esc(PZ[sel.id].n)}</b><div class="irow"><button class="btn small blue" data-a="pzflip">↔ Отразить</button><button class="btn small pink" data-a="pzcol">🎨 Цвет</button><button class="btn small ghost2" data-a="pzdel">📦 Убрать</button></div></div>`:`<div class="pzhint"><button class="btn small ${APP.pz.grid?'green':'ghost2'}" data-a="pzgrid" style="float:right;margin:0 0 4px 8px">▦ Сетка</button>Любую вещь и мебель в комнате можно взять пальцем и перенести. Пока держишь вещь, зелёным показано, куда её можно поставить. Новые вещи — в каталоге ниже.</div>`;
  const inv=S.pinv||{};const items=Object.keys(PZ).filter(id=>APP.pz.cat==='light'?!!PZ[id].light:PZ[id].s===APP.pz.cat);const setsHtml=APP.pz.cat==='sets'?`<div class="pzrow">${PZSETS.map(st=>{const ok=!st.need||deco[st.need];const c=pzSetCost(st);return`<button class="pzcard set" data-a="pzset" data-id="${st.id}" ${ok?'':'disabled'}><span class="seti">${st.ic}</span><small>${esc(st.n)}</small><i>${ok?(c?c+' 🦴':'из запаса'):'нужен '+st.needn}</i></button>`}).join('')}</div>`:'';
  b.innerHTML=tool+`<div class="pztabs">${PZC.map(c=>`<button class="pztab ${c.id===APP.pz.cat?'on':''}" data-a="pzcat" data-id="${c.id}">${c.ic} ${c.n}</button>`).join('')}</div>${setsHtml}<div class="pzrow" ${APP.pz.cat==='sets'?'hidden':''}>${items.map(id=>{const d=PZ[id],n=inv[id]||0;return`<button class="pzcard" data-a="pzbuy" data-id="${id}"><img src="${pzIcon(id)}" alt=""><small>${esc(d.n)}</small><i>${n?'в запасе: '+n:d.p+' 🦴'}</i></button>`}).join('')}</div>`;const u=$('.pzuy');if(u)u.textContent='🏡 уют +'+placedUyut(DS.room)}
 function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&APP.pz.sel&&list.find(i=>i.u===APP.pz.sel);
@@ -3559,6 +3578,10 @@ function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&A
  case'pzbuy':{const id=b.dataset.id,d=PZ[id];S.pinv=S.pinv||{};if(!(S.pinv[id]>0)){if(S.bones<d.p){toast('Нужно '+d.p+' 🦴 — пройди ещё пару уровней!');SFX.nope&&SFX.nope();return true}S.bones-=d.p;SFX.buy?SFX.buy():SFX.chime&&SFX.chime(2)}else S.pinv[id]--;
   famXP(3);const it=Object.assign({u:'z'+Date.now().toString(36)+Math.floor(Math.random()*999),id,c:0,f:0},pzDefPos(d,deco,L));list.push(it);APP.pz.sel=it.u;save();const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',12);vib(15);pzBar();refreshChips&&refreshChips();return true}
  case'pzxdel':{const e=(deco.extra||[]).find(q=>'x:'+q.u===APP.pz.sel);if(e&&EXI[e.id].sig){toast('Это часть комнаты — её можно только двигать 🙂');return true}if(e){for(const o of(deco.extra||[]))if(o.sp&&o.sp.p===e.u)delete o.sp;deco.extra=deco.extra.filter(q=>q!==e);S.inv=S.inv||{};S.inv[e.id]=(S.inv[e.id]||0)+1;APP.pz.sel=null;APP.roomDirty=true;save();SFX.tap();pzBar()}return true}
+ case'pzgrid':APP.pz.grid=!APP.pz.grid;SFX.tap();toast(APP.pz.grid?'Сетка включена ▦':'Сетка выключена');pzBar();return true
+ case'pzxcol':{const e=(deco.extra||[]).find(q=>'x:'+q.u===APP.pz.sel);if(e){const st=[0,60,120,180,240,300],i=st.indexOf(e.hue||0);e.hue=st[(i+1)%st.length]||0;if(!e.hue)delete e.hue;save();APP.roomDirty=true;SFX.tap();toast(e.hue?'Новый цвет ✨':'Цвет как в магазине')}return true}
+ case'pzxflip':{const e=(deco.extra||[]).find(q=>'x:'+q.u===APP.pz.sel);if(e){e.f=e.f?0:1;if(!e.f)delete e.f;save();APP.roomDirty=true;SFX.tap()}return true}
+ case'pzsflip':{const k=APP.pz.fsel;if(k){deco.flip=deco.flip||{};deco.flip[k]=deco.flip[k]?0:1;save();APP.roomDirty=true;SFX.tap()}return true}
  case'pzflip':if(sel){sel.f=sel.f?0:1;save();SFX.tap()}return true;
  case'pzcol':if(sel){sel.c=((sel.c||0)+1)%PZ[sel.id].cols.length;save();SFX.tap();const bx=pzBox(sel,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',5)}return true;
  case'pzdel':if(sel){for(const ch of list)if(ch.p===sel.u){const pp=pzPos(ch,deco,L);delete ch.p;ch.x=pp.x;ch.y=pzFloor(L).y0+30}deco.pl=list.filter(i=>i!==sel);S.pinv=S.pinv||{};S.pinv[sel.id]=(S.pinv[sel.id]||0)+1;APP.pz.sel=null;save();SFX.tap();pzBar()}return true}
@@ -3574,7 +3597,7 @@ function pzDown(p){const{x,y}=pzRoomPt(p);const deco=curDeco(),L=APP.L;let hit=n
  const q=xpos(it,L);return{kind:'ex',it,ox:x-q.x,oy:y-q.y,snap:JSON.stringify({x:it.x,fy:it.fy,sp:it.sp})}}
 function pzKind(drag){if(drag.kind==='pl')return PZ[drag.it.id].s;const d=EXI[drag.it.id];return d.wall?'wall':exSmall(d)?'top':'floor0'}
 function pzSize(drag){if(drag.kind==='pl'){const d=PZ[drag.it.id];return[d.w,d.h]}const d=EXI[drag.it.id];return[d.sz[0]*.8,d.sz[1]]}
-function pzMove(drag,p){const r=pzRoomPt(p),fx=r.x-drag.ox,fy=r.y-drag.oy;const deco=curDeco(),L=APP.L,it=drag.it;const k=pzKind(drag),[w,h]=pzSize(drag);
+function pzMove(drag,p){const r=pzRoomPt(p);let fx=r.x-drag.ox,fy=r.y-drag.oy;if(APP.pz.grid){fx=Math.round(fx/12)*12;fy=Math.round(fy/12)*12}const deco=curDeco(),L=APP.L,it=drag.it;const k=pzKind(drag),[w,h]=pzSize(drag);
  if(drag.kind==='pl'){it._drag=1;it._fx=clamp(fx,w/2,400-w/2);it._fy=fy;drag.tg=pzTarget(k,w,h,fx,fy,it,deco,L)}
  else{const d=EXI[it.id];if(k==='wall'){const[x0,x1,y0,y1]=exLimits(d,L);it.x=Math.round(clamp(fx,x0,x1));it.fy=Math.round(clamp(fy-L.fl,y0,y1));delete it.sp;drag.tg=null}
   else{const tg=pzTarget(k==='top'?'top':'floor',w,h,fx,fy,it,deco,L);drag.tg=tg;if(tg.t==='surf'&&tg.ok){it.sp={p:tg.p,dx:tg.dx}}else{delete it.sp;const[x0,x1,y0,y1]=exLimits(d,L);it.x=Math.round(clamp(tg.x,x0,x1));it.fy=Math.round(clamp(tg.y-L.fl,y0,y1))}APP.roomDirty=true}}
@@ -3586,7 +3609,7 @@ function pzUp(drag){if(!drag)return;const deco=curDeco(),L=APP.L,it=drag.it;cons
   if(tg.t==='ceil')it._sw=performance.now();else if(tg.t!=='wall'){const to=pzPos0(it,deco,L,PZ[it.id]);if(to.y-fy>6)it._fall={y0:fy,t0:performance.now()};else{it._land=performance.now()}}
   else{it._land=performance.now();osc(520,.05,'sine',.04)}}
  else{APP.roomDirty=true;if(tg&&!tg.ok){Object.assign(it,JSON.parse(drag.snap));if(!it.sp)delete it.sp;toast('Тут нет места');APP.roomDirty=true}else{osc(180,.08,'sine',.05,120);const q=xpos(it,L);pzPart(q.x,q.y,'dust',6)}}}
-function drawPzMarks(c,L,now){if(APP.pz.fsel&&typeof boxOf==='function'&&L[APP.pz.fsel]){const b=boxOf(L,APP.pz.fsel),p0=.55+.45*Math.sin(now*.006);c.save();c.strokeStyle=`rgba(255,214,90,${.7+.3*p0})`;c.lineWidth=2.5;c.setLineDash([]);rr(c,b.x-3,b.y-3,b.w+6,b.h+6,10);c.stroke();c.fillStyle='rgba(255,210,74,.12)';c.fill();c.restore()}const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);if(xs&&EXI[xs.id]){const p2=.55+.45*Math.sin(now*.006);c.save();const dd=EXI[xs.id];if(exSmall(dd)&&PD&&PD.pz){c.strokeStyle=`rgba(80,200,120,${.5+.4*p2})`;c.lineWidth=4;for(const s2 of pzSurfaces(deco,L)){c.beginPath();c.moveTo(s2.x0-6,s2.y);c.lineTo(s2.x1+6,s2.y);c.stroke()}}const[bx,by,bw,bh]=exRect(xs,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p2})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke();if(PD&&PD.pz&&PD.pz.tg&&!PD.pz.tg.ok){c.strokeStyle='rgba(240,80,80,.95)';rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}c.restore()}const p=.55+.45*Math.sin(now*.006);c.save();c.setLineDash([6,5]);c.lineWidth=2;
+function drawPzMarks(c,L,now){if(APP.pz.grid){c.save();c.strokeStyle='rgba(255,255,255,.22)';c.lineWidth=1;c.beginPath();for(let x=0;x<=400;x+=12){c.moveTo(x,0);c.lineTo(x,L.VH)}for(let y=0;y<=L.VH;y+=12){c.moveTo(0,y);c.lineTo(400,y)}c.stroke();c.restore()}if(APP.pz.fsel&&typeof boxOf==='function'&&L[APP.pz.fsel]){const b=boxOf(L,APP.pz.fsel),p0=.55+.45*Math.sin(now*.006);c.save();c.strokeStyle=`rgba(255,214,90,${.7+.3*p0})`;c.lineWidth=2.5;c.setLineDash([]);rr(c,b.x-3,b.y-3,b.w+6,b.h+6,10);c.stroke();c.fillStyle='rgba(255,210,74,.12)';c.fill();c.restore()}const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);if(xs&&EXI[xs.id]){const p2=.55+.45*Math.sin(now*.006);c.save();const dd=EXI[xs.id];if(exSmall(dd)&&PD&&PD.pz){c.strokeStyle=`rgba(80,200,120,${.5+.4*p2})`;c.lineWidth=4;for(const s2 of pzSurfaces(deco,L)){c.beginPath();c.moveTo(s2.x0-6,s2.y);c.lineTo(s2.x1+6,s2.y);c.stroke()}}const[bx,by,bw,bh]=exRect(xs,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p2})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke();if(PD&&PD.pz&&PD.pz.tg&&!PD.pz.tg.ok){c.strokeStyle='rgba(240,80,80,.95)';rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}c.restore()}const p=.55+.45*Math.sin(now*.006);c.save();c.setLineDash([6,5]);c.lineWidth=2;
  if(sel){const d=PZ[sel.id];c.strokeStyle=`rgba(80,200,120,${.5+.4*p})`;c.fillStyle='rgba(80,200,120,.08)';
   if(!(PD&&PD.pz)){}
   else if(d.s==='wall'){const w=pzWall(L);rr(c,4,w.y0,392,w.y1-w.y0,10);c.fill();c.stroke()}
@@ -4038,6 +4061,68 @@ async function showStyles(){const rid=S.rooms.cur;ensureDeco(rid);const cur=setI
  const v=await ask(`<div class="center"><h2 class="lob">🎨 Стиль комнаты</h2><p class="soft small">Обои, пол, мебель и свет в одном стиле одним нажатием. Скидка 25%, уже купленное не платится. Пять вещей одного стиля дают бонус к ходам.</p></div>`,btns);
  if(!v)return;const cost=styleCost(rid,v),its=styleItems(rid,v);if(S.bones<cost)return;S.bones-=cost;const d=S.deco[rid];for(const it of its){S.owned[it.id]=S.owned[it.id]||{s:1};d[it.slot]={id:it.id,c:-1}}
  save();APP.roomDirty=true;SFX.coin&&SFX.coin();SFX.chime&&SFX.chime(4);confetti&&confetti(40);const si=setInfo(rid);toast(`Стиль «${STY[v].n}» ✨${si.moves?` +${si.moves} ход${si.moves>1?'а':''} на уровнях`:''}`);if(APP.scr==='decor')showDecor(true)}
+/* ===== photo mode & album ===== */
+const PHO={db:null,frame:0,busy:false,urls:{}};
+const PH_FRAMES=[{n:'Полароид',bg:'#FFFDF6',ink:'#5A3A1A',sub:'#9A7A58'},{n:'Сердечки',bg:'#FFE3EC',ink:'#9A3A5E',sub:'#C77E98',deco:'♥'},{n:'Ночь',bg:'#26223F',ink:'#FFE6A8',sub:'#B7B0D8',deco:'✦'}];
+function phDB(){return new Promise((ok,no)=>{if(PHO.db)return ok(PHO.db);try{const r=indexedDB.open('teo-album',1);r.onupgradeneeded=()=>r.result.createObjectStore('p');r.onsuccess=()=>{PHO.db=r.result;ok(PHO.db)};r.onerror=()=>no(r.error)}catch(e){no(e)}})}
+function phPut(id,blob){return phDB().then(db=>new Promise((ok,no)=>{const t=db.transaction('p','readwrite');t.objectStore('p').put(blob,id);t.oncomplete=ok;t.onerror=()=>no(t.error)}))}
+function phGet(id){return phDB().then(db=>new Promise((ok,no)=>{const q=db.transaction('p').objectStore('p').get(id);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)}))}
+function phDel(id){return phDB().then(db=>new Promise((ok,no)=>{const t=db.transaction('p','readwrite');t.objectStore('p').delete(id);t.oncomplete=ok;t.onerror=()=>no(t.error)}))}
+function phUrl(id){if(PHO.urls[id])return Promise.resolve(PHO.urls[id]);return phGet(id).then(b=>b?(PHO.urls[id]=URL.createObjectURL(b)):'')}
+const phDate=t=>new Date(t).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'});
+function phCrop(){const W=APP.W,H=APP.H,ch=Math.min(H-150,Math.round(W*1.125));return{x:0,y:Math.round(Math.max(70,(H-ch)/2-14)),w:W,h:ch}}
+function phCompose(fr,room,t){const F=PH_FRAMES[fr],cr=phCrop(),D=APP.DPR,W=900,pad=46,pw=W-pad*2,ph=Math.round(pw*cr.h/cr.w),H=pad+ph+190;
+ const cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');c.fillStyle=F.bg;c.fillRect(0,0,W,H);
+ if(F.deco){c.fillStyle=rgba(F.sub,.35);c.font='bold 34px Nunito, sans-serif';c.textAlign='center';for(let i=0;i<26;i++){const s=srand(i*7+fr)();c.fillText(F.deco,s*W,20+((i*61)%(H-30)))}}
+ c.save();c.shadowColor='rgba(0,0,0,.25)';c.shadowBlur=14;c.shadowOffsetY=4;c.fillStyle='#000';c.fillRect(pad,pad,pw,ph);c.restore();
+ c.save();c.beginPath();c.rect(pad,pad,pw,ph);c.clip();c.drawImage(APP.cv,cr.x*D,cr.y*D,cr.w*D,cr.h*D,pad,pad,pw,ph);c.drawImage(APP.fx,cr.x*D,cr.y*D,cr.w*D,cr.h*D,pad,pad,pw,ph);c.restore();
+ c.strokeStyle=rgba(F.sub,.5);c.lineWidth=3;c.strokeRect(pad,pad,pw,ph);
+ c.textAlign='center';c.fillStyle=F.ink;c.font='62px Lobster, cursive';c.fillText(`${S.her} + ${S.him} 💛`,W/2,pad+ph+88);c.fillStyle=F.sub;c.font='bold 30px Nunito, sans-serif';c.fillText(`${phDate(t)} · ${room}`,W/2,pad+ph+140);
+ return new Promise(ok=>cv.toBlob(b=>ok(b),'image/jpeg',.86))}
+async function phSave(blob,name){try{const f=new File([blob],name,{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==='AbortError')return}
+ const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+function showPhoto(){APP.scr='photo';APP.roomDirty=true;S.album=S.album||[];const cr=phCrop();
+ APP.scrEl.innerHTML=`<div class="layer" id="photo"><div class="phtop"><button class="btn small" data-a="phclose">✕ Закрыть</button><span class="sp"></span><button class="btn small ghost" data-a="phalbum">🖼 Альбом · ${S.album.length}</button></div>
+ <div class="phview" style="top:${cr.y}px;height:${cr.h}px"><i></i><i></i><i></i><i></i></div><div class="phflash" id="phflash"></div>
+ <div class="phbot"><button class="btn small ghost" data-a="phframe" id="phfr">🎞 ${PH_FRAMES[PHO.frame].n}</button><button class="shutter" data-a="phshot" aria-label="Сделать фото"></button><span class="phhint">Подожди, пока герои займутся делом</span></div></div>`}
+async function phShoot(){if(PHO.busy)return;PHO.busy=true;const fl=$('#phflash');if(fl){fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go')}SFX.chime&&SFX.chime(2);osc(1200,.04,'square',.05);
+ try{const t=Date.now(),rn=ROOM[roomId()]?ROOM[roomId()].n:'Дом',blob=await phCompose(PHO.frame,rn,t),id='p'+t.toString(36)+Math.floor(Math.random()*999);await phPut(id,blob);S.album=S.album||[];S.album.unshift({id,t,room:roomId(),f:PHO.frame});
+  while(S.album.length>60){const o=S.album.pop();phDel(o.id).catch(()=>{});delete PHO.urls[o.id]}save();PHO.busy=false;await phView(id,true)}catch(e){PHO.busy=false;console.error(e);toast('Не получилось сохранить фото 😿')}}
+async function phView(id,fresh){const it=(S.album||[]).find(x=>x.id===id);if(!it)return;const u=await phUrl(id);
+ const v=await ask(`<div class="phcard"><img src="${u}" alt=""><p class="soft small">${fresh?'Фото в альбоме ✨':phDate(it.t)}</p></div>`,[{t:'📥 Сохранить в телефон',c:'green',v:'save'},fresh?{t:'📸 Ещё кадр',v:'more'}:{t:'🗑 Удалить',c:'ghost',v:'del'},{t:fresh?'🖼 Альбом':'Назад',c:'ghost',v:'back'}]);
+ if(v==='save'){const b=await phGet(id);if(b)await phSave(b,`teo-${new Date(it.t).toISOString().slice(0,10)}.jpg`);return phView(id,fresh)}
+ if(v==='del'){const ok=await ask('<div class="center"><h2 class="lob">Удалить фото?</h2></div>',[{t:'Удалить',c:'pink',v:1},{t:'Нет',c:'ghost',v:0}]);if(ok){S.album=S.album.filter(x=>x.id!==id);delete PHO.urls[id];phDel(id).catch(()=>{});save();toast('Фото удалено')}return phAlbum()}
+ if(v==='back'){if(fresh)return phAlbum()}return phAlbum()}
+async function phAlbum(){S.album=S.album||[];if(!S.album.length){await ask('<div class="center"><h2 class="lob">Альбом пока пуст</h2><p class="soft">Нажми на большую круглую кнопку, чтобы сделать первое фото вашего дома 📸</p></div>',[{t:'Понятно',c:'green',v:1}]);return}
+ const urls=await Promise.all(S.album.map(x=>phUrl(x.id)));const m=el('div','modal');
+ m.innerHTML=`<div class="panel"><h2 class="lob center">🖼 Наш альбом</h2><div class="phgrid">${S.album.map((x,i)=>`<button class="phth" data-id="${x.id}"><img src="${urls[i]}" alt=""><small>${phDate(x.t)}</small></button>`).join('')}</div><div class="mbtns"><button class="btn ghost" data-x="1">Закрыть</button></div></div>`;
+ m.addEventListener('click',e=>{if(e.target.closest('[data-x]')||e.target===m){SFX.tap();m.remove();return}const b=e.target.closest('.phth');if(b){SFX.tap();m.remove();phView(b.dataset.id,false)}});APP.mods.appendChild(m)}
+function albumAct(a,b){switch(a){
+ case'photo':SFX.tap();showPhoto();return true;
+ case'phclose':SFX.tap();showMenu(true);return true;
+ case'phframe':SFX.tap();PHO.frame=(PHO.frame+1)%PH_FRAMES.length;{const e=$('#phfr');if(e)e.textContent='🎞 '+PH_FRAMES[PHO.frame].n}return true;
+ case'phshot':phShoot();return true;
+ case'phalbum':SFX.tap();phAlbum();return true}return false}
+/* ===== real doors and stairs on the edges of the rooms ===== */
+function navNeighbors(cur){const o=houseOrder();if(o.length<2)return null;const i=o.indexOf(cur);if(i<0)return null;const open=id=>roomOpen(ROOM[id]);
+ const nb=d=>{for(let k=1;k<o.length;k++){const id=o[(i+d*k+o.length*3)%o.length];if(open(id))return id}return null};const H=houseOf(cur);
+ const fl=id=>{if(!H.floors)return 0;if(H.floors[0].includes(id))return 0;if(H.floors[1].includes(id))return 1;return 2};
+ const kind=id=>!id?null:fl(id)<fl(cur)?'up':fl(id)>fl(cur)?'down':'door';const l=nb(-1),r=nb(1);return{l:l&&{id:l,k:kind(l)},r:r&&{id:r,k:kind(r)}}}
+function edgeDoor(c,L,s,k){const fl=L.fl+2;c.save();c.lineJoin='round';
+ if(k==='door'){const w=58,h=190,x0=s<0?-20:362;rr(c,x0-6,fl-h-9,w+12,h+11,6);fs(c,'#7A4A26',OL,2.4);const g=c.createLinearGradient(0,fl-h,0,fl);g.addColorStop(0,'#FFE9B8');g.addColorStop(1,'#F2AE62');rr(c,x0,fl-h,w,h,3);fs(c,g,OL,1.6);
+  const hx=s<0?x0+w-1:x0+1,ex=s<0?x0+w-26:x0+26;c.beginPath();c.moveTo(hx,fl-h);c.lineTo(ex,fl-h+12);c.lineTo(ex,fl-9);c.lineTo(hx,fl);c.closePath();fs(c,'#B9783F',OL,1.8);
+  c.strokeStyle='rgba(60,30,10,.35)';c.lineWidth=1.3;for(const q of[.3,.62]){c.beginPath();c.moveTo(hx+(ex-hx)*.18,fl-h*q-24);c.lineTo(hx+(ex-hx)*.82,fl-h*q-20);c.lineTo(hx+(ex-hx)*.82,fl-h*q+20);c.lineTo(hx+(ex-hx)*.18,fl-h*q+22);c.closePath();c.stroke()}
+  ell(c,ex+(s<0?5:-5),fl-92,2.8,2.8);fs(c,'#F2D16B',OL,1.2);ell(c,x0+w/2,fl+13,27,6);fs(c,'#A94F57',OL,1.4)}
+ else if(k==='up'){const X=v=>s<0?v:400-v;c.beginPath();c.moveTo(X(78),fl);const pts=[[78,15],[66,15],[66,30],[54,30],[54,45],[42,45],[42,60],[30,60],[30,75],[18,75],[18,90],[0,90]];for(const[a,b]of pts)c.lineTo(X(a),fl-b);c.lineTo(X(0),fl);c.closePath();fs(c,'#B9783F',OL,2);
+  c.strokeStyle='rgba(60,30,10,.45)';c.lineWidth=1.4;for(let i=0;i<6;i++){c.beginPath();c.moveTo(X(78-i*12-(i?0:0)),fl-15*(i+1));c.lineTo(X(66-i*12),fl-15*(i+1));c.stroke()}
+  c.strokeStyle='#6B3F1E';c.lineWidth=3;for(const[a,b]of[[70,24],[46,52],[22,80]]){c.beginPath();c.moveTo(X(a),fl-b+4);c.lineTo(X(a),fl-b-48);c.stroke()}c.beginPath();c.moveTo(X(82),fl-18-48+24);c.lineTo(X(0),fl-90-48+10);c.stroke();
+  c.fillStyle='rgba(20,10,30,.35)';c.beginPath();c.moveTo(X(0),fl-94);c.lineTo(X(26),fl-94);c.lineTo(X(26),fl-190);c.lineTo(X(0),fl-190);c.closePath();c.fill()}
+ else{const X=v=>s<0?v:400-v;const g=c.createLinearGradient(0,fl,0,fl+34);g.addColorStop(0,'#3A2418');g.addColorStop(1,'#1A0F0A');c.beginPath();c.moveTo(X(0),fl+2);c.lineTo(X(66),fl+2);c.lineTo(X(58),fl+36);c.lineTo(X(0),fl+36);c.closePath();fs(c,g,OL,1.8);
+  c.strokeStyle='rgba(210,160,100,.5)';c.lineWidth=2;for(let i=0;i<4;i++){const y=fl+8+i*7,x=66-i*2;c.beginPath();c.moveTo(X(0),y);c.lineTo(X(x),y);c.stroke()}
+  c.strokeStyle='#6B3F1E';c.lineWidth=3;for(const a of[8,34,62]){c.beginPath();c.moveTo(X(a),fl+2);c.lineTo(X(a),fl-44);c.stroke()}c.beginPath();c.moveTo(X(2),fl-46);c.lineTo(X(66),fl-46);c.stroke()}
+ c.restore()}
+function drawEdgeDoors(c,L,room){if(!room||room.id!==S.rooms.cur||typeof houseOrder!=='function')return;const n=navNeighbors(room.id);if(!n)return;if(n.l)edgeDoor(c,L,-1,n.l.k);if(n.r)edgeDoor(c,L,1,n.r.k)}
+function doorTapAt(x,y){const L=APP.L;if(!L||APP.scr!=='menu')return false;const n=navNeighbors(S.rooms.cur);if(!n)return false;const k=400/APP.W,rx=x*k,ry=y*k;if(ry<L.fl-215||ry>L.fl+40)return false;if(rx<46&&n.l){roomStep(-1);return true}if(rx>354&&n.r){roomStep(1);return true}return false}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4074,7 +4159,7 @@ const empty=t=>`<div class="empty"><img src="${dogImg(0,60,true)}" alt=""><p>${t
 /* ===== menu ===== */
 function showMenu(noGifts){if(typeof FAMQ!=='undefined'&&FAMQ.length)setTimeout(famLevelUp,1400);if(!S.tipLife&&S.welcomed){S.tipLife=1;save();setTimeout(()=>{if(APP.scr==='menu')toast('Нажми на Сашу, Диму или собачку — они что-нибудь сделают 💛')},2600)}APP.scr='menu';APP.move.on=false;G.over=true;G.grid=[];G.target=null;APP.roomDirty=true;tween(APP.view,{x:0,y:0,s:1},450,E.inOut);
  const nc=S.coupons.filter(c=>c.nw).length;
- APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
+ APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="photo" aria-label="Фото">📸</button><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
  <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()})()}</div>
  ${typeof roomNavHtml==='function'?roomNavHtml():''}
@@ -4327,11 +4412,13 @@ function onMove(e){if(!PD)return;const p=ptOf(e);PD.lx=p.x;PD.ly=p.y;const dx=p.
 function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.longFired)return;if(d.pz){const pb=$('#pzbar');if(pb)pb.classList.remove('drag');pzUp(d.pz);save();pzBar();return}if(d.drag){save();return}
  if(d.cell){if(G.target&&!G.busy){useTarget(d.cell);return}if(d.desel&&!d.swiped)G.sel=null;return}
  if(APP.scr==='menu'&&d.moved&&d.lx!=null&&!d.cell){const sx=d.lx-d.x,sy=d.ly-d.y;if(Math.abs(sx)>60&&Math.abs(sy)<70&&typeof roomStep==='function'){roomStep(sx<0?1:-1);return}}
+ if(!d.hit&&!d.moved&&typeof doorTapAt==='function'&&doorTapAt(d.x,d.y))return;
  if(d.hit&&!d.moved)roomTap(d.hit,d.x,d.y)}
 
 /* ===== actions ===== */
 function act(a,b){
  if(a==='fam'){SFX.tap();showFamily();return}
+ if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
  if(a.startsWith('d')&&a!=='dogs'&&a!=='decor'&&a!=='dslot'&&a!=='dback'){dimaAct(a,b);return}
  switch(a){
@@ -4390,7 +4477,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:11';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 14:27';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
