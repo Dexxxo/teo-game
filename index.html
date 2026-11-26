@@ -504,6 +504,8 @@ button.chip{cursor:pointer;font-family:inherit}
 .bellbtn{position:relative}.bdg{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#E8453C;color:#fff;font:900 11px/18px 'Nunito',sans-serif;text-align:center;border:2px solid #fff;font-style:normal;padding:0 3px;box-sizing:content-box;animation:bdgp 1.6s infinite}@keyframes bdgp{50%{transform:scale(1.15)}}
 .cn-row{display:flex;align-items:center;gap:10px;background:#FFF6E4;border:2px solid #E2C48A;border-radius:14px;padding:8px 10px;margin:6px 0}.cn-row.ok{background:#E9F7E0;border-color:#9ACB86}.cn-row.done{opacity:.55}.cn-row>div{flex:1;min-width:0}.cn-row b{display:block;font-size:14.5px;color:#5b3519}.cn-row small{display:block;font-size:12px;color:#8a6a4a}.cn-i{font-size:26px;flex:none}.cn-r{font:800 12.5px 'Nunito',sans-serif;color:#8a6a4a;flex:none}.cn-row .btn{padding:6px 12px;font-size:13px;flex:none}.cn-bar{height:6px;border-radius:3px;background:#EAD9B8;margin-top:5px;overflow:hidden}.cn-bar i{display:block;height:100%;background:linear-gradient(90deg,#FFC93C,#F59A1E);border-radius:3px}.cn-log{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#5b3519;padding:6px 2px;border-bottom:1px dashed #E2C48A}.cn-log i{font-style:normal;color:#a38b6a;font-size:11.5px;flex:none}
 .maprow{display:flex;gap:8px;justify-content:center;flex:none;margin-top:8px}.maprow .maprp{margin:0;padding:8px 10px;font-size:14px}.mgl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.mgc{display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF6E4;border:2px solid #E2C48A;border-radius:16px;padding:12px 8px;box-shadow:0 3px 0 #B8925A;cursor:pointer;font-family:inherit;color:#5b3519}.mgc b{font-size:15px;text-align:center}.mgc small{font-size:11.5px;color:#8a6a4a;text-align:center}.mgi{font-size:34px}.mgc.lock{opacity:.5;box-shadow:none;cursor:default}
+.cplms{display:flex;flex-direction:column;gap:8px;margin:8px 0}.cplm{display:grid;grid-template-columns:38px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;background:#FFF6E4;border:2px solid #E2C48A;border-radius:14px;padding:8px 12px;font-family:inherit;color:#5b3519;cursor:pointer;box-shadow:0 3px 0 #B8925A}.cplm span{grid-row:1/3;font-size:28px;text-align:center}.cplm b{font-size:15px}.cplm small{font-size:12px;color:#8a6a4a}.cplm.on{background:#E9F7E0;border-color:#7FB85F;box-shadow:0 3px 0 #5E9A44}
+.cplr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}.cplb{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF6E4;border:2px solid #E2C48A;border-radius:14px;padding:10px 4px;font-family:inherit;color:#5b3519;cursor:pointer;box-shadow:0 3px 0 #B8925A}.cplb span{font-size:26px}.cplb b{font-size:12.5px}.cplb i{position:absolute;top:4px;right:6px;font-size:10px;font-style:normal;color:#3E8A2C;font-weight:800}.cplb.on{background:#E9F7E0;border-color:#7FB85F}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -2338,7 +2340,7 @@ function extraHit(x,y){const d=curDeco(),L=APP.L;const list=(d.extra||[]).filter
 function tapObj(e,px,py){heartsAt(px,py-10,3);if(ACT.cur){if(ACT.q.length<3&&!ACT.q.some(q=>q.obj===e))ACT.q.push({obj:e,key:'x:'+e.u});return}ACT.q.push({obj:e,key:'x:'+e.u});runQ()}
 function waterPlant(px,py){const rid=S.rooms.cur;S.plantG=S.plantG||{};S.plantW=S.plantW||{};const tk=todayKey();burst(px,py-30,['#7FD6FF','#BFE8FF','#FFFFFF'],12,{type:'blob',v:1,g:.16,size:3.5,max:700});
  if(S.plantW[rid]===tk){toast('Цветок уже полит сегодня 💧 Завтра подрастёт ещё');return}S.plantW[rid]=tk;S.plantG[rid]=Math.min(6,(S.plantG[rid]||0)+1);save();APP.roomDirty=true;SFX.chime(3);toast(S.plantG[rid]>=6?'Цветок вырос во всю красу! 🌸':`Полито! Цветок подрос 🌱 (${S.plantG[rid]}/6)`)}
-function updHouse(dt){try{starterTick();starter2Tick();scheduleTick(dt);life2Tick(dt)}catch(e){}if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
+function updHouse(dt){try{starterTick();starter2Tick();scheduleTick(dt);life2Tick(dt);peopleAutoTick(dt)}catch(e){}if(typeof roamTick==='function')roamTick(dt);try{wantsTick(dt)}catch(e){}if(typeof dogMicro==='function')dogMicro(dt);for(const k of['oven','cookies','dinner','bath','blown','tv','cuckoo','piano'])if(RS[k]>0)RS[k]-=dt;GST.anim+=dt;if(GST.run){GST.run.t+=dt;if(GST.run.t>1100)GST.run=null}}
 
 /* ---- scenes (dialogue between Sasha, Dima and the dogs) ---- */
 async function playScene(lines){let n=0;while((ACT.cur||ACT.q.length)&&n++<60)await wait(200);ACT.cur={a:'scene'};
@@ -3966,17 +3968,16 @@ async function walkInPeople(dir,tok){if(PPL.sleep)return;const j=PPL.joint;PPL.j
  try{await Promise.all(jobs)}finally{if(ACT.tok===tok)PPL.joint=j}}
 
 /* ===== daily routine: where Sasha and Dima are right now ===== */
-function schedRoomNow(){const h=new Date().getHours(),un=id=>S.rooms.un.includes(id);const pick=(...a)=>a.find(un)||'living';
- if(h>=23||h<7)return pick('bedroom');if(h<9)return pick('kitchen');if(h<12)return pick('study','living');if(h<14)return pick('kitchen');if(h<17)return pick('garden','living');if(h<19)return pick('hall','living');return pick('living')}
+function schedRoomNow(){return typeof cplNow==='function'?cplNow():'living'}
 function schedAway(rid){if(S.sched===false)return false;const H=houseOf(rid||S.rooms.cur);if(!H||H.id!=='home')return false;return schedRoomNow()!==(rid||S.rooms.cur)}
 async function walkOutPeople(tok){if(PPL.sleep){PPL.away=true;return}const j=PPL.joint;PPL.joint=null;const jobs=['her','him'].map(async(w,k)=>{const p=PPL[w];if(!p)return;p.sitH=0;p.pose='walk';try{await pTo(p,k?-20:420,p.y,tok)}catch(e){}});
  try{await Promise.all(jobs)}catch(e){}if(ACT.tok===tok){PPL.away=true;PPL.joint=j}}
-function scheduleTick(dt){APP.sT=(APP.sT||0)+dt;if(APP.sT<15000)return;APP.sT=0;const nr=schedRoomNow();if(APP.schedRoom==null){APP.schedRoom=nr;return}if(nr===APP.schedRoom)return;const old=APP.schedRoom;APP.schedRoom=nr;
+function scheduleTick(dt){APP.sT=(APP.sT||0)+dt;if(APP.sT<4000)return;APP.sT=0;const nr=schedRoomNow();if(APP.schedRoom==null){APP.schedRoom=nr;return}if(nr===APP.schedRoom)return;const old=APP.schedRoom;APP.schedRoom=nr;
  if(S.sched===false||houseOf(S.rooms.cur).id!=='home'||APP.scr!=='menu')return;const cur=S.rooms.cur;
  if(old===cur&&PPL.her&&!PPL.away){walkOutPeople(ACT.tok);toast('Саша и Дима пошли в «'+(ROOM[nr]?ROOM[nr].n:'')+'» 🚶');refreshRoomNav()}
  else if(nr===cur){APP.walkIn=1;ACT.key='';toast('Саша и Дима пришли сюда 🚶');refreshRoomNav()}else refreshRoomNav()}
 function refreshRoomNav(){const m=$('#menu');if(!m)return;const o=m.querySelectorAll('.rnavp,.rarr,.rwhere');o.forEach(e=>e.remove());m.insertAdjacentHTML('beforeend',roomNavHtml())}
-function whereHtml(){if(!schedAway())return'';const r=ROOM[schedRoomNow()];return r?`<button class="rwhere" data-a="rgo" data-id="${r.id}">🧑‍🤝‍🧑 ${esc(S.her)} и ${esc(S.him)} сейчас: ${esc(r.n)} →</button>`:''}
+
 
 /* ===== tasks for the new rooms ===== */
 Object.assign(TASKS,{
@@ -4309,6 +4310,74 @@ function moodClaim(){const m=homeMood(),tr=moodTier(m);if(!tr||S.moodDay===today
 function life2Tick(dt){if(APP.scr!=='menu'||!APP.L)return;RS.acT=(RS.acT||0)+dt;if(RS.acT>6000){RS.acT=0;try{if(achCheck()||true)refreshBell()}catch(e){}}const rid=S.rooms&&S.rooms.cur,deco=S.deco&&S.deco[rid];if(!deco)return;
  if(rid==='living'&&!S.sproutPlaced&&roomId()===rid&&APP.view){S.sproutPlaced=1;deco.pl=deco.pl||[];const q=pzSpecPlace(deco,APP.L,['t_sprout','sill',-50]);if(q){APP.roomDirty=true;save();setTimeout(()=>toast('На подоконнике новый росток 🌱 Поливай его каждый день'),1500)}else{S.pinv=S.pinv||{};S.pinv.t_sprout=(S.pinv.t_sprout||0)+1;save()}}
  if(S.giftDay!==todayKey()){RS.gT=(RS.gT||0)+dt;if(RS.gT>40000+(RS.gR||(RS.gR=Math.random()*40000))){RS.gT=0;RS.gR=0;heroGift()}}}
+/* ===== the house lives by itself: where Sasha and Dima are, what they do in every room, and how to steer them ===== */
+const RIC={living:'🛋️',kitchen:'🍳',bedroom:'🛏️',bath:'🛁',hall:'🚪',study:'📚',garden:'🌿',terrace:'☀️'};
+const rIc=id=>(ROOM[id]&&ROOM[id].ic)||RIC[id]||'🏠';
+function cpl(){S.cpl=S.cpl||{room:null,until:0,mode:'auto',pin:null};return S.cpl}
+const RORD=['living','kitchen','bedroom','bath','hall','study','garden','terrace'];function cplRooms(){try{const l=houseRooms('living').filter(r=>ROOM[r]);return l.sort((x,y)=>(RORD.indexOf(x)+99)%99-(RORD.indexOf(y)+99)%99)}catch(e){return['living']}}
+const CPLW=h=>h>=23||h<7?{bedroom:1}:h<9?{kitchen:.5,bath:.3,bedroom:.1,living:.1}:h<12?{study:.3,living:.25,kitchen:.15,garden:.15,hall:.1,bath:.05}:h<14?{kitchen:.5,living:.3,garden:.1,hall:.1}:h<17?{garden:.3,living:.3,study:.2,hall:.1,kitchen:.1}:h<19?{kitchen:.3,hall:.2,living:.3,garden:.1,bath:.1}:{living:.5,kitchen:.2,bath:.15,bedroom:.15};
+function cplPick(rs,last){const h=new Date().getHours(),w=CPLW(h);let tot=0;const lst=rs.map(r=>{let x=w[r]||0;if(r===last&&rs.length>1&&!(h>=23||h<7))x*=.2;tot+=x;return[r,x]});if(!tot)return rs.includes('living')?'living':rs[0];let q=Math.random()*tot;for(const[r,x]of lst){q-=x;if(q<=0)return r}return rs[0]}
+function nextHour(hh){const d=new Date();d.setHours(hh,0,0,0);if(d<=new Date())d.setDate(d.getDate()+1);return d.getTime()}
+function cplNow(){const c=cpl(),now=Date.now(),rs=cplRooms();if(!rs.length)return'living';
+ if(c.mode==='pin'&&c.pin&&rs.includes(c.pin)&&(!c.pinUntil||now<c.pinUntil))return c.pin;
+ if(c.mode==='pin'){c.mode='auto';c.pin=null;c.until=0;save()}
+ if(!c.room||!rs.includes(c.room)||now>c.until){const h=new Date().getHours(),night=h>=23||h<7;c.room=cplPick(rs,c.room);c.until=night?nextHour(7):now+(4+Math.random()*6)*60000;save()}
+ return c.room}
+function cplLabel(){const c=cpl(),r=ROOM[schedRoomNow()];return S.sched===false?'всегда рядом с тобой':c.mode==='pin'?'закреплены в «'+(r?r.n:'')+'»':'живут сами: сейчас «'+(r?r.n:'')+'»'}
+function whereHtml(){try{if(houseOf(S.rooms.cur).id!=='home')return'';const away=schedAway(),r=ROOM[schedRoomNow()];const lab=S.sched===false?'рядом с тобой':away?(r?r.n:''):'здесь';return`<button class="rwhere" data-a="cpl">🧑‍🤝‍🧑 ${esc(S.her)} и ${esc(S.him)}: ${esc(lab)}${cpl().mode==='pin'&&S.sched!==false?' 📌':''} ▸</button>`}catch(e){return''}}
+function cplApply(){APP.sT=1e9;const nr=cplNow(),cur=S.rooms.cur,home=houseOf(cur).id==='home',wantHere=S.sched===false||nr===cur||!home;
+ if(wantHere&&PPL.away){APP.walkIn=1;ACT.key='';toast('Саша и Дима пришли сюда 🚶')}
+ else if(!wantHere&&PPL.her&&!PPL.away){walkOutPeople(ACT.tok);toast('Саша и Дима пошли в «'+(ROOM[nr]?ROOM[nr].n:'')+'» 🚶')}
+ APP.schedRoom=nr;refreshRoomNav()}
+function showCpl(){const c=cpl(),rs=cplRooms(),cur=S.rooms.cur,now=schedRoomNow(),follow=S.sched===false,mode=follow?'follow':c.mode==='pin'?'pin':'auto';
+ const md=(k,ic,t,d,a)=>`<button class="cplm${mode===k?' on':''}" data-a="${a}"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
+ openPage('cpl',`Где ${esc(S.her)} и ${esc(S.him)}? 🧑‍🤝‍🧑`,`<p class="soft small center">Сейчас: <b>${esc(cplLabel())}</b></p><div class="cplms">${md('auto','🏡','Живут сами','Ходят по дому как в жизни: утром кухня, ночью спальня','cplauto')}${md('follow','🧲','Рядом со мной','Всегда в той комнате, где ты','cplfollow')}${md('pin','📌','Закрепить','Остаются в выбранной комнате','cplpin')}</div>
+ ${rs.includes(cur)&&now!==cur&&!follow?`<button class="btn green" data-a="cplhere" style="display:block;margin:10px auto">📣 Позвать сюда: ${esc(ROOM[cur].n)}</button>`:''}
+ <h3>Отправить в комнату</h3><div class="cplr">${rs.map(r=>`<button class="cplb${r===now&&!follow?' on':''}" data-a="cplroom" data-id="${r}"><span>${rIc(r)}</span><b>${esc(ROOM[r].n)}</b>${r===now&&!follow?'<i>тут</i>':''}</button>`).join('')}</div>
+ <p class="soft small center">Если закрепить, они будут сами жить в этой комнате: готовить, читать, смотреть телевизор и гулять с собаками.</p>`)}
+function cplAct(a,b){const c=cpl();
+ if(a==='cpl'){SFX.tap();showCpl();return true}
+ if(a==='cplauto'){S.sched=true;c.mode='auto';c.pin=null;c.until=0;save();cplApply();showCpl();return true}
+ if(a==='cplfollow'){S.sched=false;save();cplApply();showCpl();return true}
+ if(a==='cplpin'){S.sched=true;c.mode='pin';c.pin=schedRoomNow();c.pinUntil=0;save();cplApply();showCpl();return true}
+ if(a==='cplhere'||a==='cplroom'){S.sched=true;c.mode='pin';c.pin=a==='cplhere'?S.rooms.cur:b.dataset.id;c.pinUntil=0;save();SFX.tap&&SFX.tap();cplApply();showCpl();return true}return false}
+
+/* ---- what they do in every room ---- */
+const PA={t:0,next:8000};
+const STN={
+ fridge:{ids:['f_fridge'],pose:'back',say:['Что бы перекусить? 🧀','Кто-то хочет сыр? 🧀'],open:1,then:'tea',thenSay:'Ммм, вкусно 😋'},
+ wardrobe:{ids:['f_wardrobe'],pose:'back',say:['Что бы надеть? 👗','Выбираю образ ✨'],open:1},
+ washer:{ids:['f_washer'],pose:'back',say:['Запускаю стирку 🧺','Бельё само не постирается 😄'],fx:'drop'},
+ basket:{ids:['f_basket'],pose:'crouch',say:['Разбираю бельё 🧦']},
+ vanity:{ids:['p_vanity'],pose:'back',say:['Как я выгляжу? 💄','Ещё чуть-чуть, и пойдём ✨']},
+ hooks:{ids:['p_hooks'],pose:'back',say:['Куда повесить куртку? 🧥']},
+ shoes:{ids:['f_shoes'],pose:'crouch',say:['Переобуваюсь 👟']},
+ desk:{ids:['f_desk','t_laptop'],pose:'read',say:['Немного поработаю 💻','Надо записать идею ✍️']},
+ books:{ids:['t_books'],pose:'read',say:['Вот эту книгу хочу 📚','Что же почитать? 📖']},
+ tv:{ids:['f_tv'],pose:'stand',say:['Что сегодня по телевизору? 📺'],both:1,dist:64},
+ firepit:{ids:['f_firepit'],pose:'crouch',say:['Тепло и уютно 🔥']},
+ nightstand:{ids:['f_nightstand'],pose:'phone',say:['Поставлю будильник ⏰']},
+ bench:{ids:['f_bench'],pose:'tea',say:['Посижу с чаем ☕']},
+ armchair:{ids:['f_armchair'],pose:'read',say:['Люблю это кресло 📖']}};
+function stationsFor(deco){const out=[];for(const k in STN){const its=pzList(deco).filter(i=>STN[k].ids.includes(i.id)&&PZ[i.id]);if(its.length)out.push({k,it:pick(its)})}return out}
+async function stationRun(p,s,L,deco,tok){const d=STN[s.k],it=s.it,hn=p.who==='her'?S.her:S.him,pp=pzPos(it,deco,L),isF=PZ[it.id].s==='floor',y=isF?clamp(pp.y+8,L.fl+60,L.VH-100):clamp(L.fl+80,L.fl+60,L.VH-100),side=p.x<pp.x?-1:1,dx=d.dist||34;
+ const o=otherP(p);await pStand(p,tok);if(d.both&&o&&o.mode==='stay'){await pStand(o,tok)}
+ say(p,pick(d.say));const go=[pTo(p,clamp(pp.x+side*dx,30,370),y,tok)];if(d.both&&o)go.push(pTo(o,clamp(pp.x-side*dx,30,370),y+4,tok));await Promise.all(go);
+ p.face=pp.x>p.x?1:-1;if(d.both&&o)o.face=pp.x>o.x?1:-1;p.pose=d.pose;if(d.both&&o)o.pose=d.pose;
+ const b=pzBox(it,deco,L);if(d.open){it.open=true;SFX.tap&&SFX.tap()}if(d.fx)pzPart(b[0]+b[2]/2,b[1]+b[3]*.4,d.fx,8);if(s.k==='tv')pzPart(b[0]+b[2]/2,b[1]+b[3]*.5,'spark',4);
+ await hold(2400,tok);if(d.open){it.open=false}
+ if(d.then){p.pose=d.then;say(p,d.thenSay);await hold(2200,tok)}
+ if(d.both&&o){say(o,pick(['Давай это посмотрим 😄','Мне нравится 💛','Сделай погромче 🔊']));await hold(1600,tok)}
+ await Promise.all([pHome(p,tok),d.both&&o?pHome(o,tok):Promise.resolve()]);return true}
+async function soloPose(p,tok){const hn=p.who==='her'?S.her:S.him,k=pick(['phone','stretch','tea','wave']);await pStand(p,tok);const l={phone:['Сообщения от друзей 📱','Смотрю наши фото 📷'],stretch:['Ох, надо размяться 🙆','Потянуться бы! 🧘'],tea:['Сделаю чайку ☕','Чай — это счастье ☕'],wave:['Привет, ты там? 👋','Эй, я тут! 👋']}[k];say(p,pick(l));p.pose=k;await hold(k==='wave'?1800:3000,tok);p.pose='stand';await pHome(p,tok);return true}
+async function runPerson(p,fn){const tok=ACT.tok;ACT.cur={a:p,auto:1};try{await fn(tok)}catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}}
+function autoPeopleAct(){const L=APP.L,deco=curDeco();if(!L||!deco)return;const opts=[],P=[PPL.her,PPL.him];const p=pick(P);
+ for(const s of stationsFor(deco))opts.push({w:3,run:()=>runPerson(pick(P),tok=>stationRun(pick(P),s,L,deco,tok))});
+ for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id])opts.push({w:2.5,run:()=>{ACT.q.push({obj:e,key:'x:'+e.u});runQ()}});
+ for(const id of['pzwater','pzmusic','pzlook','pzlight']){const ok=id==='pzwater'?pzFind(deco,'f_tree').length+pzFind(deco,'c_plant').length+pzFind(deco,'t_cactus').length:id==='pzmusic'?pzFind(deco,'t_player').length:id==='pzlook'?pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish','spin','flutter'].includes(PZ[i.id].act)):pzList(deco).some(i=>PZ[i.id]&&PZ[i.id].light&&PZ[i.id].s==='floor');if(ok)opts.push({w:1.2,run:()=>runPerson(p,tok=>doAct(p,id,L,deco,tok))})}
+ opts.push({w:2.5,run:()=>{ACT.q.push(p);runQ()}});opts.push({w:1.5,run:()=>runPerson(p,tok=>soloPose(p,tok))});
+ let tot=0;opts.forEach(o=>tot+=o.w);let q=Math.random()*tot;for(const o of opts){q-=o.w;if(q<=0){o.run();return}}}
+function peopleAutoTick(dt){if(S.roam===false||APP.scr!=='menu'||!APP.L||!ACT.H||!PPL.her||PPL.away||PPL.sleep||PPL.nap)return;if(ACT.cur||ACT.q.length||$('.modal',APP.mods)){PA.t=0;return}PA.t+=dt;if(PA.t<PA.next)return;PA.t=0;PA.next=9000+Math.random()*10000;autoPeopleAct()}
 /* ===== endless levels: years/seasons counter, replaying any passed level, progress guard ===== */
 const YEAR_LEN=SEASON_LEN*4;
 const yearOf=n=>Math.floor((n-1)/YEAR_LEN)+1;
@@ -4874,6 +4943,7 @@ function act(a,b){
  if((a==='center'||a==='achclaim'||a==='moodclaim2')&&centerAct(a,b))return;
  if((a==='rpyr'||a==='rpplay'||a==='replaylist')&&levelsAct(a,b))return;
  if((a==='minilist'||a==='mgplay')&&mgAct(a,b))return;
+ if(a.startsWith('cpl')&&cplAct(a,b))return;
  if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
  if(a.startsWith('d')&&a!=='dogs'&&a!=='decor'&&a!=='dslot'&&a!=='dback'){dimaAct(a,b);return}
@@ -4933,7 +5003,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 15:14';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 15:22';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
