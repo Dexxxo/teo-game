@@ -476,6 +476,12 @@ button.chip{cursor:pointer;font-family:inherit}
 .ytree.t1{left:5%}.ytree.t2{right:5%;height:54px;width:36px}
 .ypath{position:absolute;left:50%;top:-6px;width:24px;height:12px;margin-left:-12px;background:#E8D2A6;border-radius:4px}
 .yfence{height:8px;margin:6px -12px -8px;background:repeating-linear-gradient(90deg,#F4EBD8 0 10px,transparent 10px 16px);border-bottom:3px solid #E8D2A6}
+.rnavp{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 86px);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+.rname{font:900 13px 'Nunito',sans-serif;color:#FFF3D6;text-shadow:0 1px 3px rgba(0,0,0,.7);background:rgba(40,22,10,.55);padding:3px 12px;border-radius:12px}
+.rdots{display:flex;gap:7px;padding:5px 10px;background:rgba(40,22,10,.45);border-radius:12px;pointer-events:auto}
+.rdot{width:11px;height:11px;border-radius:50%;border:0;padding:0;background:#FFF3D6;opacity:.8}.rdot.on{background:#FFD24A;transform:scale(1.35);opacity:1}.rdot.lk{background:rgba(255,255,255,.3)}
+.rarr{position:absolute;top:46%;width:34px;height:58px;border:0;border-radius:14px;background:rgba(40,22,10,.4);color:#FFF3D6;font:900 30px/54px 'Nunito',sans-serif;pointer-events:auto;padding:0;text-align:center}
+.rarr.l{left:4px}.rarr.r{right:4px}.rarr:active{background:rgba(40,22,10,.7)}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3765,6 +3771,19 @@ function starterFill(rid){S.starter=S.starter||{};if(S.starter[rid])return;const
   deco.pl.push(it);n++}
  save();APP.roomDirty=true}
 function starterTick(){if(!APP.L||APP.scr==='game')return;const rid=S.rooms&&S.rooms.cur;if(!rid||roomId()!==rid)return;S.starter=S.starter||{};if(S.starter[rid])return;if(!S.deco[rid])return;if(APP.W&&APP.view)starterFill(rid)}
+
+/* ===== walking through the house: swipe / arrows between rooms ===== */
+function houseOrder(){const H=houseOf(S.rooms.cur);const o=H.floors?[...H.floors.flat(),...(H.yard||[])]:H.rooms.slice();return o.filter(id=>ROOM[id])}
+function roomNavHtml(){const o=houseOrder();if(o.length<2)return'';const cur=S.rooms.cur,i=o.indexOf(cur);const open=id=>roomOpen(ROOM[id]);
+ const dots=o.map(id=>`<button class="rdot ${id===cur?'on':''} ${open(id)?'':'lk'}" data-a="rgo" data-id="${id}" aria-label="${esc(ROOM[id].n)}"></button>`).join('');
+ const hasN=o.some((id,k)=>k!==i&&open(id));
+ return`<div class="rnavp"><div class="rname">${esc(ROOM[cur]?ROOM[cur].n:'')}</div><div class="rdots">${dots}</div></div>${hasN?`<button class="rarr l" data-a="rprev" aria-label="Назад">‹</button><button class="rarr r" data-a="rnext" aria-label="Дальше">›</button>`:''}`}
+function roomStep(dir){const o=houseOrder(),i=o.indexOf(S.rooms.cur);if(i<0)return;for(let k=1;k<o.length;k++){const id=o[(i+dir*k+o.length*3)%o.length];if(roomOpen(ROOM[id])){goRoom(id,dir);return}}}
+function goRoom(id,dir=1){const r=ROOM[id];if(!r||id===S.rooms.cur)return;if(!roomOpen(r)){houseTap(id);return}if(APP.rslide)return;
+ let snap=null;try{const cv=APP.cv;snap=document.createElement('canvas');snap.width=cv.width;snap.height=cv.height;snap.getContext('2d').drawImage(cv,0,0);snap.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;transition:transform .38s cubic-bezier(.3,.7,.2,1);box-shadow:0 0 30px rgba(0,0,0,.4)';cv.parentNode.insertBefore(snap,cv.nextSibling)}catch(e){snap=null}
+ if(!S.rooms.un.includes(id))S.rooms.un.push(id);S.rooms.cur=id;ensureDeco(id);save();APP.roomDirty=true;SFX.tap&&SFX.tap();showMenu(true);
+ if(snap){APP.rslide=1;const cv=APP.cv;cv.style.transition='none';cv.style.transform=`translateX(${dir*100}%)`;requestAnimationFrame(()=>requestAnimationFrame(()=>{cv.style.transition='transform .38s cubic-bezier(.3,.7,.2,1)';cv.style.transform='translateX(0)';snap.style.transform=`translateX(${-dir*100}%)`;setTimeout(()=>{snap.remove();cv.style.transition='';cv.style.transform='';APP.rslide=0},420)}))}
+}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3804,6 +3823,7 @@ function showMenu(noGifts){if(typeof FAMQ!=='undefined'&&FAMQ.length)setTimeout(
  APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="whistle" aria-label="Позвать собак">${gim('whistle','icoimg')}</button><button class="ico" data-a="sound" aria-label="Настройки">${gim('gear','icoimg')}</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
  <div class="mcenter">${(()=>{const lv=S.run?S.run.n:S.lvl,se=seasonOf(lv);return(S.run?`<button class="btn green big" data-a="cont">Продолжить<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`:`<button class="btn green big" data-a="play">Играть<small>${se.ic} ${se.n} · ур. ${lv}</small></button>`)+taskPill()})()}</div>
+ ${typeof roomNavHtml==='function'?roomNavHtml():''}
  <div class="nav">${[['rooms','home','Дом',0],['decor','cozy','Уют',0],['hearts','shop','Лавка',0],['advent','tree','Адвент',advAvail()],['coupons','coupon','Купоны',nc],['dogs','paws','Семья',0]].map(([a,i,n,b])=>`<button class="navb" data-a="${a}"><span class="ni">${gim(i,'nimg')}</span><span>${n}</span>${b?`<i class="dot">${b}</i>`:''}</button>`).join('')}</div></div>`;
  const t=$('#ttl');let lt=null;const stop=()=>clearTimeout(lt);t.addEventListener('pointerdown',()=>{lt=setTimeout(dimaEnter,1500)});t.addEventListener('pointerup',stop);t.addEventListener('pointerleave',stop);t.addEventListener('pointercancel',stop);
  if(!noGifts){checkGifts();setTimeout(()=>{if(APP.scr==='menu'&&!$('.modal',APP.mods))checkMem()},3000)}}
@@ -4043,7 +4063,7 @@ function onDown(e){auInit();const p=ptOf(e);PD={x:p.x,y:p.y,moved:false,long:nul
   if(swappable(t)){G.sel=t;G.selCell=cell;SFX.tap()}else{G.sel=null;if(t&&t.ice){t.s=.9;tween(t,{s:1},200,E.back)}}return}}
  if(APP.scr==='decor'&&APP.pz&&APP.pz.on){PD.pz=pzDown(p);if(!PD.pz)pzFurnDown(p,PD);else APP.pz.fsel=null;return}
  if(APP.scr==='decor'){if(APP.move.on){const k=moveHit(p.x,p.y);APP.move.sel=k;updMoveBar();if(k){if(k.startsWith('x:')){const e=selExtra();PD.drag={x:e,ox:e.x,ofy:e.fy}}else{const d=curDeco();d.pos=d.pos||{};const o=d.pos[k]||{dx:0,dy:0};PD.drag={k,ox:o.dx,oy:o.dy}}SFX.tap();vib(10)}}return}const h=roomHit(p.x,p.y);PD.hit=h;if(h==='bed'){PD.long=setTimeout(()=>{if(PD){PD.longFired=true;dimaEnter()}},1500)}}
-function onMove(e){if(!PD)return;const p=ptOf(e);const dx=p.x-PD.x,dy=p.y-PD.y;if(PD.pz){pzMove(PD.pz,p);const pb=$('#pzbar');if(pb)pb.classList.add('drag');return}
+function onMove(e){if(!PD)return;const p=ptOf(e);PD.lx=p.x;PD.ly=p.y;const dx=p.x-PD.x,dy=p.y-PD.y;if(PD.pz){pzMove(PD.pz,p);const pb=$('#pzbar');if(pb)pb.classList.add('drag');return}
  if(PD.drag&&PD.drag.x){if(PD.drag.x.sp)delete PD.drag.x.sp;const sc=APP.W/400,v=APP.view,e=PD.drag.x,L0=baseLayout(APP.H/sc),[x0,x1,y0,y1]=exLimits(EXI[e.id],L0);e.x=Math.round(clamp(PD.drag.ox+dx/v.s/sc,x0,x1));e.fy=Math.round(clamp(PD.drag.ofy+dy/v.s/sc,y0,y1));APP.roomDirty=true;return}
  if(PD.drag){const sc=APP.W/400,v=APP.view,d=curDeco(),k=PD.drag.k;const L0=baseLayout(APP.H/sc);const[x0,x1,y0,y1]=movLimits(L0,k);const nx=clamp(L0[k].x+PD.drag.ox+dx/v.s/sc,x0,x1),ny=clamp(L0[k].y+PD.drag.oy+dy/v.s/sc,y0,y1);const Lc=roomLayout(APP.H/sc,d);const rs=typeof solidFoot==='function'?solidFoot(Lc,d,null,k):[];const hw=SOLW[k]||0;const bad=(x,y)=>{if(k==='pic'){const wo=wallObst(Lc,d);return !!rectHit(x,y-8,100,96,wo)}if(!hw)return false;const dd=SOLD[k];for(const r of rs)if(x+hw>r.x0&&x-hw<r.x1&&y+dd[1]>r.y0&&y+dd[0]<r.y1)return true;return false};
   let fx=nx,fy=ny;if(!bad(Lc[k].x,Lc[k].y)&&bad(fx,fy)){if(!bad(fx,Lc[k].y))fy=Lc[k].y;else if(!bad(Lc[k].x,fy))fx=Lc[k].x;else{fx=Lc[k].x;fy=Lc[k].y}}
@@ -4051,6 +4071,7 @@ function onMove(e){if(!PD)return;const p=ptOf(e);const dx=p.x-PD.x,dy=p.y-PD.y;i
  if(PD.cell&&!PD.swiped&&G.sel&&!G.busy&&T(PD.cell[0],PD.cell[1])===G.sel){const th=G.cs*.35;if(Math.abs(dx)>th||Math.abs(dy)>th){PD.swiped=true;const[r,c]=PD.cell;let r2=r,c2=c;if(Math.abs(dx)>Math.abs(dy))c2+=dx>0?1:-1;else r2+=dy>0?1:-1;G.sel=null;if(T(r2,c2))trySwap(r,c,r2,c2)}}}
 function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.longFired)return;if(d.pz){const pb=$('#pzbar');if(pb)pb.classList.remove('drag');pzUp(d.pz);save();pzBar();return}if(d.drag){save();return}
  if(d.cell){if(G.target&&!G.busy){useTarget(d.cell);return}if(d.desel&&!d.swiped)G.sel=null;return}
+ if(APP.scr==='menu'&&d.moved&&d.lx!=null&&!d.cell){const sx=d.lx-d.x,sy=d.ly-d.y;if(Math.abs(sx)>60&&Math.abs(sy)<70&&typeof roomStep==='function'){roomStep(sx<0?1:-1);return}}
  if(d.hit&&!d.moved)roomTap(d.hit,d.x,d.y)}
 
 /* ===== actions ===== */
@@ -4063,7 +4084,7 @@ function act(a,b){
  case'cont':SFX.tap();startLevel();break;
  case'newrun':ask('<div class="center"><h2 class="lob">Начать заново?</h2><p class="soft">Текущий забег закончится.</p></div>',[{t:'Да',c:'green',v:1},{t:'Нет',c:'ghost',v:0}]).then(v=>{if(v){S.run=null;startRun()}});break;
  case'sound':SFX.tap();showSettings().then(()=>showMenu(true));break;
- case'rooms':SFX.tap();APP.htab=null;showHouse();break;case'hearts':SFX.tap();showHearts();break;case'tasks':SFX.tap();showTasks();break;case'tdo':SFX.tap();doTask();break;case'tplay':SFX.tap();$$('.modal.page',APP.mods).forEach(m=>m.remove());startRun();break;case'hroom':houseTap(b.dataset.id);break;case'htab':SFX.tap();APP.htab=b.dataset.id;showHouse();break;case'whistle':SFX.tap();showWhistle();break;case'wcall':whistleCall(+b.dataset.id);break;case'wcallall':whistleAll();break;case'hsx':case'hsc':case'hsput':case'hsf':case'hsput2':case'hsch':heartAct(a,b);break;case'decor':SFX.tap();showDecor();break;case'coupons':SFX.tap();showCoupons('w');break;case'dogs':SFX.tap();showDogs();break;
+ case'rprev':roomStep(-1);break;case'rnext':roomStep(1);break;case'rgo':goRoom(b.dataset.id,houseOrder().indexOf(b.dataset.id)>houseOrder().indexOf(S.rooms.cur)?1:-1);break;case'rooms':SFX.tap();APP.htab=null;showHouse();break;case'hearts':SFX.tap();showHearts();break;case'tasks':SFX.tap();showTasks();break;case'tdo':SFX.tap();doTask();break;case'tplay':SFX.tap();$$('.modal.page',APP.mods).forEach(m=>m.remove());startRun();break;case'hroom':houseTap(b.dataset.id);break;case'htab':SFX.tap();APP.htab=b.dataset.id;showHouse();break;case'whistle':SFX.tap();showWhistle();break;case'wcall':whistleCall(+b.dataset.id);break;case'wcallall':whistleAll();break;case'hsx':case'hsc':case'hsput':case'hsf':case'hsput2':case'hsch':heartAct(a,b);break;case'decor':SFX.tap();showDecor();break;case'coupons':SFX.tap();showCoupons('w');break;case'dogs':SFX.tap();showDogs();break;
  case'pause':pause();break;case'boost':boostClick(b.dataset.id);break;case'lvinfo':if(!G.busy&&G.lv)levelIntro(G.lv,false);break;
  case'close':SFX.tap();closeTop();break;
  case'dslot':SFX.tap();DS.slot=b.dataset.id;showDecor(true);tween(APP.view,decorView(DS.slot),500,E.inOut);{const on=$('.tab.on');if(on)on.scrollIntoView({inline:'nearest',block:'nearest'})}break;
@@ -4111,7 +4132,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:21';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:25';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
