@@ -2114,7 +2114,7 @@ function tapActor(a,px,py){if(!ACT.H)return;if(a.who&&PPL.away){callCouple();toa
  if(ACT.cur){if(ACT.q.length>=3){heartsAt(px,py-20,3);return}ACT.q.push(a);say(a,'Сейчас моя очередь! ⏳',1600);heartsAt(px,py-20,4);if(a.i!=null)dogBark(a.i);return}
  ACT.q.push(a);heartsAt(px,py-20,6);runQ()}
 async function runQ(){if(ACT.cur||!ACT.q.length)return;const a=ACT.q.shift();const tok=ACT.tok;ACT.cur={a};if(a.micro){a.pose=a.micro.p0;a.face=a.micro.f0;a.micro=null}
- try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f){const ic='x:'+a.obj.id,P=[PPL.her,PPL.him].filter(Boolean);P.forEach(p=>p._act=ic);try{await f(a.obj,L,deco,tok,a)}finally{P.forEach(p=>p._act=null)}}}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
+ try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f){const ic='x:'+a.obj.id,P=[PPL.her,PPL.him].filter(Boolean);P.forEach(p=>p._act=ic);let okx=false;try{await f(a.obj,L,deco,tok,a);okx=true}finally{P.forEach(p=>p._act=null)}if(okx)P.forEach(p=>{try{const w=(S.wants||{})[actorKey(p)];if(w&&w.id===ic)wantDone(p,ic)}catch(e){}})}}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
   for(let tries=0;tries<list.length&&!ok;tries++){const id=list[n%list.length];n++;ok=await doAct(a,id,L,deco,tok)}ACT.idx[k]=n}}
  catch(e){if(e!==ABORT)console.error(e)}
  if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}
@@ -3994,10 +3994,10 @@ function moodOf(k){S.mood=S.mood||{};if(S.mood[k]==null)S.mood[k]=80;return S.mo
 function moodTick(){S.mood=S.mood||{};const now=Date.now();const last=S.moodT||now;const h=(now-last)/3600000;if(h>0.02){for(const k in S.mood)S.mood[k]=Math.max(25,S.mood[k]-h*5);S.moodT=now}if(!S.moodT)S.moodT=now}
 function moodMoves(){const a=(moodOf('her')+moodOf('him'))/2;return a>=90?2:a>=75?1:0}
 function wantPool(a,deco){const has=id=>pzList(deco).some(i=>i.id===id);const plants=['f_tree','c_plant','t_cactus'].some(has),player=has('t_player'),pretty=pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish'].includes(PZ[i.id].act));
- if(a.who){const base=['dance','selfie','pet','window','hug'];if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
+ if(a.who){const base=['dance','selfie','pet','window','hug'];if(a.who==='her')base.push('carry','read');else base.push('fetch','carry');try{for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id]&&WANTL['x:'+e.id]&&e.id!=='x_bigbed'){base.push('x:'+e.id,'x:'+e.id)}}catch(e){}if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
  const ids=(AUTOACT[a.i]||['roll']).filter(x=>x!=='howl').concat(pzAutoIds(deco).filter(x=>x!=='pzmusic'));return ids.filter(x=>WANTL[x])}
 function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep||PPL.away)return;moodTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
- for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wants[k]={id:pick(pool),room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
+ for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wantLast=S.wantLast||{};const lst=S.wantLast[k]||[];let cand=pool.filter(x=>!lst.includes(x));if(!cand.length)cand=pool;const nid=pick(cand);S.wantLast[k]=lst.concat(nid).slice(-4);S.wants[k]={id:nid,room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
 function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();try{const sp=scrPt(a.x,a.y-120);flyReward('bone',sp.x,sp.y,r)}catch(e){}famXP(15);heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
 function drawWants(c,now){if(APP.scr!=='menu'||!APP.L)return;S.wants=S.wants||{};c.save();c.lineJoin='round';
@@ -4019,13 +4019,14 @@ async function pzPersonAct(p,id,L,deco,tok,hn){const nearFoot=it=>pzFloorFoot(it
  return false}
 /* ---- pie menu ---- */
 const XL={x_bigbed:['Полежать на кровати','🛏'],x_bathtub:['Принять ванну','🛁'],x_kitchen:['Приготовить вкусное','🍳'],x_dtable:['Поужинать вместе','🍽'],x_tv:['Посмотреть телевизор','📺'],x_piano:['Сыграть на пианино','🎹'],x_guitar:['Сыграть на гитаре','🎸'],x_hammock:['Покачаться в гамаке','🌴'],x_kotatsu:['Погреться под котацу','♨️'],x_gramophone:['Завести граммофон','🎶'],x_snowglobe:['Встряхнуть снежный шар','❄️'],x_aquarium:['Покормить рыбок','🐟'],x_caketable:['Задуть свечи на торте','🎂'],x_pizza:['Съесть пиццу','🍕'],x_cuckoo:['Позвать кукушку','🕰'],x_sinkmirror:['Умыться у зеркала','🪞'],x_sledtree:['Нарядить ёлку','🎄'],x_tree:['Полюбоваться ёлкой','🎄'],x_robot:['Включить робота','🤖'],x_balloons:['Поиграть с шариками','🎈'],x_boxes:['Распаковать коробки','📦'],x_cafetable:['Выпить кофе','☕'],x_ringbox:['Открыть шкатулку','💍'],x_archlights:['Зажечь арку','✨'],x_memwall:['Вспомнить моменты','📷'],x_lovetree:['Дерево любви','💗'],x_weddingarch:['Постоять под аркой','💒'],x_coffeebar:['Сварить кофе','☕'],x_cakecase:['Выбрать пирожное','🧁'],x_parasol:['Отдохнуть под зонтиком','⛱']};
+for(const k in XL){const t=XL[k][0];WANTL['x:'+k]=[t[0].toLowerCase()+t.slice(1),XL[k][1]]}
 function xLabel(e){const l=XL[e.id];return l?l:[(EXI[e.id]&&EXI[e.id].n)||'Использовать','✨']}
 function runObj(e){if(ACT.cur){toast('Секундочку, сейчас закончат 🙂');return}if(PPL.sleep&&e.id!=='x_bigbed'){toast('Тсс… они спят 😴');return}ACT.q.push({obj:e,key:'x:'+e.u});runQ()}
 const cap=t=>t[0].toUpperCase()+t.slice(1);
 const DL={beg:'Дать вкусняшку',roll:'Почесать пузико',sofa:'Позвать на диван',lap:'Посадить на ручки',zoom:'Побегать',fetch:'Поиграть в апорт',snack:'Покормить',paw:'Дай лапу!',guard:'Охранять дом',window:'Посмотреть в окно',fire:'Погреться у камина',dance:'Потанцевать',howl:'Спеть луне',pzpouf:'Поспать на пуфике',pzaqua:'Посмотреть на рыбок',pztoys:'Поиграть игрушками',pzplant:'Понюхать листики'};
 function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();const want=k=>{const w=(S.wants||{})[k];return w&&w.id};
  const add=(t,ic,fn,hot,sec)=>o.push({t,ic,fn,hot,sec:sec||''});
- if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);if(wi&&WANTL[wi])add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1);
+ if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);if(wi&&WANTL[wi]){if(wi.startsWith('x:')){const ex=((deco.extra)||[]).find(e=>'x:'+e.id===wi);if(ex)add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runObj(ex),1)}else add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1)}
   const ids=[...new Set(PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her'],['window']).concat(deco.fire?['fire']:[]))].filter(id=>id!=='kiss'||(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on)).filter(id=>id!=='read'||p.sitH).filter(id=>WANTL[id]);
   for(const id of ids)if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Вдвоём');
   for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате')}
@@ -6503,7 +6504,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 18:53';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 20:12';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'||!!APP.cafeOpen||!!APP.farmOpen||!!document.getElementById('cafe')||!!document.querySelector('.farm')}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
