@@ -433,6 +433,17 @@ button.chip{cursor:pointer;font-family:inherit}
 .shbtn span{flex:none;width:30px;height:30px;border-radius:50%;background:#FFF1D6;display:flex;align-items:center;justify-content:center;font-size:16px}.shbtn:active,.shwish:active{transform:scale(.96)}
 .actsheet{max-height:66%;display:flex;flex-direction:column}.shscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px 2px}.shsec{font:900 11.5px Nunito,sans-serif;color:#9A7A55;margin:6px 2px 5px;letter-spacing:.3px}.shav.pp.xo{background:linear-gradient(#FFF1D6,#F2D09A);font-size:24px}
 .actsheet{max-height:56%}
+
+.famchip{position:relative;border-color:#F2B33A!important}.famring{position:absolute;inset:-3px;border-radius:22px;background:conic-gradient(#FFD23F calc(var(--p)*1%),transparent 0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:2px;pointer-events:none}
+.famtoast{position:absolute;right:14px;top:calc(env(safe-area-inset-top) + 58px);z-index:61;background:linear-gradient(#FFF3B8,#FFD45E);color:#5A2E12;font-weight:900;padding:5px 12px;border-radius:14px;border:2px solid #E09A10;box-shadow:0 3px 0 #B07A10;animation:famT 1.6s ease-out both;pointer-events:none}.famtoast small{font-weight:800;opacity:.75}
+@keyframes famT{0%{opacity:0;transform:translateY(8px) scale(.8)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+.famlv{width:58px;height:58px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 30px Lobster,Georgia,serif;color:#fff;background:radial-gradient(circle at 35% 30%,#FFE58A,#F2A71A);border:3px solid #fff;box-shadow:0 0 0 3px #E09A10,0 6px 14px rgba(0,0,0,.25);text-shadow:0 2px 0 #B0700A}.famlv.big{width:96px;height:96px;font-size:52px;margin:6px auto 10px}
+.famgift{background:#FFF8E6;border:2px dashed #E2B23A;border-radius:14px;padding:10px;font-weight:900;margin:8px 0}
+.famhead{display:flex;gap:12px;align-items:center;background:linear-gradient(#FFF6DA,#FBE6B6);border:2.5px solid #E2B23A;border-radius:18px;padding:12px}.fambar{flex:1}.fambar div{display:flex;justify-content:space-between;align-items:baseline}.fambar i{display:block;height:12px;border-radius:6px;background:#EAD9B8;overflow:hidden;margin:6px 0 4px}.fambar i b{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#FFE27A,#F2A71A)}.fambar>small{color:#8A6A4A;font-weight:700;font-size:11.5px}
+.fh{font:400 22px Lobster,Georgia,serif;color:#5A2E12;margin:16px 2px 8px}.fmem{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}.fcard{background:#FFFDF6;border:2px solid #EAD9B8;border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}.fcard small{font-size:11px;color:#8A6A4A;font-weight:700}
+.fav{width:52px;height:52px;border-radius:50%;object-fit:contain;display:flex;align-items:center;justify-content:center;font:400 26px Lobster,Georgia,serif;color:#fff;border:2.5px solid #fff;box-shadow:0 0 0 2px #E2B23A}.fav.her{background:linear-gradient(#F7A8C8,#E0709A)}.fav.him{background:linear-gradient(#8FB8E8,#5A86C0)}
+.fpairs{display:flex;flex-direction:column;gap:6px}.frow{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;background:#FFFDF6;border:2px solid #EAD9B8;border-radius:12px;padding:7px 10px;font-weight:800}.frow small{grid-column:1/3;color:#8A6A4A;font-size:11.5px}.frow i{font-style:normal}
+.froad{display:flex;gap:10px;align-items:center;background:#FFFDF6;border:2px solid #EAD9B8;border-radius:12px;padding:8px 10px;margin-bottom:6px;font-weight:800}.froad b{width:30px;height:30px;border-radius:50%;background:linear-gradient(#FFE58A,#F2A71A);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;text-shadow:0 1px 0 #B0700A}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -1783,6 +1794,7 @@ async function doActRaw(a,id,L,deco,tok){
  const H=PPL.her,M=PPL.him;const night=['night','evening'].includes(dayPhase());
  /* ===== dogs ===== */
  if(a.i!=null){const w=a,nm=dname(w.i);
+  if(id.startsWith('tr_')||id.startsWith('sh_'))return await trickAct(w,id,L,deco,tok,nm);
   if(DGAMES[id]){const mt=DGM;DGM=null;return await dogGame(w,id,L,deco,tok,nm,mt&&!mt.busyPair&&mt.mode==='stay'?mt:null)}
   if(id.startsWith('pz'))return await pzDogAct(w,id,L,deco,tok,nm);
   switch(id){
@@ -2445,7 +2457,7 @@ async function whistleAll(){$$('.modal.page',APP.mods).forEach(m=>m.remove());os
 /* ---- dogs live on their own: one real activity now and then + small idle moments for 1–2 dogs ---- */
 const AUTOACT={0:['zoom','fetch','roll','fire','window'],1:['lap','roll','beg','zoom'],2:['guard','fire','paw','roll'],3:['snack','zoom','roll','beg'],4:['howl','zoom','window','roll'],5:['dance','roll','beg']};
 async function autoDogAct(){const cand=WK.list.filter(w=>w.mode==='stay'&&!w.hidden);if(!cand.length)return;const w=pick(cand);const tok=ACT.tok;ACT.cur={a:w,auto:1};if(w.micro){w.pose=w.micro.p0;w.face=w.micro.f0;w.micro=null}
- try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());{const ex=pzAutoIds(deco);if(ex.length&&Math.random()<.5)list.unshift(...shuffleArr(ex))}if(freeMates(w).length&&Math.random()<.45)list.unshift(pick(Object.keys(DGAMES)));for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
+ try{const L=APP.L,deco=curDeco();const list=shuffleArr((AUTOACT[w.i]||['roll']).slice());{const ex=pzAutoIds(deco);if(ex.length&&Math.random()<.5)list.unshift(...shuffleArr(ex))}{const ms=freeMates(w);if(ms.length&&Math.random()<.45){const best=ms.some(o=>friendLv(friendPts(w.i,o.i))>=2);list.unshift(pick(Object.keys(DGAMES).filter(g=>g!=='dcuddle'||best)))}}for(const id of list){if(id==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')continue;if(await doAct(w,id,L,deco,tok))break}}
  catch(e){if(e!==ABORT)console.error(e)}finally{if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}}
 const MICRO=['look','nap','beg','hop','roll','look','nap'];
 function dogMicro(dt){if(S.roam===false||APP.scr!=='menu'||!ACT.H||PPL.sleep)return;const now=performance.now();let busy=WK.list.filter(w=>w.micro).length;
@@ -3407,7 +3419,7 @@ function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&A
  case'pzoff':SFX.tap();APP.pz.on=false;APP.pz.sel=null;save();showDecor(true);return true;
  case'pzcat':SFX.tap();APP.pz.cat=b.dataset.id;pzBar();return true;
  case'pzbuy':{const id=b.dataset.id,d=PZ[id];S.pinv=S.pinv||{};if(!(S.pinv[id]>0)){if(S.bones<d.p){toast('Нужно '+d.p+' 🦴 — пройди ещё пару уровней!');SFX.nope&&SFX.nope();return true}S.bones-=d.p;SFX.buy?SFX.buy():SFX.chime&&SFX.chime(2)}else S.pinv[id]--;
-  const it=Object.assign({u:'z'+Date.now().toString(36)+Math.floor(Math.random()*999),id,c:0,f:0},pzDefPos(d,deco,L));list.push(it);APP.pz.sel=it.u;save();const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',12);vib(15);pzBar();refreshChips&&refreshChips();return true}
+  famXP(3);const it=Object.assign({u:'z'+Date.now().toString(36)+Math.floor(Math.random()*999),id,c:0,f:0},pzDefPos(d,deco,L));list.push(it);APP.pz.sel=it.u;save();const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',12);vib(15);pzBar();refreshChips&&refreshChips();return true}
  case'pzxdel':{const e=(deco.extra||[]).find(q=>'x:'+q.u===APP.pz.sel);if(e&&EXI[e.id].sig){toast('Это часть комнаты — её можно только двигать 🙂');return true}if(e){for(const o of(deco.extra||[]))if(o.sp&&o.sp.p===e.u)delete o.sp;deco.extra=deco.extra.filter(q=>q!==e);S.inv=S.inv||{};S.inv[e.id]=(S.inv[e.id]||0)+1;APP.pz.sel=null;APP.roomDirty=true;save();SFX.tap();pzBar()}return true}
  case'pzflip':if(sel){sel.f=sel.f?0:1;save();SFX.tap()}return true;
  case'pzcol':if(sel){sel.c=((sel.c||0)+1)%PZ[sel.id].cols.length;save();SFX.tap();const bx=pzBox(sel,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',5)}return true;
@@ -3459,7 +3471,7 @@ function wantPool(a,deco){const has=id=>pzList(deco).some(i=>i.id===id);const pl
  const ids=(AUTOACT[a.i]||['roll']).filter(x=>x!=='howl').concat(pzAutoIds(deco).filter(x=>x!=='pzmusic'));return ids.filter(x=>WANTL[x])}
 function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep)return;moodTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
  for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wants[k]={id:pick(pool),room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
-function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
+function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();famXP(15);heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
 function drawWants(c,now){if(APP.scr!=='menu'||!APP.L)return;S.wants=S.wants||{};c.save();c.lineJoin='round';
  for(const a of actorsNow()){const k=actorKey(a);const top=a.who?a.y-(a.sitH?146:174):a.y-62-(a.z||0);
@@ -3492,7 +3504,8 @@ function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();c
   for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате')}
   const seen=new Set();for(const it of pzList(deco)){const d=PZ[it.id];if(!d)continue;let t=null,id=null,ic='';if(d.act==='water'){t='Полить: '+d.n.toLowerCase();id='pzwater';ic='💧'}else if(d.act==='music'){t='Поставить пластинку';id='pzmusic';ic='🎶'}else if(d.light&&!seen.has('light')){seen.add('light');t=(it.on===false?'Включить: ':'Выключить: ')+d.n.toLowerCase();id='pzlight';ic='💡'}else if(['love','shine','fish','spin','flutter'].includes(d.act)&&!seen.has('look')){seen.add('look');t='Полюбоваться вещами';id='pzlook';ic='😍'}if(!t||seen.has(t))continue;seen.add(t);const u=it.u;if(id===wi)continue;add(t,ic,()=>{PZT=u;runAct(p,id)},0,'С вещами')}
   return o}
- if(kind==='dog'){const w=obj,k=actorKey(w),wi=null;{const mates=freeMates(w);if(mates.length){const mt=mates.sort((a,b)=>Math.hypot(a.x-w.x,a.y-w.y)-Math.hypot(b.x-w.x,b.y-w.y))[0];for(const gid of Object.keys(DGAMES))add(DGAMES[gid][0]+' с '+dname(mt.i),DGAMES[gid][1],()=>{DGM=mt;runAct(w,gid)},0,'С друзьями')}}
+ if(kind==='dog'){const w=obj,k=actorKey(w),wi=null;{const mates=freeMates(w);if(mates.length){const mt=mates.sort((a,b)=>Math.hypot(a.x-w.x,a.y-w.y)-Math.hypot(b.x-w.x,b.y-w.y))[0];for(const gid of Object.keys(DGAMES)){if(gid==='dcuddle'&&friendLv(friendPts(w.i,mt.i))<2)continue;add(DGAMES[gid][0]+' с '+dnameI(mt.i),DGAMES[gid][1],()=>{DGM=mt;runAct(w,gid)},0,'С друзьями')}}}
+  if(famS().lvl>=3)for(const T of TRICKS){if(T.lvl>famS().lvl)continue;const pr=trickProg(w.i,T.id);if(pr>=3)add('Показать: '+T.n,T.ic,()=>runAct(w,'sh_'+T.id),0,'Трюки');else add(`Учить: ${T.n} (${pr}/3)`,T.ic,()=>runAct(w,'tr_'+T.id),0,'Трюки')}
   const ids=[...new Set((DACTS[w.i]||[]).concat(AUTOACT[w.i]||[]).filter(x=>WANTL[x]&&!(x==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')))];for(const id of ids)if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'Игры');
   for(const id of pzAutoIds(deco).filter(x=>x!=='pzmusic'&&WANTL[x]))if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'С вещами');return o}
  if(kind==='xobj'){const e=obj,[l,ic]=xLabel(e);add(l,ic,()=>runObj(e));add('Переставить','✋',()=>{showPlace();APP.pz.sel='x:'+e.u;pzBar()});return o}
@@ -3528,17 +3541,20 @@ function drawPieTarget(c,now){const t=APP.pieT;if(!t||!$('.actsheet',APP.uiEl)){
  c.restore()}
 function closePie(){$$('.pie,.piebg,.actsheet',APP.uiEl).forEach(x=>x.remove());APP.pieT=null;if(APP.pieShift){APP.pieShift=0;tween(APP.view,{x:0,y:0,s:1},380,E.inOut)}}
 /* ===== dogs play with each other ===== */
-const DGAMES={dchase:['Догонялки','🐾'],dtug:['Перетягивание игрушки','🧶'],dsniff:['Обнюхаться','👃'],dwrestle:['Возня','🤼']};
+const DNI=['Тео','Марсой','Графом','Пончиком','Луной','Зефиркой'];const dnameI=i=>DNI[i]||dname(i);
+const DGAMES={dcuddle:['Поспать в обнимку','💞'],dchase:['Догонялки','🐾'],dtug:['Перетягивание игрушки','🧶'],dsniff:['Обнюхаться','👃'],dwrestle:['Возня','🤼']};
 let DG=null;
 function freeMates(w){return WK.list.filter(o=>o!==w&&!o.hidden&&o.mode==='stay'&&!o.busyPair&&!(ACT.cur&&ACT.cur.a===o))}
-async function dogGame(w,id,L,deco,tok,nm,mate){mate=mate||pick(freeMates(w));if(!mate)return false;const m=mate,mn=dname(m.i);m.busyPair=true;m._act=id;if(m.micro){m.pose=m.micro.p0;m.face=m.micro.f0;m.micro=null}
+async function dogGame(w,id,L,deco,tok,nm,mate){mate=mate||pick(freeMates(w));if(!mate)return false;if(id==='dcuddle'&&friendLv(friendPts(w.i,mate.i))<2)id='dsniff';const m=mate,mn=dname(m.i);m.busyPair=true;m._act=id;if(m.micro){m.pose=m.micro.p0;m.face=m.micro.f0;m.micro=null}
  const cx=clamp(L.rug.x,90,310),cy=clamp(L.rug.y,L.fl+70,L.VH-110);
  try{
  if(id==='dchase'){say(w,`${nm} и ${mn} играют в догонялки! 💨`);dogBark(w.i);const pts=[[cx-90,cy-8],[cx,cy+26],[cx+90,cy-6],[cx+20,cy-30],[cx-70,cy+18],[cx+70,cy+14]];for(let k=0;k<pts.length;k++){const[a,b]=pts[k],[a2,b2]=pts[(k+pts.length-1)%pts.length];await Promise.all([dogTo(w,a,b,tok,true),dogTo(m,(a+a2)/2,(b+b2)/2,tok,true)]);if(k===2)dogBark(m.i)}w.mode=m.mode='stay';w.pose=m.pose='sit';w.face=m.x>w.x?1:-1;m.face=-w.face;heartsBurstV((w.x+m.x)/2,w.y-50);await hold(700,tok)}
+ else if(id==='dcuddle'){say(w,`${nm} и ${mn} спят в обнимку 💞`);const bx=clamp(L.bed?L.bed.x:cx,60,340),by=L.bed?L.bed.y-2:cy;await Promise.all([dogTo(w,bx-14,by,tok),dogTo(m,bx+14,by+2,tok)]);w.face=1;m.face=-1;w.mode=m.mode='stay';w.pose=m.pose='sleep';await hold(800,tok);heartsBurstV(bx,by-50);await hold(4200,tok)}
  else if(id==='dtug'){say(w,`${nm} и ${mn} тянут игрушку 🧶`);await Promise.all([dogTo(w,cx-30,cy,tok),dogTo(m,cx+30,cy,tok)]);w.face=1;m.face=-1;w.mode=m.mode='stay';w.pose=m.pose='sniff';DG={a:w,b:m,t0:performance.now()};for(let k=0;k<6;k++){const d=k%2?6:-6;w.x+=d;m.x+=d;if(k===3)dogBark(pick([w.i,m.i]));await hold(380,tok)}DG=null;const win=pick([w,m]);win.pose='beg';heartsBurstV(win.x,win.y-60);say(win,`${dname(win.i)} победил${win.i===1||win.i===5||win.i===4?'а':''}! 🏆`,1500);await hold(1100,tok)}
- else if(id==='dsniff'){say(w,`${nm} знакомится с ${mn} 👃`);const tx=m.x+(w.x<m.x?-30:30);await dogTo(w,tx,m.y+2,tok);w.face=m.x>w.x?1:-1;m.face=-w.face;w.mode='stay';w.pose='sniff';m.pose='sniff';await hold(1200,tok);w.pose=m.pose='beg';heartsBurstV((w.x+m.x)/2,w.y-55);dogBark(w.i);await hold(900,tok)}
+ else if(id==='dsniff'){say(w,`${nm} знакомится с ${dnameI(m.i)} 👃`);const tx=m.x+(w.x<m.x?-30:30);await dogTo(w,tx,m.y+2,tok);w.face=m.x>w.x?1:-1;m.face=-w.face;w.mode='stay';w.pose='sniff';m.pose='sniff';await hold(1200,tok);w.pose=m.pose='beg';heartsBurstV((w.x+m.x)/2,w.y-55);dogBark(w.i);await hold(900,tok)}
  else{say(w,`${nm} и ${mn} возятся на ковре 🤼`);await Promise.all([dogTo(w,cx-14,cy,tok,true),dogTo(m,cx+14,cy+4,tok,true)]);w.mode=m.mode='stay';for(let k=0;k<6;k++){w.pose=k%2?'roll':'sit';m.pose=k%2?'sit':'roll';w.face=-w.face;if(k%2)pzPart((w.x+m.x)/2,cy+4,'dust',5);await hold(360,tok)}heartsBurstV((w.x+m.x)/2,w.y-45);dogBark(m.i);w.pose=m.pose='sit';await hold(500,tok)}
  }finally{DG=null;m.busyPair=false;m._act=null}
+ friendAdd(w.i,m.i);famXP(3);
  await Promise.all([dogHome(w,tok),dogHome(m,tok)]);return true}
 function drawTug(c,now){if(!DG)return;const a=DG.a,b=DG.b;const ax=a.x+a.face*24,ay=a.y-26-(a.z||0),bx=b.x+b.face*24,by=b.y-26-(b.z||0);const mx=(ax+bx)/2,my=(ay+by)/2+4+Math.sin(now*.02)*2;c.save();c.lineCap='round';c.strokeStyle=OL;c.lineWidth=6;c.beginPath();c.moveTo(ax,ay);c.quadraticCurveTo(mx,my+6,bx,by);c.stroke();c.strokeStyle='#E0565B';c.lineWidth=4;c.stroke();c.strokeStyle='#fff';c.lineWidth=2;c.setLineDash([4,5]);c.stroke();c.setLineDash([]);ell(c,mx,my+4,6,5);fs(c,'#E0565B',OL,1.6);c.restore()}
 /* ===== activity bubbles: only while doing something ===== */
@@ -3548,6 +3564,45 @@ function drawActivity(c,now){if(APP.scr!=='menu'||!APP.L)return;drawTug(c,now);c
   const top=a.who?a.y-(a.sitH?146:174):a.y-62-(a.z||0);const bx=a.x+(a.who?26:20),by=top-(a.who?8:4)+Math.sin(now*.003+a.x)*2;const s=.95+.05*Math.sin(now*.005);
   c.save();c.translate(bx,by);c.scale(s,s);c.fillStyle='rgba(40,20,8,.16)';ell(c,1.5,3,17,13);c.fill();cloud(c,0,0,[[-8,2,8],[0,-3,10],[9,1,8],[1,5,8]],'#FFFFFF','#9A7A5A',1.2);ell(c,-11,13,3,2.6);fs(c,'#fff','#9A7A5A',1);ell(c,-15,18,1.8,1.6);fs(c,'#fff','#9A7A5A',.9);c.font='14px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(ic,0,1);c.restore()}
  c.restore()}
+/* ===== family level, dog friendship & tricks ===== */
+function famS(){S.fam=S.fam||{xp:0,lvl:1};return S.fam}
+const famNeed=l=>60+l*40;
+const FAMR={2:{t:'Свечи в подарок + 100 🦴',f:()=>{pinvAdd('t_candle');S.bones+=100}},3:{t:'Открыто обучение трюкам 🐾',f:()=>{}},4:{t:'Пуфик в подарок + 150 🦴',f:()=>{pinvAdd('f_pouf');S.bones+=150}},5:{t:'+2 💗',f:()=>{S.hearts+=2}},6:{t:'Проигрыватель в подарок 🎶',f:()=>{pinvAdd('t_player')}},7:{t:'Новые трюки: «Зайка» и «Дай пять»',f:()=>{}},8:{t:'Аквариум в подарок 🐟',f:()=>{pinvAdd('t_aqua')}},9:{t:'+300 🦴',f:()=>{S.bones+=300}},10:{t:'Неон «Love» + 5 💗',f:()=>{pinvAdd('p_neon');S.hearts+=5}}};
+function famReward(l){return FAMR[l]||{t:'+200 🦴 и +1 💗',f:()=>{S.bones+=200;S.hearts+=1}}}
+function pinvAdd(id){S.pinv=S.pinv||{};S.pinv[id]=(S.pinv[id]||0)+1}
+let FAMQ=[];
+function famXP(n,why){const f=famS();f.xp+=n;let up=false;while(f.xp>=famNeed(f.lvl)){f.xp-=famNeed(f.lvl);f.lvl++;up=true;const r=famReward(f.lvl);try{r.f()}catch(e){}FAMQ.push(f.lvl)}save();
+ if(APP.scr==='menu'){const c=$('[data-a=fam]');if(c){c.outerHTML=famChip();}}
+ if(!up&&why&&APP.scr!=='game')famToast(n);if(up)setTimeout(famLevelUp,APP.scr==='game'?0:600)}
+function famToast(n){const t=el('div','famtoast');t.innerHTML=`💛 +${n} <small>семья</small>`;APP.uiEl.appendChild(t);setTimeout(()=>t.remove(),1600)}
+async function famLevelUp(){if(!FAMQ.length||APP.scr==='game')return;if($('.modal',APP.mods)){setTimeout(famLevelUp,1500);return}const l=FAMQ.shift();SFX.legend&&SFX.legend();confetti&&confetti(50);
+ await ask(`<div class="center"><div class="ribbon lob">Наша семья растёт!</div><div class="famlv big">${l}</div><p>Уровень семьи <b>${l}</b></p><div class="famgift">🎁 ${esc(famReward(l).t)}</div><p class="soft small">Подарки из «Обустроить» лежат в запасе — их можно поставить бесплатно.</p></div>`,[{t:'Ура! 💛',c:'green',v:1}]);if(FAMQ.length)famLevelUp()}
+function famChip(){const f=famS(),p=Math.min(1,f.xp/famNeed(f.lvl));return`<button class="chip famchip" data-a="fam" style="--p:${Math.round(p*100)}"><i class="famring"></i>💛 <b>${f.lvl}</b></button>`}
+/* friendship */
+function fKey(a,b){return a<b?a+'-'+b:b+'-'+a}
+function friendPts(a,b){S.friend=S.friend||{};return S.friend[fKey(a,b)]||0}
+function friendLv(p){return p>=8?2:p>=3?1:0}
+const FRN=['Знакомые','Друзья','Лучшие друзья'];
+function friendAdd(a,b){S.friend=S.friend||{};const k=fKey(a,b),was=friendLv(S.friend[k]||0);S.friend[k]=(S.friend[k]||0)+1;const now=friendLv(S.friend[k]);save();if(now>was){famXP(10);toast(`${dname(a)} и ${dname(b)} теперь ${FRN[now].toLowerCase()}! 💞`)}}
+/* tricks */
+const TRICKS=[{id:'paw',n:'Дай лапу',ic:'🐾',lvl:3},{id:'spin',n:'Покрутись',ic:'🌀',lvl:3},{id:'dead',n:'Замри',ic:'😵',lvl:5},{id:'bunny',n:'Зайка',ic:'🐰',lvl:7},{id:'five',n:'Дай пять',ic:'🙌',lvl:7}];
+function trickProg(i,id){S.tricks=S.tricks||{};return(S.tricks[i]||{})[id]||0}
+async function trickPose(w,id,tok){if(id==='spin'){for(let k=0;k<6;k++){w.face=-w.face;w.pose=k%2?'sit':'beg';await hold(140,tok)}w.pose='sit'}else if(id==='dead'){w.pose='roll';await hold(1300,tok);w.pose='sit'}else if(id==='bunny'){w.pose='beg';await hold(1300,tok)}else{w.pose='beg';await hold(700,tok);w.pose='sit';await hold(200,tok);w.pose='beg';await hold(500,tok)}}
+async function trickAct(w,id,L,deco,tok,nm){const show=id.startsWith('sh_'),tid=id.slice(3),T=TRICKS.find(t=>t.id===tid);if(!T)return false;const p=w.i===1||w.i===5?PPL.her:pick([PPL.her,PPL.him]);if(!p)return false;const hn=p.who==='her'?S.her:S.him;
+ await pStand(p,tok);const f=frontOf(p);await dogTo(w,clamp(f.x+(w.x<f.x?-36:36),30,370),f.y+8,tok);w.face=p.x>w.x?1:-1;p.face=-w.face;w.mode='stay';w.pose='sit';
+ if(show){say(p,`${nm}, ${T.n.toLowerCase()}!`,1400);await hold(500,tok);await trickPose(w,tid,tok);heartsBurstV(w.x,w.y-70);dogBark(w.i,true);say(p,'Умница! 👏',1300);famXP(2);await hold(900,tok)}
+ else{S.tricks=S.tricks||{};S.tricks[w.i]=S.tricks[w.i]||{};const pr=(S.tricks[w.i][tid]||0);say(p,`${hn} учит ${nm}: «${T.n}» (${pr+1}/3)`,1800);await hold(600,tok);if(pr===0){w.pose='sniff';await hold(700,tok);w.pose='sit';await hold(300,tok)}else await trickPose(w,tid,tok);
+  S.tricks[w.i][tid]=pr+1;save();heartsBurstV(w.x,w.y-60);if(pr+1>=3){say(p,`${nm} выучил${[1,4,5].includes(w.i)?'а':''} трюк «${T.n}»! 🎉`,2200);famXP(20);confetti&&confetti(30);dogBark(w.i,true)}else{say(p,'Почти получилось! Держи вкусняшку 🍪',1500);famXP(4)}await hold(1100,tok)}
+ await Promise.all([dogHome(w,tok),pHome(p,tok)]);return true}
+/* ---- family screen ---- */
+function showFamily(){const f=famS(),need=famNeed(f.lvl),pc=Math.round(f.xp/need*100);const dogs=(typeof allHomeDogs==='function'?allHomeDogs():[0,1]).filter(i=>DOGS[i]);
+ const mem=[{n:S.her,av:`<div class="fav her">${esc(S.her[0])}</div>`,sub:`Настроение ${Math.round(moodOf('her'))}%`},{n:S.him,av:`<div class="fav him">${esc(S.him[0])}</div>`,sub:`Настроение ${Math.round(moodOf('him'))}%`}].concat(dogs.map(i=>{const learned=TRICKS.filter(t=>trickProg(i,t.id)>=3);return{n:DOGS[i].name,av:`<img class="fav" src="${dogImg(i,48)}" alt="">`,sub:learned.length?learned.map(t=>t.ic).join(' ')+' трюки':'трюков пока нет'}}));
+ const pairs=[];for(let a=0;a<dogs.length;a++)for(let b=a+1;b<dogs.length;b++){const p=friendPts(dogs[a],dogs[b]),lv=friendLv(p);pairs.push(`<div class="frow"><span>${esc(DOGS[dogs[a]].name)} + ${esc(DOGS[dogs[b]].name)}</span><i>${'💗'.repeat(lv+1)}${'🤍'.repeat(2-lv)}</i><small>${FRN[lv]}</small></div>`)}
+ const road=[1,2,3].map(k=>`<div class="froad"><b>${f.lvl+k}</b><span>${esc(famReward(f.lvl+k).t)}</span></div>`).join('');
+ openPage('fam','Наша семья 💛',`<div class="famhead"><div class="famlv">${f.lvl}</div><div class="fambar"><div><b>Уровень семьи ${f.lvl}</b><small>${f.xp} / ${need} 💛</small></div><i><b style="width:${pc}%"></b></i><small>Опыт семьи растёт от уровней, желаний, игр собак, трюков и уюта</small></div></div>
+  <h3 class="fh">Мы</h3><div class="fmem">${mem.map(m=>`<div class="fcard">${m.av}<b>${esc(m.n)}</b><small>${esc(m.sub)}</small></div>`).join('')}</div>
+  <h3 class="fh">Дружба собак</h3><div class="fpairs">${pairs.join('')||'<p class="soft small">Когда собак станет больше — они подружатся 🐾</p>'}</div><p class="soft small">Лучшие друзья спят в обнимку 💞</p>
+  <h3 class="fh">Впереди</h3>${road}`)}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3577,12 +3632,12 @@ function toast(msg){const t=el('div','toast');t.textContent=msg;APP.uiEl.appendC
 function openPage(id,title,html){let m=APP.mods.querySelector(`.page[data-page="${id}"]`);if(!m){m=el('div','modal page');m.dataset.page=id;APP.mods.appendChild(m)}m.innerHTML=`<div class="panel pg"><div class="pgh"><b class="lob">${title}</b><button class="x" data-a="close" aria-label="Закрыть">✕</button></div><div class="pgb">${html}</div></div>`;return m}
 function rerenderPage(id,html){const b=APP.mods.querySelector(`.page[data-page="${id}"] .pgb`);if(b){const st=b.scrollTop;b.innerHTML=html;b.scrollTop=st}}
 function closeTop(){const ms=$$('.modal.page',APP.mods);const m=ms[ms.length-1];if(m){m.remove();if(APP.scr==='menu')showMenu(true)}}
-function chips(){return`<div class="chip">🦴 <b>${S.bones}</b></div><button class="chip" data-a="hearts">💗 <b>${S.hearts}</b></button><button class="chip" data-a="tasks">⭐ <b>${S.stars||0}</b></button><div class="chip">🏡 <b>${roomUyut(S.rooms.cur)}</b></div>`}
+function chips(){return`<div class="chip">🦴 <b>${S.bones}</b></div><button class="chip" data-a="hearts">💗 <b>${S.hearts}</b></button><button class="chip" data-a="tasks">⭐ <b>${S.stars||0}</b></button>${famChip()}`}
 function cardHtml(c,cls=''){const R=RAR[c.r]||RAR.c;return`<div class="ccard ${cls}" style="--rc:${R.col}"><i class="gem"></i><div class="art">${esc(c.ic)}</div><div class="ct">${esc(fmt(c.t))}</div><div class="cd">${esc(fmt(c.d))}</div><div class="cr">${R.n}</div></div>`}
 const empty=t=>`<div class="empty"><img src="${dogImg(0,60,true)}" alt=""><p>${t}</p></div>`;
 
 /* ===== menu ===== */
-function showMenu(noGifts){if(!S.tipLife&&S.welcomed){S.tipLife=1;save();setTimeout(()=>{if(APP.scr==='menu')toast('Нажми на Сашу, Диму или собачку — они что-нибудь сделают 💛')},2600)}APP.scr='menu';APP.move.on=false;G.over=true;G.grid=[];G.target=null;APP.roomDirty=true;tween(APP.view,{x:0,y:0,s:1},450,E.inOut);
+function showMenu(noGifts){if(typeof FAMQ!=='undefined'&&FAMQ.length)setTimeout(famLevelUp,1400);if(!S.tipLife&&S.welcomed){S.tipLife=1;save();setTimeout(()=>{if(APP.scr==='menu')toast('Нажми на Сашу, Диму или собачку — они что-нибудь сделают 💛')},2600)}APP.scr='menu';APP.move.on=false;G.over=true;G.grid=[];G.target=null;APP.roomDirty=true;tween(APP.view,{x:0,y:0,s:1},450,E.inOut);
  const nc=S.coupons.filter(c=>c.nw).length;
  APP.scrEl.innerHTML=`<div class="layer" id="menu"><div class="topbar">${chips()}<span class="sp"></span><button class="ico" data-a="whistle" aria-label="Позвать собак">📣</button><button class="ico" data-a="sound" aria-label="Настройки">⚙️</button></div>
  <div class="title"><h1 id="ttl">Тео и друзья</h1><p>${esc(S.her)}, это для тебя 💛</p>${counterHtml()?`<div class="counter">${counterHtml()}</div>`:''}${dailyHtml()}</div>
@@ -3627,7 +3682,7 @@ function updBoosters(){for(const b of BOOST){const e=document.querySelector(`.bo
 async function winLevel(){if(G.over)return;G.over=true;G.busy=true;clearIdle();SFX.win();bigText('Ура!',undefined,undefined,68);confetti(45);dogBark(0,true);await wait(900);
  const left=await bonusMoves();await wait(350);await levelDone(left*2)}
 async function levelDone(bonus){const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
- const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=n+1;S.won++;S.mercy=0;S.run=null;save();const nx=seasonOf(n+1);
+ const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=n+1;S.won++;S.mercy=0;S.run=null;save();famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
  const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
  if(n%5===0){try{await miniGame(n)}catch(e){console.error(e)}}
@@ -3836,6 +3891,7 @@ function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.long
 
 /* ===== actions ===== */
 function act(a,b){
+ if(a==='fam'){SFX.tap();showFamily();return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
  if(a.startsWith('d')&&a!=='dogs'&&a!=='decor'&&a!=='dslot'&&a!=='dback'){dimaAct(a,b);return}
  switch(a){
@@ -3891,7 +3947,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 10:05';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 10:21';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
