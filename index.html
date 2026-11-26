@@ -512,6 +512,66 @@ button.chip{cursor:pointer;font-family:inherit}
 .sl-bot{padding:0 12px calc(env(safe-area-inset-bottom) + 14px);display:flex;flex-direction:column;gap:10px}.sl-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sl-chip{border:2px solid #E2C48A;background:#FFF6E4;color:#5b3519;border-radius:14px;padding:7px 11px;font:800 13px 'Nunito',sans-serif;box-shadow:0 2px 0 #B8925A}.sl-chip.on{background:#E9F7E0;border-color:#7FB85F;box-shadow:0 2px 0 #5E9A44}.sl-row{display:flex;gap:10px;justify-content:center}
 .sl-row2{display:flex;align-items:center;gap:10px;background:#FFF6E4;border:2px solid #E2C48A;border-radius:16px;padding:8px 10px;margin:8px 0}.sl-row2 img{width:52px;height:52px;border-radius:14px}.sl-i{flex:1;display:flex;flex-direction:column;text-align:left}.sl-i b{font-size:15px;color:#5b3519}.sl-i small{font-size:12px;color:#8a6a4a}.sl-b{display:flex;flex-direction:column;gap:5px}.sl-b .btn{padding:5px 10px;font-size:12px;white-space:nowrap}
 .rwrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 138px);display:flex;gap:6px;align-items:center;pointer-events:none;max-width:96%}.rwrap .rwhere{position:static;transform:none;pointer-events:auto}.rwrap .rws{padding:8px 11px}
+/* ===== ферма ===== */
+.farmbtn{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translateX(-50%);z-index:9;padding:10px 20px;border:0;border-radius:22px;background:linear-gradient(#8FE07A,#4FB35A);color:#fff;font:800 16px Nunito,sans-serif;box-shadow:0 4px 0 #2F7F3C,0 8px 16px #0004;pointer-events:auto}
+.farm{position:fixed;inset:0;z-index:70;overflow:hidden;background:#BFE8F7;font-family:Nunito,sans-serif;color:#3a2a1a;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.farm *{box-sizing:border-box}
+.fi-sky{position:absolute;inset:0 0 45% 0;background:linear-gradient(#7FD0F2,#E9F8D8)}
+.fi-sun{position:absolute;right:12%;top:9%;width:74px;height:74px;border-radius:50%;background:#FFE27A;box-shadow:0 0 0 14px #FFE27A55,0 0 0 30px #FFE27A33;animation:fpulse 5s ease-in-out infinite}
+.fi-c{position:absolute;height:26px;width:90px;border-radius:20px;background:#fff;opacity:.9;animation:fcloud 38s linear infinite}
+.fi-c.c1{top:14%;left:-100px}.fi-c.c2{top:26%;left:-100px;animation-duration:55s;animation-delay:-20s;transform:scale(.7)}
+.fi-c:before{content:'';position:absolute;left:14px;top:-14px;width:44px;height:30px;border-radius:50%;background:#fff}
+.fbird{position:absolute;top:34%;left:-30px;font-style:normal;font-size:18px;animation:fbird 24s linear infinite}
+.fi-hill{position:absolute;left:-10%;right:-10%;top:30%;bottom:0;background:radial-gradient(ellipse 70% 38% at 30% 0,#9BD97F 60%,transparent 61%),radial-gradient(ellipse 60% 34% at 80% 4%,#86CC6F 60%,transparent 61%),linear-gradient(#8ED06F 12%,#5FB05C 100%)}
+.fhud{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:10px;right:10px;display:flex;gap:8px;align-items:center;z-index:3}
+.fh-b{width:42px;height:42px;border-radius:50%;border:0;background:#fff;font-size:20px;box-shadow:0 3px 0 #0002}
+.fh-p{padding:8px 14px;border-radius:18px;background:#ffffffee;font-weight:800;font-size:14px;box-shadow:0 3px 0 #0002}
+.fh-p:last-child{margin-left:auto}
+.fscene{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 62px);height:90px}
+.fscene span{position:absolute;font-size:52px;filter:drop-shadow(0 4px 0 #0002)}
+.fd1{left:8%;top:6px;font-size:64px!important}.fd2{left:44%;top:14px}.fd3{right:10%;top:20px}
+.fgrid{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 170px);transform:translateX(-50%);width:min(92vw,400px);display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fp{position:relative;aspect-ratio:1;border:0;border-radius:18px;background:radial-gradient(circle at 50% 30%,#A9703F,#7C4A25);box-shadow:inset 0 0 0 4px #5E3818,0 5px 0 #4A2B12;display:flex;align-items:center;justify-content:center;padding:0;overflow:visible}
+.fp.dry{background:radial-gradient(circle at 50% 30%,#B8884F,#946238)}
+.fp.grow,.fp.ripe{background:radial-gradient(circle at 50% 30%,#8A5A33,#5F3A1C)}
+.fp-e{font-style:normal;font-size:clamp(34px,13vw,52px);line-height:1;transform-origin:50% 90%;animation:fsway 3.5s ease-in-out infinite}
+.fp.ripe .fp-e{animation:fripe 1.3s ease-in-out infinite;filter:drop-shadow(0 0 8px #FFE27A)}
+.fp-w{position:absolute;right:6px;top:4px;font-style:normal;font-size:22px;display:none;animation:fpulse 1.4s ease-in-out infinite}
+.fp.dry .fp-w{display:block}
+.fp-b{position:absolute;left:10%;right:10%;bottom:7px;height:6px;border-radius:4px;background:#0004;overflow:hidden;display:none}
+.fp.grow .fp-b,.fp.dry .fp-b{display:block}
+.fp-b u{display:block;height:100%;background:#8BE36E;width:0;transition:width 1s linear}
+.fp.lock{background:#7aa86a;box-shadow:inset 0 0 0 4px #5f8d52,0 5px 0 #4a6f3f;flex-direction:column;color:#fff;font-weight:800}
+.fp.lock span{font-size:26px}.fp.lock small{font-size:13px}
+.ffx{position:absolute;left:50%;top:10%;transform:translateX(-50%);font:800 18px Nunito,sans-serif;font-style:normal;color:#fff;text-shadow:0 2px 0 #0006;pointer-events:none;white-space:nowrap;animation:ffx 1.1s ease-out forwards;z-index:5}
+.fdog{position:absolute;left:5%;bottom:calc(env(safe-area-inset-bottom,0px) + 168px);font-size:44px;animation:fdog 26s linear infinite;z-index:2}
+.fhint{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 148px);text-align:center;font-weight:800;font-size:14px;color:#2f4a22;text-shadow:0 1px 0 #fff8}
+.fbar{position:absolute;left:0;right:0;bottom:0;padding:10px 10px calc(env(safe-area-inset-bottom,0px) + 10px);background:linear-gradient(#0000,#2f5a2a99 30%,#2f5a2acc)}
+.fseeds{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.fs{position:relative;width:52px;height:52px;border-radius:14px;border:0;background:#ffffffdd;font-size:26px;box-shadow:0 3px 0 #0003;padding:0}
+.fs b{position:absolute;right:-4px;bottom:-4px;min-width:20px;height:20px;border-radius:10px;background:#FF7B5A;color:#fff;font-size:12px;line-height:20px;text-align:center}
+.fs.on{outline:3px solid #FFD23F;transform:translateY(-4px)}.fs.no{opacity:.55}
+.ftools{display:flex;gap:8px;justify-content:center}.ftools .btn{flex:1;max-width:130px;font-size:14px;padding:10px 4px}
+.fshop{position:absolute;inset:0;z-index:8;background:#0008;display:flex;align-items:flex-end}.fshop[hidden]{display:none}
+.fsh{width:100%;max-height:78%;overflow:auto;background:#FFF6E0;border-radius:22px 22px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px)}
+.fsh-h{display:flex;justify-content:space-between;align-items:center;font-size:20px}.fsh-s{margin:8px 0 10px;font-weight:700}
+.fsh-r{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #0001;font-weight:800}.fsh-r small{display:block;font-weight:600;opacity:.65}
+.fintro .fi-sky{inset:0 0 40% 0;animation:ffade 1.2s ease-out}
+.fi-gate{position:absolute;left:50%;top:44%;width:260px;height:150px;margin-left:-130px}
+.fi-sign{position:absolute;left:0;right:0;margin:0 auto;width:max-content;white-space:nowrap;top:-6px;padding:8px 18px;border-radius:10px;background:#7a4a24;color:#FFE9B0;font:800 18px Nunito,sans-serif;box-shadow:0 4px 0 #4a2b12;z-index:2;animation:fdrop .9s .4s cubic-bezier(.3,1.6,.5,1) both}
+.fi-g{position:absolute;top:34px;width:50%;height:110px;background:repeating-linear-gradient(90deg,#B77A3C 0 14px,#9A6230 14px 17px);border-radius:8px 8px 0 0;box-shadow:inset 0 0 0 4px #6e4320;transition:transform 1.4s 1.2s ease}
+.fi-g.l{left:0;transform-origin:0 50%;animation:fgl 1.6s 1.3s ease forwards}.fi-g.r{right:0;transform-origin:100% 50%;animation:fgr 1.6s 1.3s ease forwards}
+.fi-t{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 56px);text-align:center;animation:fdrop 1s .9s cubic-bezier(.3,1.6,.5,1) both}
+.fi-t h1{font-size:40px;margin:0;color:#fff;text-shadow:0 4px 0 #3b8a3a,0 8px 14px #0004}.fi-t p{font-size:22px;font-weight:800;margin:6px 0 2px;color:#2f5a2a}.fi-t small{display:block;margin-bottom:22px;font-weight:700;color:#3e6b32}
+.fi-go{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 40px);margin-left:-110px;width:220px;white-space:nowrap;animation:ffade .8s 2.6s both!important}
+@keyframes fsway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes fripe{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes fpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes fcloud{to{left:110%}}@keyframes fbird{0%{left:-30px;top:34%}50%{top:28%}100%{left:110%;top:36%}}
+@keyframes ffx{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-46px)}}
+@keyframes fdog{0%{left:5%;transform:scaleX(1)}49%{left:78%;transform:scaleX(1)}50%{left:78%;transform:scaleX(-1)}99%{left:5%;transform:scaleX(-1)}100%{left:5%;transform:scaleX(1)}}
+@keyframes ffade{from{opacity:0}to{opacity:1}}@keyframes fdrop{from{opacity:0;transform:translateY(-40px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes fgl{to{transform:perspective(500px) rotateY(-80deg)}}@keyframes fgr{to{transform:perspective(500px) rotateY(80deg)}}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3967,7 +4027,7 @@ function houseOrder(){const H=houseOf(S.rooms.cur);const o=H.floors?[...H.floors
 function roomNavHtml(){const o=houseOrder();if(o.length<2)return'';const cur=S.rooms.cur,i=o.indexOf(cur);const open=id=>roomOpen(ROOM[id]);
  const dots=o.map(id=>`<button class="rdot ${id===cur?'on':''} ${open(id)?'':'lk'}" data-a="rgo" data-id="${id}" aria-label="${esc(ROOM[id].n)}"></button>`).join('');
  const nb=d=>{for(let k=1;k<o.length;k++){const id=o[(i+d*k+o.length*3)%o.length];if(open(id))return id}return null};const nx=nb(1),pv=nb(-1);const fl=id=>{const H=houseOf(cur);if(!H.floors)return 0;if(H.floors[0].includes(id))return 0;if(H.floors[1].includes(id))return 1;return 2};const lab=id=>id?`<small>${fl(id)<fl(cur)?'⬆ ':fl(id)>fl(cur)?'⬇ ':''}${esc(ROOM[id].n)}</small>`:'';const hasN=!!(nx||pv);
- return`${whereHtml()}<div class="rnavp"><div class="rname">${esc(ROOM[cur]?ROOM[cur].n:'')}</div><div class="rdots">${dots}</div></div>${hasN?`<button class="rarr l" data-a="rprev" aria-label="Назад"><b>‹</b>${lab(pv)}</button><button class="rarr r" data-a="rnext" aria-label="Дальше"><b>›</b>${lab(nx)}</button>`:''}`}
+ return`${whereHtml()}${cur==='garden'?farmEntryHtml():''}<div class="rnavp"><div class="rname">${esc(ROOM[cur]?ROOM[cur].n:'')}</div><div class="rdots">${dots}</div></div>${hasN?`<button class="rarr l" data-a="rprev" aria-label="Назад"><b>‹</b>${lab(pv)}</button><button class="rarr r" data-a="rnext" aria-label="Дальше"><b>›</b>${lab(nx)}</button>`:''}`}
 function roomStep(dir){const o=houseOrder(),i=o.indexOf(S.rooms.cur);if(i<0)return;for(let k=1;k<o.length;k++){const id=o[(i+dir*k+o.length*3)%o.length];if(roomOpen(ROOM[id])){goRoom(id,dir);return}}}
 function goRoom(id,dir=1){const r=ROOM[id];if(!r||id===S.rooms.cur)return;if(!roomOpen(r)){houseTap(id);return}if(APP.rslide)return;
  let snap=null;try{const cv=APP.cv;snap=document.createElement('canvas');snap.width=cv.width;snap.height=cv.height;snap.getContext('2d').drawImage(cv,0,0);snap.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;transition:transform .38s cubic-bezier(.3,.7,.2,1);box-shadow:0 0 30px rgba(0,0,0,.4)';cv.parentNode.insertBefore(snap,cv.nextSibling)}catch(e){snap=null}
@@ -3987,7 +4047,7 @@ function scheduleTick(dt){APP.sT=(APP.sT||0)+dt;if(APP.sT<4000)return;APP.sT=0;c
  if(S.sched===false||houseOf(S.rooms.cur).id!=='home'||APP.scr!=='menu')return;const cur=S.rooms.cur;
  if(old===cur&&PPL.her&&!PPL.away){walkOutPeople(ACT.tok);toast('Саша и Дима пошли в «'+(ROOM[nr]?ROOM[nr].n:'')+'» 🚶');refreshRoomNav()}
  else if(nr===cur){APP.walkIn=1;ACT.key='';toast('Саша и Дима пришли сюда 🚶');refreshRoomNav()}else refreshRoomNav()}
-function refreshRoomNav(){const m=$('#menu');if(!m)return;const o=m.querySelectorAll('.rnavp,.rarr,.rwhere,.rwrap');o.forEach(e=>e.remove());m.insertAdjacentHTML('beforeend',roomNavHtml())}
+function refreshRoomNav(){const m=$('#menu');if(!m)return;const o=m.querySelectorAll('.rnavp,.rarr,.rwhere,.rwrap,.farmbtn');o.forEach(e=>e.remove());m.insertAdjacentHTML('beforeend',roomNavHtml())}
 
 
 /* ===== tasks for the new rooms ===== */
@@ -4854,6 +4914,64 @@ function drawHairMark(c,x,y,cs,l,now){const h=G.lv.hair,dog=typeof h.who==='numb
  c.strokeStyle=lt;c.lineWidth=Math.max(1.4,cs*.035);const w=Math.sin(now*.002+x*.05+y*.03)*cs*.02;for(const a of[.2,.4,.6,.8]){c.beginPath();c.moveTo(x+cs*a,y+cs*.06);c.quadraticCurveTo(x+cs*(a+.04)+w,y-cs*.03,x+cs*(a-.03)+w*1.5,y-cs*.09);c.stroke()}
  if(l>1){for(const a of[.3,.7]){c.beginPath();c.moveTo(x+cs*a,y+cs*.94);c.quadraticCurveTo(x+cs*(a-.05),y+cs*1.02,x+cs*(a+.03),y+cs*1.07);c.stroke()}}
  c.restore()}
+/* ===== Ферма «Тео»: отдельный уютный мир. Растёт сам, ничего не вянет, никто не ругает ===== */
+const FCROP={
+ carrot:{n:'Морковь',e:'🥕',seed:8,sell:22,min:10},
+ flower:{n:'Тюльпаны',e:'🌷',seed:10,sell:28,min:15},
+ tomato:{n:'Томаты',e:'🍅',seed:14,sell:40,min:25},
+ sunflower:{n:'Подсолнух',e:'🌻',seed:16,sell:46,min:30},
+ berry:{n:'Клубника',e:'🍓',seed:20,sell:62,min:40},
+ pumpkin:{n:'Тыква',e:'🎃',seed:30,sell:100,min:60}};
+const FKEYS=Object.keys(FCROP),FPRICE=1500,FPLOT=[0,0,0,0,300,500,800,1200,1600];
+function farmS(){if(!S.farm)S.farm={on:0,seeds:{},inv:{},pl:Array(9).fill(null),sel:'carrot',dg:0,tot:0};const f=S.farm;if(!f.pl||f.pl.length<9)f.pl=Array(9).fill(null).map((_,i)=>(f.pl&&f.pl[i])||null);return f}
+function farmPlotOpen(f,i){return i<4||(f.u||[]).includes(i)}
+function farmPlotMs(p){return FCROP[p.c].min*60000}
+function farmState(p){if(!p)return'empty';if(!p.w)return'dry';const left=farmPlotMs(p)-(Date.now()-p.w);return left<=0?'ripe':'grow'}
+function farmDrop(){const f=farmS();if(!f.on)return;const pool=['carrot','carrot','flower','flower','tomato','sunflower','berry','pumpkin'];const g=[pick(pool)];if(Math.random()<.35)g.push(pick(pool));g.forEach(k=>f.seeds[k]=(f.seeds[k]||0)+1);save();toast('Семена для фермы: '+g.map(k=>FCROP[k].e).join(' ')+' 🌱')}
+function farmEntryHtml(){const f=farmS();return`<button class="farmbtn" data-a="farm">${f.on?'🌱 На ферму':'🌱 Огород'}</button>`}
+function farmAct(){const f=farmS();SFX.tap&&SFX.tap();if(f.on){farmOpen(false);return}
+ ask(`<div class="center"><div class="bic">🌱</div><h2 class="lob">Участок под огород</h2><p>Своя ферма за домом: сажаешь, поливаешь, собираешь урожай. Всё растёт без спешки, ничего не вянет.</p><div class="reward">${FPRICE} <span>🦴</span></div></div>`,[{t:'Купить',c:'green',v:1,dis:S.bones<FPRICE},{t:'Позже',c:'ghost',v:0}]).then(v=>{if(!v)return;if(S.bones<FPRICE)return;S.bones-=FPRICE;f.on=1;f.seeds={carrot:4,flower:2,tomato:1};save();SFX.coin&&SFX.coin();farmOpen(true)})}
+function farmOpen(intro){const old=$('#farm');if(old)old.remove();const f=farmS();const d=el('div','farm');d.id='farm';$('#app').appendChild(d);APP.farmOpen=true;
+ if(intro){d.classList.add('fintro');d.innerHTML=`<div class="fi-sky"><i class="fi-sun"></i><i class="fi-c c1"></i><i class="fi-c c2"></i></div><div class="fi-hill"></div><div class="fi-gate"><b class="fi-sign">ФЕРМА ТЕО</b><div class="fi-g l"></div><div class="fi-g r"></div></div><div class="fi-t"><h1 class="lob">Поздравляем!</h1><p>Вы открыли ферму</p><small>Здесь растут овощи, цветы и счастье</small></div><button class="btn green big fi-go" data-f="enter">Войти на ферму</button>`;setTimeout(()=>{try{confetti(70);SFX.chime&&SFX.chime(5)}catch(e){}},900)}
+ else farmDraw(d);
+ d.onclick=ev=>{const b=ev.target.closest('[data-f]');if(!b)return;farmClick(d,b.dataset.f,b.dataset.i)};
+ clearInterval(farmOpen.iv);farmOpen.iv=setInterval(()=>farmTick(d),1000)}
+function farmClose(){const d=$('#farm');if(d)d.remove();APP.farmOpen=false;clearInterval(farmOpen.iv);try{refreshRoomNav()}catch(e){}}
+function farmDraw(d){const f=farmS();d.classList.remove('fintro');
+ const plots=f.pl.map((p,i)=>farmPlotOpen(f,i)?`<button class="fp" data-f="plot" data-i="${i}"><i class="fp-e"></i><i class="fp-w">💧</i><i class="fp-b"><u></u></i></button>`:`<button class="fp lock" data-f="plot" data-i="${i}"><span>🔒</span><small>${FPLOT[i]} 🦴</small></button>`).join('');
+ const seeds=FKEYS.map(k=>`<button class="fs" data-f="sel" data-i="${k}"><span>${FCROP[k].e}</span><b></b></button>`).join('');
+ d.innerHTML=`<div class="fi-sky"><i class="fi-sun"></i><i class="fi-c c1"></i><i class="fi-c c2"></i><i class="fbird">🐦</i></div><div class="fi-hill"></div><div class="fhud"><button class="fh-b" data-f="home">🏠</button><span class="fh-p" id="fbn"></span><span class="fh-p" id="fbt"></span></div><div class="fscene"><span class="fd1">🏡</span><span class="fd2">🌳</span><span class="fd3">⛲</span></div><div class="fgrid">${plots}</div><div class="fdog" data-f="dog">🐶</div><div class="fhint" id="fhint">Выбери семена внизу и нажми на грядку</div><div class="fbar"><div class="fseeds">${seeds}</div><div class="ftools"><button class="btn" data-f="water">💧 Полить всё</button><button class="btn" data-f="reap">🧺 Собрать</button><button class="btn" data-f="shop">🏪 Лавка</button></div></div><div class="fshop" id="fshop" hidden></div>`;farmTick(d,true)}
+function farmHint(t){const h=$('#fhint');if(h)h.textContent=t}
+function farmTick(d,force){if(!d.isConnected){clearInterval(farmOpen.iv);return}if(d.classList.contains('fintro'))return;const f=farmS();
+ const bn=$('#fbn',d),bt=$('#fbt',d);if(bn)bn.textContent='🦴 '+S.bones;const g=gtInfo();if(bt)bt.textContent='день '+g.d+' · '+String(g.h).padStart(2,'0')+':'+String(g.m).padStart(2,'0');
+ const ps=d.querySelectorAll('.fp:not(.lock)');ps.forEach(b=>{const i=+b.dataset.i,p=f.pl[i],st=farmState(p),e=b.querySelector('.fp-e'),bar=b.querySelector('.fp-b u');const key=st+(p?p.c:'');
+  let frac=0;if(p&&p.w)frac=Math.min(1,(Date.now()-p.w)/farmPlotMs(p));const stage=!p?'':st==='ripe'?FCROP[p.c].e:frac>.5?'🌿':'🌱';
+  if(b.dataset.k!==key+stage){b.dataset.k=key+stage;e.textContent=stage;b.className='fp '+st}
+  if(bar)bar.style.width=(st==='ripe'?100:frac*100)+'%'});
+ d.querySelectorAll('.fs').forEach(b=>{const k=b.dataset.i,n=f.seeds[k]||0;b.querySelector('b').textContent=n;b.classList.toggle('on',f.sel===k);b.classList.toggle('no',!n)})}
+function farmFx(b,txt){const s=el('span','ffx',txt);b.appendChild(s);setTimeout(()=>s.remove(),1100)}
+function farmClick(d,a,i){const f=farmS();
+ if(a==='enter'){farmDraw(d);return}
+ if(a==='home'){farmClose();return}
+ if(a==='sel'){f.sel=i;save();farmTick(d);farmHint(FCROP[i].n+': '+FCROP[i].min+' мин росту');SFX.tap&&SFX.tap();return}
+ if(a==='plot'){const n=+i,b=d.querySelector(`.fp[data-i="${n}"]`);
+  if(!farmPlotOpen(f,n)){const c=FPLOT[n];ask(`<div class="center"><div class="bic">🌾</div><h2 class="lob">Новая грядка</h2><div class="reward">${c} <span>🦴</span></div></div>`,[{t:'Купить',c:'green',v:1,dis:S.bones<c},{t:'Позже',c:'ghost',v:0}]).then(v=>{if(!v||S.bones<c)return;S.bones-=c;f.u=(f.u||[]).concat(n);save();SFX.coin&&SFX.coin();farmDraw(d)});return}
+  const p=f.pl[n],st=farmState(p);
+  if(st==='empty'){const k=f.sel;if(!(f.seeds[k]>0)){farmHint('Нет таких семян. Выиграй уровень или загляни в лавку 🏪');return}f.seeds[k]--;f.pl[n]={c:k,w:0};save();farmFx(b,'🌱');SFX.tap&&SFX.tap()}
+  else if(st==='dry'){p.w=Date.now();save();farmFx(b,'💧');SFX.pop&&SFX.pop();farmHint(FCROP[p.c].n+' поливается и растёт')}
+  else if(st==='ripe'){farmReap(n,b)}
+  else{const left=Math.ceil((farmPlotMs(p)-(Date.now()-p.w))/60000);farmHint(FCROP[p.c].n+': ещё около '+left+' мин')}
+  farmTick(d);return}
+ if(a==='water'){let n=0;f.pl.forEach(p=>{if(p&&!p.w){p.w=Date.now();n++}});save();farmHint(n?'Полито грядок: '+n:'Поливать нечего');if(n)SFX.pop&&SFX.pop();farmTick(d);return}
+ if(a==='reap'){let n=0;f.pl.forEach((p,k)=>{if(farmState(p)==='ripe'){farmReap(k,d.querySelector(`.fp[data-i="${k}"]`),1);n++}});if(n){save();SFX.chime&&SFX.chime(3);farmHint('Собрано: '+n)}else farmHint('Пока ничего не созрело');farmTick(d);return}
+ if(a==='dog'){const dg=$('.fdog',d);farmFx(dg,'💗');if(Date.now()>(f.dg||0)){f.dg=Date.now()+90000;S.bones+=5;save();farmFx(dg,'+5 🦴');SFX.coin&&SFX.coin()}else farmHint('Тео довольно виляет хвостом');return}
+ if(a==='shop'||a==='shopx'){farmShop(d,i);return}
+ if(a==='buy'){const k=i,c=FCROP[k].seed;if(S.bones<c){farmHint('Не хватает косточек');return}S.bones-=c;f.seeds[k]=(f.seeds[k]||0)+1;save();SFX.tap&&SFX.tap();farmShop(d);farmTick(d);return}
+ if(a==='sellall'){let t=0;FKEYS.forEach(k=>{t+=(f.inv[k]||0)*FCROP[k].sell;f.inv[k]=0});if(t){S.bones+=t;save();SFX.coin&&SFX.coin();confetti&&confetti(20);farmHint('Продано на '+t+' 🦴')}farmShop(d);farmTick(d);return}
+ if(a==='shopclose'){const s=$('#fshop',d);s.hidden=true;return}}
+function farmReap(n,b,quiet){const f=farmS(),p=f.pl[n];if(!p)return;const k=p.c;f.inv[k]=(f.inv[k]||0)+1;f.tot=(f.tot||0)+1;if(Math.random()<.25)f.seeds[k]=(f.seeds[k]||0)+1;f.pl[n]=null;if(!quiet){save();SFX.chime&&SFX.chime(2)}if(b)farmFx(b,'+1 '+FCROP[k].e)}
+function farmShop(d,x){const f=farmS(),s=$('#fshop',d);s.hidden=false;let tot=0,cnt=0;FKEYS.forEach(k=>{tot+=(f.inv[k]||0)*FCROP[k].sell;cnt+=f.inv[k]||0});
+ s.innerHTML=`<div class="fsh"><div class="fsh-h"><b class="lob">Лавка</b><button class="x" data-f="shopclose">✕</button></div><div class="fsh-s">Урожай: ${FKEYS.map(k=>f.inv[k]?FCROP[k].e+' '+f.inv[k]:'').filter(Boolean).join('  ')||'пока пусто'}</div><button class="btn green" data-f="sellall" ${cnt?'':'disabled'}>Продать всё за ${tot} 🦴</button><div class="fsh-l">${FKEYS.map(k=>`<div class="fsh-r"><span>${FCROP[k].e} ${FCROP[k].n}<small> ${FCROP[k].min} мин · продажа ${FCROP[k].sell}</small></span><button class="btn" data-f="buy" data-i="${k}">${FCROP[k].seed} 🦴</button></div>`).join('')}</div></div>`}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -4933,7 +5051,7 @@ function updHUD(){const m=$('#moves');if(!m)return;m.textContent=G.moves;m.paren
 function updBoosters(){for(const b of BOOST){const e=document.querySelector(`.boost[data-id="${b.id}"]`);if(!e)continue;const free=b.id==='paw'&&S.run&&S.run.freePaw>0;e.querySelector('.bp').textContent=free?`бесплатно ×${S.run.freePaw}`:`${b.b} 🦴`;e.classList.toggle('on',G.target===b.id)}}
 async function winLevel(){if(G.over)return;G.over=true;G.busy=true;clearIdle();SFX.win();bigText('Ура!',undefined,undefined,68);confetti(45);dogBark(0,true);await wait(900);
  const left=await bonusMoves();await wait(350);await levelDone(left*2)}
-async function levelDone(bonus){if(S.run&&S.run.hair)return hairDone(bonus);if(S.run&&S.run.replay)return replayDone(bonus);const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
+async function levelDone(bonus){if(S.run&&S.run.hair)return hairDone(bonus);if(S.run&&S.run.replay)return replayDone(bonus);try{farmDrop()}catch(e){}const n=S.run.n,L=G.lv;let bones=Math.round((12+Math.min(n,60)*1.2)*bonesMult())+(L.hard?15:0)+(L.boss?30:0);bones+=bonus;const fin=n%SEASON_LEN===0;if(fin)bones+=150;
  const left5=Math.round((bonus||0)/2),ratio=left5/Math.max(1,L.moves),rate=ratio>=.28?3:ratio>=.1?2:1;const stars=1+(rate===3?1:0)+(fin?1:0);S.streak=(S.streak||0)+1;S.maxStreak=Math.max(S.maxStreak||0,S.streak);S.lvStars=S.lvStars||{};S.lvStars[n]=Math.max(S.lvStars[n]||0,rate);S.stars=(S.stars||0)+stars;S.bones+=bones;S.best=Math.max(S.best,n);S.lvl=Math.max(S.lvl||1,n+1);try{lvlGuard()}catch(e){}S.won++;S.mercy=0;S.run=null;save();try{achCheck()}catch(e){}famXP(L.boss?40:fin?50:20);const nx=seasonOf(n+1);
  const v=await ask(`<div class="center"><div class="ribbon lob">${fin?`${L.se.n} пройдена!`:`Уровень ${n} пройден!`}</div><div class="stars3">${[1,2,3].map(i=>`<span class="${i<=rate?'on':''}" style="animation-delay:${.15+i*.28}s">★</span>`).join('')}</div>${S.streak>1?`<p class="streak">🔥 Серия побед: <b>${S.streak}</b></p>`:''}<img class="bigdog" src="${dogImg(pick(G.cols),80)}" alt=""><div class="reward">+${bones} <span>🦴</span> +${stars} <span>⭐</span></div>${bonus?`<p class="soft small">включая ${bonus} 🦴 за оставшиеся ходы</p>`:''}${typeof houseNews==='function'?houseNews():''}${fin?`<p>Дальше новый сезон: <b>${nx.ic} ${nx.n}</b></p>`:''}</div>`,[{t:'Дальше ▶',c:'green',v:'next'},{t:'Домой 🏠',c:'ghost',v:'home'}]);
  if(L.boss&&S.pool.length){const cp=drawCoupon();await openPack(cp)}
@@ -5155,6 +5273,7 @@ function act(a,b){
  if((a==='rpyr'||a==='rpplay'||a==='replaylist')&&levelsAct(a,b))return;
  if((a==='minilist'||a==='mgplay')&&mgAct(a,b))return;
  if(a.startsWith('cpl')&&cplAct(a,b))return;
+ if(a==='farm'){farmAct();return}
  if((a==='salon'||a==='saloncut'||a==='salonlv')&&salonAct(a,b))return;
  if(a.startsWith('ph')||a==='photo'){if(albumAct(a,b))return}
  if(a.startsWith('pz')&&pzAct(a,b))return;
@@ -5215,7 +5334,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 16:26';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 16:33';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
