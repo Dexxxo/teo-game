@@ -417,6 +417,20 @@ button.chip{cursor:pointer;font-family:inherit}
 @keyframes pieIn{from{opacity:0;transform:translate(-50%,-50%) scale(.3)}to{opacity:1;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(1)}}
 @keyframes piePop{from{opacity:0;transform:translate(-50%,-50%) scale(.5)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 .piebg,.piei,.piec{pointer-events:auto}
+
+.actsheet{position:absolute;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom) + 8px);z-index:59;pointer-events:auto;background:linear-gradient(#FFF9EC,#F6E6C6);border:3px solid #7A4A26;border-radius:22px;padding:8px 12px 12px;box-shadow:0 6px 0 #4A2810,0 12px 30px rgba(0,0,0,.45);animation:shUp .32s cubic-bezier(.2,1.2,.4,1) both;color:#3b2416}
+@keyframes shUp{from{transform:translateY(110%)}to{transform:none}}
+.shgrab{width:42px;height:5px;border-radius:3px;background:#D9C29A;margin:0 auto 8px}
+.shhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}.shav{width:48px;height:48px;border-radius:50%;background:#fff;border:2.5px solid #E2B23A;flex:none;object-fit:contain}
+.shav.pp{display:flex;align-items:center;justify-content:center;font:900 22px Lobster,Georgia,serif;color:#fff}.shav.pp.her{background:linear-gradient(#F7A8C8,#E0709A)}.shav.pp.him{background:linear-gradient(#8FB8E8,#5A86C0)}.shav.it{padding:4px}
+.shtt{flex:1;min-width:0}.shtt b{display:block;font:400 22px Lobster,Georgia,serif;color:#5A2E12;line-height:1.1}.shsub{font:800 12px Nunito,sans-serif;color:#8A6A4A}
+.shmood{display:flex;align-items:center;gap:8px;font:800 11.5px Nunito,sans-serif;color:#8A6A4A;margin-top:3px}.shmood i{flex:1;height:9px;border-radius:5px;background:#EAD9B8;overflow:hidden;max-width:160px}.shmood b{display:block;height:100%;border-radius:5px}.shmood b.g{background:linear-gradient(90deg,#7EE07F,#3FB84F)}.shmood b.y{background:linear-gradient(90deg,#FFE27A,#E0B020)}.shmood b.r{background:linear-gradient(90deg,#FFB0A0,#E0503A)}
+.shx{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid #D9C29A;background:#fff;font-weight:900;color:#8A6A4A}
+.shwish{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:linear-gradient(#FFF3B8,#FFD45E);border:2.5px solid #E09A10;border-radius:16px;padding:8px 12px;margin-bottom:8px;font:900 14.5px Nunito,sans-serif;color:#5A2E12;box-shadow:0 3px 0 #B07A10;animation:wishGlow 1.6s ease-in-out infinite}
+.shwish span{font-size:22px}.shwish div{flex:1}.shwish small{display:block;font:800 11px Nunito,sans-serif;color:#9A6A10;text-transform:none}.shwish em{font-style:normal;font-weight:900;color:#7A4A10}
+@keyframes wishGlow{0%,100%{box-shadow:0 3px 0 #B07A10,0 0 0 0 rgba(255,214,90,.0)}50%{box-shadow:0 3px 0 #B07A10,0 0 0 5px rgba(255,214,90,.35)}}
+.shgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shbtn{display:flex;align-items:center;gap:8px;text-align:left;background:#FFFDF6;border:2px solid #EAD9B8;border-radius:14px;padding:7px 10px 7px 7px;font:800 13px/1.15 Nunito,sans-serif;color:#3b2416;box-shadow:0 2px 0 #D9C29A;transition:transform .1s;min-height:44px}
+.shbtn span{flex:none;width:30px;height:30px;border-radius:50%;background:#FFF1D6;display:flex;align-items:center;justify-content:center;font-size:16px}.shbtn:active,.shwish:active{transform:scale(.96)}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -3445,7 +3459,7 @@ function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep)return;moo
 function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
 function drawWants(c,now){if(APP.scr!=='menu'||!APP.L)return;S.wants=S.wants||{};c.save();c.lineJoin='round';
- for(const a of actorsNow()){const k=actorKey(a);const top=a.who?a.y-(a.sitH?168:196):a.y-62-(a.z||0);
+ for(const a of actorsNow()){const k=actorKey(a);const top=a.who?a.y-(a.sitH?146:174):a.y-62-(a.z||0);
   if(a.who&&!PPL.sleep){const m=moodOf(k),col=m>=60?['#9CF59A','#2FB84A']:m>=35?['#FFF08A','#E0B020']:['#FFB0A0','#E0503A'];const y=top-14+Math.sin(now*.003+(a.who==='her'?0:1))*2.5;c.save();c.translate(a.x,y);c.rotate(Math.sin(now*.0015)*.08);c.beginPath();c.moveTo(0,-11);c.lineTo(6.5,0);c.lineTo(0,11);c.lineTo(-6.5,0);c.closePath();const g=c.createLinearGradient(-6,-10,6,10);g.addColorStop(0,col[0]);g.addColorStop(1,col[1]);c.fillStyle=g;c.fill();c.strokeStyle='rgba(30,60,30,.55)';c.lineWidth=1;c.stroke();c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.moveTo(0,-9);c.lineTo(3.5,-1);c.lineTo(0,-1);c.closePath();c.fill();c.restore()}
   const w=S.wants[k];if(!w||!WANTL[w.id]||(ACT.cur&&ACT.cur.a===a)||PPL.sleep&&a.who)continue;const bx=a.x+(a.who?30:22),by=top-(a.who?30:18)+Math.sin(now*.002+a.x)*2;const s=1+.04*Math.sin(now*.004);
   c.save();c.translate(bx,by);c.scale(s,s);c.fillStyle='rgba(40,20,8,.18)';ell(c,1.5,3,19,15);c.fill();cloud(c,0,0,[[-9,2,9],[0,-4,11],[10,1,9],[1,6,9]],'#FFFFFF','#8A6A4A',1.4);ell(c,-12,15,3.5,3);fs(c,'#fff','#8A6A4A',1.2);ell(c,-17,21,2,1.8);fs(c,'#fff','#8A6A4A',1);c.font='15px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(WANTL[w.id][1],0,1);c.restore()}
@@ -3471,21 +3485,33 @@ function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();c
  const it=obj,d=PZ[it.id],tap=()=>placedTap(it);
  const her=(id,t,ic)=>add(`${S.her}: ${t}`,ic,()=>{PZT=it.u;runAct(H,id)},want('her')===id),him=(id,t,ic)=>add(`${S.him}: ${t}`,ic,()=>{PZT=it.u;runAct(M,id)},want('him')===id);
  switch(d.act){
- case'light':add(it.on===false?'Включить свет':'Выключить свет','💡',tap);her('pzlight','щёлкнуть выключателем','👆');break;
- case'music':him('pzmusic','поставить пластинку','🎶');add('Танцевать вместе','💃',()=>{tap();setTimeout(()=>runAct(H,'dance'),400)});add('Позвать собак танцевать','🐶',()=>pzCallDog('pzmusic'));break;
- case'fish':add('Покормить рыбок','🐟',tap);add('Позвать собаку посмотреть','🐶',()=>pzCallDog('pzaqua'));her('pzlook','полюбоваться','😍');break;
+ case'light':add(it.on===false?'Включить свет':'Выключить свет','💡',tap);her('pzlight','включить','👆');break;
+ case'music':him('pzmusic','поставить пластинку','🎶');add('Танцевать вместе','💃',()=>{tap();setTimeout(()=>runAct(H,'dance'),400)});add('Собаки: танцевать','🐶',()=>pzCallDog('pzmusic'));break;
+ case'fish':add('Покормить рыбок','🐟',tap);add('Собака: посмотреть','🐶',()=>pzCallDog('pzaqua'));her('pzlook','полюбоваться','😍');break;
  case'water':her('pzwater','полить','💧');him('pzwater','полить','💧');add('Собака: понюхать','🐶',()=>pzCallDog('pzplant'));break;
  case'toy':add('Поиграть с собакой','🎾',()=>pzCallDog('pztoys'));break;
- case'boing':add('Позвать собаку на пуфик','💤',()=>pzCallDog('pzpouf'));add('Попрыгать','🫧',tap);break;
+ case'boing':add('Собака: на пуфик','💤',()=>pzCallDog('pzpouf'));add('Попрыгать','🫧',tap);break;
  case'clock':add('Узнать время','🕰',tap);break;
- default:add('Полюбоваться','✨',tap);her('pzlook','рассмотреть поближе','😍')}
+ default:add('Полюбоваться','✨',tap);her('pzlook','полюбоваться','😍')}
  add('Переставить','✋',()=>{showPlace();APP.pz.sel=it.u;pzBar()});return o}
-function showPie(kind,obj,px,py){closePie();const opts=pieOpts(kind,obj);if(!opts.length)return;SFX.tap();vib(8);const m=el('div','pie');const W=APP.W,H=APP.H;const R=Math.min(104,W*.27);const cx=clamp(px,R+70,W-R-70),cy=clamp(py,R+60,H-R-90);m.style.left=cx+'px';m.style.top=cy+'px';
- const title=kind==='person'||kind==='dog'?actorName(obj):PZ[obj.id].n;const n=opts.length;
- m.innerHTML=`<div class="piec">${esc(title)}</div>`+opts.map((o,i)=>{const a=-Math.PI/2+(n===1?0:(i/(n))*Math.PI*2);const x=Math.cos(a)*R,y=Math.sin(a)*R*.92;return`<button class="piei${o.hot?' hot':''}" data-pi="${i}" style="--x:${x.toFixed(0)}px;--y:${y.toFixed(0)}px;animation-delay:${i*35}ms"><span>${o.ic}</span>${esc(o.t)}</button>`}).join('');
- const bg=el('div','piebg');bg.addEventListener('pointerdown',e=>{e.preventDefault();closePie()});APP.uiEl.appendChild(bg);APP.uiEl.appendChild(m);
- m.querySelectorAll('.piei').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const o=opts[+b.dataset.pi];closePie();SFX.tap();try{o.fn()}catch(err){console.error(err)}}))}
-function closePie(){$$('.pie,.piebg',APP.uiEl).forEach(x=>x.remove())}
+function showPie(kind,obj,px,py){closePie();const opts=pieOpts(kind,obj);if(!opts.length)return;SFX.tap();vib(8);APP.pieT={kind,obj,t0:performance.now()};
+ const isA=kind==='person'||kind==='dog';const title=isA?actorName(obj):PZ[obj.id].n;const k=isA?actorKey(obj):null;
+ const av=kind==='dog'?`<img class="shav" src="${dogImg(obj.i,48)}" alt="">`:kind==='person'?`<div class="shav pp ${obj.who}">${esc(title[0]||'?')}</div>`:`<img class="shav it" src="${pzIcon(obj.id,obj.c||0)}" alt="">`;
+ const m=isA?Math.round(moodOf(k)):null;const mc=m==null?'':m>=60?'g':m>=35?'y':'r';
+ const sub=isA?`<div class="shmood"><span>Настроение</span><i><b class="${mc}" style="width:${m}%"></b></i></div>`:`<div class="shsub">${esc(PZC.find(c=>c.id===PZ[obj.id].s)?.n||'')}</div>`;
+ const hot=opts.filter(o=>o.hot),rest=opts.filter(o=>!o.hot);
+ const sh=el('div','actsheet');sh.innerHTML=`<div class="shgrab"></div><div class="shhead">${av}<div class="shtt"><b>${esc(title)}</b>${sub}</div><button class="shx" data-close aria-label="Закрыть">✕</button></div>`+
+  hot.map(o=>`<button class="shwish" data-pi="${opts.indexOf(o)}"><span>✨</span><div><small>Желание</small>${esc(o.t.replace('Исполнить желание: ',''))}</div><em>+🦴</em></button>`).join('')+
+  `<div class="shgrid">${rest.map(o=>`<button class="shbtn" data-pi="${opts.indexOf(o)}"><span>${o.ic}</span>${esc(o.t)}</button>`).join('')}</div>`;
+ const bg=el('div','piebg');bg.addEventListener('pointerdown',e=>{e.preventDefault();closePie()});APP.uiEl.appendChild(bg);APP.uiEl.appendChild(sh);
+ sh.querySelector('[data-close]').addEventListener('click',()=>closePie());
+ requestAnimationFrame(()=>{try{const top=APP.H-sh.offsetHeight-12;const sc=APP.W/400;let fy;if(isA)fy=(obj.y+8)*sc;else{const b=pzBox(obj,curDeco(),APP.L);fy=(b[1]+b[3]+6)*sc}const need=top-14-fy;if(need<0&&Math.abs(APP.view.s-1)<.02&&Math.abs(APP.view.y)<3){APP.pieShift=1;tween(APP.view,{x:0,y:Math.max(need,-APP.H*.55),s:1},380,E.inOut)}}catch(e){}});
+ sh.querySelectorAll('[data-pi]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const o=opts[+b.dataset.pi];closePie();SFX.tap();try{o.fn()}catch(err){console.error(err)}}))}
+function drawPieTarget(c,now){const t=APP.pieT;if(!t||!$('.actsheet',APP.uiEl)){APP.pieT=null;return}const p=.5+.5*Math.sin(now*.008);c.save();
+ if(t.kind==='placed'){const deco=curDeco();if(!pzList(deco).includes(t.obj)){c.restore();return}const[bx,by,bw,bh]=pzBox(t.obj,deco,APP.L);c.strokeStyle=`rgba(255,214,90,${.6+.4*p})`;c.lineWidth=3;c.setLineDash([7,5]);c.lineDashOffset=-now*.02;rr(c,bx-6,by-6,bw+12,bh+12,10);c.stroke()}
+ else{const a=t.obj,r=a.who?42:30;c.globalCompositeOperation='lighter';const g=c.createRadialGradient(a.x,a.y,4,a.x,a.y,r*1.3);g.addColorStop(0,`rgba(255,214,90,${.35+.2*p})`);g.addColorStop(1,'rgba(255,214,90,0)');c.fillStyle=g;c.save();c.translate(a.x,a.y+2);c.scale(1,.32);ell(c,0,0,r*1.3,r*1.3);c.restore();c.fill();c.globalCompositeOperation='source-over';c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;c.beginPath();c.ellipse(a.x,a.y+2,r,r*.32,0,0,Math.PI*2);c.stroke()}
+ c.restore()}
+function closePie(){$$('.pie,.piebg,.actsheet',APP.uiEl).forEach(x=>x.remove());APP.pieT=null;if(APP.pieShift){APP.pieShift=0;tween(APP.view,{x:0,y:0,s:1},380,E.inOut)}}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -3810,7 +3836,7 @@ function renderRoomCache(){const D=APP.DPR,W=APP.W,H=APP.H;if(!APP.rc)APP.rc=mkC
 function frame(now){try{const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
  const c=APP.ctx,D=APP.DPR,W=APP.W,H=APP.H;if(APP.curtAnim)APP.roomDirty=true;{const ph=dayPhase();if(APP.ph!==ph){APP.ph=ph;APP.roomDirty=true}}if(APP.roomDirty||!APP.rc)renderRoomCache();ensureWalkers(APP.L,roomId());updWalkers(dt,APP.L,curDeco());ensurePeople(APP.L,roomId(),curDeco());updPeople(dt,APP.L,curDeco());updCouple(dt);if(RS.fw>0)RS.fw-=dt;
  c.setTransform(D,0,0,D,0,0);c.fillStyle='#1d120b';c.fillRect(0,0,W,H);
- const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu')drawWants(c,now);if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
+ const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu'){drawPieTarget(c,now);drawWants(c,now)}if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
  c.setTransform(D,0,0,D,0,0);if(APP.scr==='game'&&G.grid.length){drawBackdrop(c,now);drawBoard(c,now)}
  const f=APP.fctx;f.setTransform(D,0,0,D,0,0);f.clearRect(0,0,W,H);drawP(f)}catch(err){console.error(err)}
  requestAnimationFrame(frame)}
@@ -3829,7 +3855,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 09:48';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 09:53';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
