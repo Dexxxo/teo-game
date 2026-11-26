@@ -1854,7 +1854,7 @@ const ABORT={abort:1};
 function chk(tok){if(tok!==ACT.tok)throw ABORT}
 const hold=(ms,tok)=>wait(ms).then(()=>chk(tok));
 const twk=(o,p,ms,tok,e)=>tween(o,p,ms,e||E.inOut).then(()=>chk(tok));
-function say(a,text,ms=2400){ACT.lab=ACT.lab.filter(l=>l.a!==a);ACT.lab.push({a,text,l:0,max:ms})}
+function say(a,text,ms=2400){if((a===PPL.her||a===PPL.him)&&(PPL.away||PPL.sleep&&!/💤|спят|Тсс/.test(text)))return;ACT.lab=ACT.lab.filter(l=>l.a!==a);ACT.lab.push({a,text,l:0,max:ms})}
 function homeDogs(){const all=[0,1,...[2,3,4,5].filter(i=>(S.home||[]).includes(i))];return typeof dogRoom==='function'?all.filter(i=>dogRoom(i)===roomId()):all}
 function dname(i){return DOGS[i].name}
 
@@ -3909,7 +3909,7 @@ function friendAdd(a,b){S.friend=S.friend||{};const k=fKey(a,b),was=friendLv(S.f
 const TRICKS=[{id:'paw',n:'Дай лапу',ic:'🐾',lvl:3},{id:'spin',n:'Покрутись',ic:'🌀',lvl:3},{id:'dead',n:'Замри',ic:'😵',lvl:5},{id:'bunny',n:'Зайка',ic:'🐰',lvl:7},{id:'five',n:'Дай пять',ic:'🙌',lvl:7}];
 function trickProg(i,id){S.tricks=S.tricks||{};return(S.tricks[i]||{})[id]||0}
 async function trickPose(w,id,tok){if(id==='spin'){for(let k=0;k<6;k++){w.face=-w.face;w.pose=k%2?'sit':'beg';await hold(140,tok)}w.pose='sit'}else if(id==='dead'){w.pose='roll';await hold(1300,tok);w.pose='sit'}else if(id==='bunny'){w.pose='beg';await hold(1300,tok)}else{w.pose='beg';await hold(700,tok);w.pose='sit';await hold(200,tok);w.pose='beg';await hold(500,tok)}}
-async function trickAct(w,id,L,deco,tok,nm){const show=id.startsWith('sh_'),tid=id.slice(3),T=TRICKS.find(t=>t.id===tid);if(!T)return false;const p=w.i===1||w.i===5?PPL.her:pick([PPL.her,PPL.him]);if(!p)return false;const hn=p.who==='her'?S.her:S.him;
+async function trickAct(w,id,L,deco,tok,nm){const show=id.startsWith('sh_'),tid=id.slice(3),T=TRICKS.find(t=>t.id===tid);if(!T)return false;const p=w.i===1||w.i===5?PPL.her:pick([PPL.her,PPL.him]);if(!p||PPL.away||PPL.sleep||PPL.nap)return false;const hn=p.who==='her'?S.her:S.him;
  await pStand(p,tok);const f=frontOf(p);await dogTo(w,clamp(f.x+(w.x<f.x?-36:36),30,370),f.y+8,tok);w.face=p.x>w.x?1:-1;p.face=-w.face;w.mode='stay';w.pose='sit';
  if(show){say(p,`${nm}, ${T.n.toLowerCase()}!`,1400);await hold(500,tok);await trickPose(w,tid,tok);heartsBurstV(w.x,w.y-70);dogBark(w.i,true);say(p,'Умница! 👏',1300);famXP(2);await hold(900,tok)}
  else{S.tricks=S.tricks||{};S.tricks[w.i]=S.tricks[w.i]||{};const pr=(S.tricks[w.i][tid]||0);say(p,`${hn} учит ${nm}: «${T.n}» (${pr+1}/3)`,1800);await hold(600,tok);if(pr===0){w.pose='sniff';await hold(700,tok);w.pose='sit';await hold(300,tok)}else await trickPose(w,tid,tok);
@@ -5215,7 +5215,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 16:13';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 16:15';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
