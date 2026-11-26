@@ -3440,6 +3440,10 @@ function placedUyut(rid){const d=S.deco[rid];if(!d||!d.pl)return 0;let u=0;for(c
 function exSmall(d){return d&&!d.wall&&!d.pseat&&d.sz&&d.sz[0]<=70&&d.sz[1]<=90}
 function onSurf(deco,L,p,self){const out=[];for(const it of pzList(deco)){if(it===self||it.p!==p||!PZ[it.id])continue;const q=pzPos0(it,deco,L,PZ[it.id]);out.push({x:q.x,w:PZ[it.id].w})}for(const e of(deco.extra||[])){if(e===self||!e.sp||e.sp.p!==p||!EXI[e.id])continue;const q=spPoint(e,L);if(q)out.push({x:q.x,w:EXI[e.id].sz[0]*.8})}return out}
 function freeX(want,w,x0,x1,others){const fits=x=>others.every(o=>Math.abs(x-o.x)>=(w+o.w)/2-3);const lo=x0,hi=x1;want=clamp(want,lo,hi);if(fits(want))return want;for(let s=2;s<=hi-lo;s+=2){if(want-s>=lo&&fits(want-s))return want-s;if(want+s<=hi&&fits(want+s))return want+s}return null}
+const SOLW={fire:62,sofa:86,lamp:14,plant:20,bed:60},SOLD={fire:[-30,10],sofa:[-40,10],lamp:[-14,8],plant:[-14,8],bed:[-26,10]};
+function solidFoot(L,deco,skipE,skipK){const out=[];for(const k of Object.keys(SOLW)){if(k===skipK||!deco[k]||!L[k])continue;const p=L[k];out.push({x0:p.x-SOLW[k],x1:p.x+SOLW[k],y0:p.y+SOLD[k][0],y1:p.y+SOLD[k][1],k})}
+ for(const e of(deco.extra||[])){if(e===skipE)continue;const d=EXI[e.id];if(!d||d.wall||d.toy||d.sp||e.sp||exSmall(d)||d.pseat)continue;const q=xpos(e,L);out.push({x0:q.x-d.sz[0]*.4,x1:q.x+d.sz[0]*.4,y0:q.y-Math.min(26,d.sz[1]*.4),y1:q.y+6,e:1})}return out}
+function footHit(x,y,w,rs){for(const r of rs)if(x+w/2>r.x0&&x-w/2<r.x1&&y+6>r.y0&&y-12<r.y1)return r;return null}
 function pzTarget(kind,w,h,fx,fy,self,deco,L){const fl=pzFloor(L);const cx=v=>clamp(v,w/2+2,398-w/2);
  if(kind==='wall'){const wl=pzWall(L);return{t:'wall',x:cx(fx),y:clamp(fy,wl.y0+h/2,wl.y1-h/2),ok:true}}
  if(kind==='ceil')return{t:'ceil',x:cx(fx),ok:true};
@@ -3447,6 +3451,7 @@ function pzTarget(kind,w,h,fx,fy,self,deco,L){const fl=pzFloor(L);const cx=v=>cl
   if(best){const x=freeX(fx,w,best.x0,best.x1,onSurf(deco,L,best.p,self));if(x==null)return{t:'surf',x:fx,y:best.y,ok:false,s:best};return{t:'surf',p:best.p,dx:Math.round(x-(best.x0+(best.x1-best.x0)/2)),x,y:best.y,ok:true,s:best}}}
  let y=clamp(Math.max(fy,fl.y0),fl.y0,fl.y1),x=cx(fx);
  if(kind==='floor'){for(let pass=0;pass<3;pass++)for(const it of pzList(deco)){if(it===self||it.p||!PZ[it.id]||PZ[it.id].s!=='floor')continue;const d=PZ[it.id];if(Math.abs(it.y-y)>24)continue;const need=(w+d.w)/2+2;if(Math.abs(x-it.x)<need)x=cx(x<it.x?it.x-need:it.x+need)}}
+ if(kind==='floor'){const rs=solidFoot(L,deco,self&&self.id&&EXI[self.id]?self:null);let h2=footHit(x,y,w,rs);if(h2){const lx=h2.x0-w/2-2,rx=h2.x1+w/2+2,a=Math.abs(x-lx)<Math.abs(x-rx)?[lx,rx]:[rx,lx];let moved=false;for(const nx of a){const x2=cx(nx);if(!footHit(x2,y,w,rs)){x=x2;moved=true;break}}if(!moved)return{t:'floor',x,y,ok:false}}}
  return{t:'floor',x,y,ok:true}}
 /* ===== dogs use placed things ===== */
 function pzFind(deco,id){return pzList(deco).filter(i=>i.id===id&&PZ[i.id])}
@@ -3948,7 +3953,9 @@ function onDown(e){auInit();const p=ptOf(e);PD={x:p.x,y:p.y,moved:false,long:nul
  if(APP.scr==='decor'){if(APP.move.on){const k=moveHit(p.x,p.y);APP.move.sel=k;updMoveBar();if(k){if(k.startsWith('x:')){const e=selExtra();PD.drag={x:e,ox:e.x,ofy:e.fy}}else{const d=curDeco();d.pos=d.pos||{};const o=d.pos[k]||{dx:0,dy:0};PD.drag={k,ox:o.dx,oy:o.dy}}SFX.tap();vib(10)}}return}const h=roomHit(p.x,p.y);PD.hit=h;if(h==='bed'){PD.long=setTimeout(()=>{if(PD){PD.longFired=true;dimaEnter()}},1500)}}
 function onMove(e){if(!PD)return;const p=ptOf(e);const dx=p.x-PD.x,dy=p.y-PD.y;if(PD.pz){pzMove(PD.pz,p);const pb=$('#pzbar');if(pb)pb.classList.add('drag');return}
  if(PD.drag&&PD.drag.x){if(PD.drag.x.sp)delete PD.drag.x.sp;const sc=APP.W/400,v=APP.view,e=PD.drag.x,L0=baseLayout(APP.H/sc),[x0,x1,y0,y1]=exLimits(EXI[e.id],L0);e.x=Math.round(clamp(PD.drag.ox+dx/v.s/sc,x0,x1));e.fy=Math.round(clamp(PD.drag.ofy+dy/v.s/sc,y0,y1));APP.roomDirty=true;return}
- if(PD.drag){const sc=APP.W/400,v=APP.view,d=curDeco(),k=PD.drag.k;const L0=baseLayout(APP.H/sc);const[x0,x1,y0,y1]=movLimits(L0,k);const nx=clamp(L0[k].x+PD.drag.ox+dx/v.s/sc,x0,x1),ny=clamp(L0[k].y+PD.drag.oy+dy/v.s/sc,y0,y1);d.pos[k]={dx:Math.round(nx-L0[k].x),dy:Math.round(ny-L0[k].y)};APP.roomDirty=true;return}if(Math.hypot(dx,dy)>10){PD.moved=true;clearTimeout(PD.long)}
+ if(PD.drag){const sc=APP.W/400,v=APP.view,d=curDeco(),k=PD.drag.k;const L0=baseLayout(APP.H/sc);const[x0,x1,y0,y1]=movLimits(L0,k);const nx=clamp(L0[k].x+PD.drag.ox+dx/v.s/sc,x0,x1),ny=clamp(L0[k].y+PD.drag.oy+dy/v.s/sc,y0,y1);const Lc=roomLayout(APP.H/sc,d);const rs=typeof solidFoot==='function'?solidFoot(Lc,d,null,k):[];const hw=SOLW[k]||0;const bad=(x,y)=>{if(!hw)return false;const dd=SOLD[k];for(const r of rs)if(x+hw>r.x0&&x-hw<r.x1&&y+dd[1]>r.y0&&y+dd[0]<r.y1)return true;return false};
+  let fx=nx,fy=ny;if(!bad(Lc[k].x,Lc[k].y)&&bad(fx,fy)){if(!bad(fx,Lc[k].y))fy=Lc[k].y;else if(!bad(Lc[k].x,fy))fx=Lc[k].x;else{fx=Lc[k].x;fy=Lc[k].y}}
+  d.pos[k]={dx:Math.round(fx-L0[k].x),dy:Math.round(fy-L0[k].y)};APP.roomDirty=true;return}if(Math.hypot(dx,dy)>10){PD.moved=true;clearTimeout(PD.long)}
  if(PD.cell&&!PD.swiped&&G.sel&&!G.busy&&T(PD.cell[0],PD.cell[1])===G.sel){const th=G.cs*.35;if(Math.abs(dx)>th||Math.abs(dy)>th){PD.swiped=true;const[r,c]=PD.cell;let r2=r,c2=c;if(Math.abs(dx)>Math.abs(dy))c2+=dx>0?1:-1;else r2+=dy>0?1:-1;G.sel=null;if(T(r2,c2))trySwap(r,c,r2,c2)}}}
 function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.longFired)return;if(d.pz){const pb=$('#pzbar');if(pb)pb.classList.remove('drag');pzUp(d.pz);save();pzBar();return}if(d.drag){save();return}
  if(d.cell){if(G.target&&!G.busy){useTarget(d.cell);return}if(d.desel&&!d.swiped)G.sel=null;return}
@@ -4012,7 +4019,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 13:05';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 13:09';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
