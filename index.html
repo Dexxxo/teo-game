@@ -2766,7 +2766,8 @@ async function trySwap(r1,c1,r2,c2){if(G.busy||G.over)return;const A=T(r1,c1),B=
  G.lastSwap=[K(r1,c1),K(r2,c2)];
  if(findGroups().length){G.moves--;updHUD();G.combo=0;await resolve();await endTurn();return}
  SFX.nope();swapGrid(r1,c1,r2,c2);await Promise.all([tween(A,{x:c1,y:r1},170,E.inOut),tween(B,{x:c2,y:r2},170,E.inOut)]);G.lastSwap=null;G.busy=false}
-async function endTurn(){if(G.over)return;G.movesUsed++;updHUD();const lv=G.lv;
+function fixGoals(){const lv=G.lv;if(!lv)return;for(const g of G.goals){if(g.have>=g.need)continue;let n=0;if(g.type==='ice'){if(lv.muts&&lv.muts.includes('blizzard'))continue;for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){const e=G.grid[r][c];if(e.on&&e.t&&e.t.ice)n++}}else if(g.type==='floor'){for(let r=0;r<G.R;r++)for(let c=0;c<G.C;c++){const e=G.grid[r][c];if(e.on&&e.fl)n+=e.fl}}else continue;if(n<g.need-g.have){g.have=g.need-n;updHUD()}}}
+async function endTurn(){if(G.over)return;G.movesUsed++;try{fixGoals()}catch(e){}updHUD();const lv=G.lv;
  if(!goalsDone()&&G.moves>0){
   await mudSpread();
   if(G.cat&&!G.cat.gone){const rac=G.cat.kind==='raccoon';if(G.movesUsed%3===0){await catJump(!rac);if(rac&&G.cat)raccoonSteal()}if(!rac&&G.movesUsed%4===0&&G.moves>2){G.moves--;updHUD();bigText('Барсик украл ход! 🐾',undefined,undefined,30,{c1:'#FFFFFF',c2:'#C9D3E0'});meow();await wait(500)}}
@@ -4084,7 +4085,7 @@ function howTo(){return ask(`<h2 class="lob center">Как играть</h2><ul 
 
 /* ===== run flow ===== */
 function startRun(){S.run={n:S.lvl||1,v2:1,perks:{},bones:0,lifeUsed:false,freePaw:0};save();startLevel()}
-async function startLevel(){const run=S.run;if(!run){showMenu();return}
+async function startLevel(){if(window.__applyUpd&&window.__applyUpd())return;const run=S.run;if(!run){showMenu();return}
  G.room=S.rooms.rnd?pick(S.rooms.un):S.rooms.cur;ensureDeco(G.room);
  const L=genLevel(run.n);G.lv=L;G.se=L.se;G.cols=L.colList;G.moves=L.moves;G.goals=L.goals.map(g=>({type:g.type,d:g.d,need:g.need,have:0}));
  Object.assign(G,{movesUsed:0,contUsed:false,over:false,combo:0,sel:null,selCell:null,hint:null,target:null,dying:[],sleepers:null,lastSwap:null,busy:true,idle:0,shake:0});
@@ -4375,10 +4376,12 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 14:03';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 14:08';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
+function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
+window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
-if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
+if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}go(t)}).catch(function(){busy=0})}
 setTimeout(chk,1200);try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')}catch(e){}document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
 setInterval(function(){if(window.__upd&&!inGame()){window.__upd=0;chk()}},2500);setInterval(chk,10*60*1000);
 setTimeout(function(){try{if(localStorage.getItem('teo_updated')){localStorage.removeItem('teo_updated');toast('Игра обновилась ✨ версия '+V)}}catch(e){}},2500)})()</script></body></html>
