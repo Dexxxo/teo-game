@@ -904,6 +904,7 @@ function drawRoomDyn(c,L,room,deco,t,still){
  const darkNow=!still&&!RS.lampOn;if(still||!(darkNow||glassLayer(c,L,room,t,false))){if(!darkNow){sceneFx(c,L.win,room.scene,t);if(!still)windowTint(c,L.win,room.scene,t)}}
  if(!still)drawCelebration(c,L,t);
  const dark=!still&&!RS.lampOn;let dk=0;
+ if(deco.fire){const st=stOf(deco.fire);drawFlames(c,L.fire.x,L.fire.y,t,st==='legend',still?0:RS.fireBoost);for(const e of(deco.extra||[])){const d=EXI[e.id];if(!d||d.wall||e.sp)continue;const p=xpos(e,L);if(p.y>L.fire.y-6&&Math.abs(p.x-L.fire.x)<64+d.sz[0]/2)drawExtra(c,e,L)}}
  drawPlaced(c,L,deco,t,still);
  if(!still){roomNightTint(c,L,room);if(dark){const w=L.win,k=RS.curt||0,op=1-k;const E=winEdges(w),inL=E[-1].inner,inR=E[1].inner;{const ph=dayPhase(),base=ph==='night'?.55:ph==='evening'||ph==='sunset'?.45:ph==='dawn'?.35:.24;dk=deco.ceil&&chOn()?base*.38:base}
   c.save();c.fillStyle=`rgba(10,5,28,${dk})`;c.fillRect(0,0,400,L.VH);c.restore();
@@ -914,7 +915,7 @@ function drawRoomDyn(c,L,room,deco,t,still){
  /* object-level animation & light: always behind the characters */
  if(!still)drawPlacedLights(c,L,deco,t);
  if(!still)drawLightsDyn(c,L,deco,t);
- if(deco.fire){const st=stOf(deco.fire);drawFlames(c,L.fire.x,L.fire.y,t,st==='legend',still?0:RS.fireBoost)}
+ 
  if(deco.lamp&&(RS.lampOn||still)){const p=L.lampPt,col=stOf(deco.lamp)==='night'?colOf(deco.lamp,'#9B7BEA'):'#FFD98A';c.save();c.globalCompositeOperation='lighter';const r=150+Math.sin(t*.002)*4;const g=c.createRadialGradient(p.x,p.y,4,p.x,p.y,r);g.addColorStop(0,rgba(col,.4));g.addColorStop(.4,rgba(col,.12));g.addColorStop(1,rgba(col,0));c.fillStyle=g;c.fillRect(p.x-r,p.y-r,r*2,r*2);c.restore()}
  if(deco.garland)drawGarlandBulbs(c,L,stOf(deco.garland),deco.garland,t);
  for(const e of(deco.extra||[]))if(EXI[e.id])drawExtraAnim(c,e,L,t);
@@ -1199,10 +1200,10 @@ const DRXA={
  x_snowglobe:(c,x,y,t)=>{c.save();ell(c,x,y-40,24,24);c.clip();c.fillStyle='#fff';for(let k=0;k<14;k++){const fx=x-20+((k*13.7)%40)+Math.sin(t*.002+k)*3,fy=y-64+(((k*9.1)+t*.012)%44);ell(c,fx,fy,1.3,1.3);c.fill()}c.restore();c.fillStyle='rgba(255,255,255,.5)';ell(c,x-10,y-52,4,7,-.5);c.fill()},
  x_gramophone:(c,x,y,t)=>{const q=(t%2400)/2400;c.globalAlpha=Math.sin(q*Math.PI);c.fillStyle='#5B3519';c.font='bold 14px Nunito, sans-serif';c.textAlign='center';c.fillText('♪',x-30-q*10,y-104-q*30);c.fillText('♫',x-10+q*8,y-112-q*24);c.globalAlpha=1}
 };
-function exPos(e,L){return{x:e.x,y:L.fl+e.fy}}
+function exPos(e,L){if(e.sp){const q=spPoint(e,L);if(q)return q}return{x:e.x,y:L.fl+e.fy}}
 function exBox(e,L){const d=EXI[e.id];const[w,h]=d.sz;const p=exPos(e,L);return d.wall?{x:p.x-w/2,y:p.y-h/2,w,h}:{x:p.x-w/2,y:p.y-h,w,h}}
 function exLimits(d,L){return d.wall?[d.sz[0]/2+4,400-d.sz[0]/2-4,-(L.fl-d.sz[1]/2-36),-50]:[d.sz[0]/2,400-d.sz[0]/2,16,L.VH-L.fl-14]}
-function drawExtra(c,e,L){const d=EXI[e.id];if(!d||!DRX[e.id])return;const p=exPos(e,L);const[x0,x1,y0,y1]=exLimits(d,L);const x=clamp(p.x,x0,x1),y=L.fl+clamp(e.fy,y0,y1);c.save();c.lineJoin='round';DRX[e.id](c,x,y,e);c.restore()}
+function drawExtra(c,e,L){const d=EXI[e.id];if(!d||!DRX[e.id])return;const p=exPos(e,L);const[x0,x1,y0,y1]=exLimits(d,L);const x=e.sp?p.x:clamp(p.x,x0,x1),y=e.sp?p.y:L.fl+clamp(e.fy,y0,y1);c.save();c.lineJoin='round';DRX[e.id](c,x,y,e);c.restore()}
 function drawExtraAnim(c,e,L,t){const f=DRXA[e.id];if(!f)return;const d=EXI[e.id];const[x0,x1,y0,y1]=exLimits(d,L);f(c,clamp(e.x,x0,x1),L.fl+clamp(e.fy,y0,y1),t,e)}
 function exUyut(rid){const ex=(S.deco[rid]&&S.deco[rid].extra)||[];return ex.reduce((a,e)=>a+((EXI[e.id]&&EXI[e.id].u)||0),0)}
 function placeExtra(id,rid){const d=EXI[id];const sc=APP.W/400;const deco=S.deco[rid];deco.extra=deco.extra||[];const L=roomLayout(APP.H/sc,deco);
@@ -2125,7 +2126,7 @@ function drawFloorArch(c,L,room,key){const W=400,fl=L.fl,VH=L.VH,R=srand(23);c.s
 function roomNo(rid){return(ROOM[rid]&&ROOM[rid].no)||[]}
 function addSigs(rid){const r=ROOM[rid],d=S.deco[rid];if(!r||!d)return;S.sigs=S.sigs||{};if(S.sigs[rid])return;S.sigs[rid]=1;for(const k of roomNo(rid))d[k]=null;d.extra=d.extra||[];
  for(const[id,x,fy]of(r.sig||[]))if(!d.extra.some(e=>e.id===id))d.extra.push({u:'s_'+id,id,x,fy,c:EXI[id].col})}
-function xpos(e,L){const d=EXI[e.id];const[x0,x1,y0,y1]=exLimits(d,L);return{x:clamp(e.x,x0,x1),y:L.fl+clamp(e.fy,y0,y1)}}
+function xpos(e,L){if(e.sp){const q=spPoint(e,L);if(q)return q}const d=EXI[e.id];const[x0,x1,y0,y1]=exLimits(d,L);return{x:clamp(e.x,x0,x1),y:L.fl+clamp(e.fy,y0,y1)}}
 function v2s(x,y){const v=APP.view,sc=APP.W/400;return{x:x*sc*v.s+v.x,y:y*sc*v.s+v.y}}
 function seatHomes(L,deco){for(const e of(deco.extra||[])){const d=EXI[e.id];if(!d||!d.pseat)continue;const p=xpos(e,L);const[a,b]=d.pseat;return{her:{x:p.x+a[0],y:p.y+3+(a[3]||0),sit:a[1],sofa:d.cuddle?1:0},him:{x:p.x+b[0],y:p.y+3+(b[3]||0),sit:b[1],sofa:d.cuddle?1:0}}}return null}
 function isSleepTime(deco){const h=new Date().getHours();return(h>=23||h<7)&&(deco.extra||[]).some(e=>e.id==='x_bigbed')}
@@ -3249,7 +3250,7 @@ const PZ={
  f_toys:{n:'Корзина с игрушками',s:'floor',w:52,h:40,p:320,u:7,cols:['#C98A44','#F4F0E8','#F2A7C3','#8CC8F5'],act:'toy'},
  t_vase:{n:'Ваза с цветами',s:'top',w:24,h:38,p:160,u:4,cols:['#8CC8F5','#F4F0E8','#F2A7C3','#E2B23A'],act:'love'},
  t_candle:{n:'Свечи',s:'top',w:28,h:30,p:150,u:4,cols:['#FFF4DC','#F2A7C3','#E2B23A','#B79CF5'],light:70,act:'light'},
- t_books:{n:'Стопка книг',s:'top',w:30,h:24,p:120,u:3,cols:['#E0565B','#5FA8C8','#7EC8A4','#B79CF5'],act:'love'},
+ t_books:{n:'Стопка книг',s:'top',w:30,h:24,p:120,u:3,cols:['#E0565B','#5FA8C8','#7EC8A4','#B79CF5'],act:'love',top:{dy:-24,hw:9}},
  t_mug:{n:'Кружка какао',s:'top',w:20,h:18,p:100,u:3,cols:['#FFFFFF','#F2A7C3','#8CC8F5','#FFD23F'],act:'love'},
  t_player:{n:'Проигрыватель',s:'top',w:40,h:28,p:620,u:9,cols:['#C98A44','#F2A7C3','#8CC8F5','#2F3A4A'],act:'music'},
  t_aqua:{n:'Аквариум',s:'top',w:44,h:34,p:680,u:10,cols:['#8CC8F5','#7EC8A4','#B79CF5','#F2A7C3'],act:'fish'},
@@ -3262,11 +3263,13 @@ function pzWall(L){return{y0:Math.max(30,L.fl-380),y1:L.fl+14}}
 function pzCeilY(L){return Math.max(8,L.fl-392)}
 function pzFloor(L){return{y0:L.fl+40,y1:L.VH-24}}
 function pzList(deco){return deco.pl||(deco.pl=[])}
-function pzPos(it,deco,L){const d=PZ[it.id];if(!d)return{x:0,y:0};if(it.p){const s=pzSurfaces(deco,L).find(q=>q.p===it.p);if(s)return{x:clamp(s.x0+(s.x1-s.x0)/2+(it.dx||0),s.x0,s.x1),y:s.y}}if(d.s==='ceil')return{x:it.x,y:pzCeilY(L)};return{x:it.x,y:it.y}}
+function pzPos(it,deco,L){const d=PZ[it.id];if(!d)return{x:0,y:0};if(it._drag)return{x:it._fx,y:d.s==='ceil'?pzCeilY(L):it._fy};const base=pzPos0(it,deco,L,d);if(it._fall){const q=(performance.now()-it._fall.t0)/280;if(q<1)return{x:base.x,y:it._fall.y0+(base.y-it._fall.y0)*q*q};delete it._fall;it._land=performance.now();pzPart(base.x,base.y,'dust',6);osc(180,.08,'sine',.05,120)}return base}
+function pzPos0(it,deco,L,d,dep=0){if(it.p){const s=pzSurfaces(deco,L,dep+1).find(q=>q.p===it.p);if(s)return{x:clamp(s.x0+(s.x1-s.x0)/2+(it.dx||0),s.x0,s.x1),y:s.y}}if(d.s==='ceil')return{x:it.x,y:pzCeilY(L)};return{x:it.x,y:it.y}}
 function pzBox(it,deco,L){const d=PZ[it.id],p=pzPos(it,deco,L);const g=it.g?1+it.g*.08:1;if(d.s==='wall')return[p.x-d.w/2,p.y-d.h/2,d.w,d.h];if(d.s==='ceil')return[p.x-d.w/2,p.y,d.w,d.h*g];return[p.x-d.w*g/2,p.y-d.h*g,d.w*g,d.h*g]}
-function pzSurfaces(deco,L){const out=[];const w=L.win;if(w)out.push({p:'sill',y:w.y+w.h+2,x0:w.x+12,x1:w.x+w.w-12});for(const it of pzList(deco)){const d=PZ[it.id];if(!d||!d.top||it.p)continue;const x=it.x,y=d.s==='ceil'?pzCeilY(L):it.y;out.push({p:it.u,y:y+d.top.dy,x0:x-d.top.hw,x1:x+d.top.hw})}return out}
+function pzSurfaces(deco,L,dep=0){const out=[];const w=L.win;if(w)out.push({p:'sill',y:w.y+w.h+2,x0:w.x+12,x1:w.x+w.w-12});if(deco&&deco.fire&&L.fire)out.push({p:'mantel',y:L.fire.y-146,x0:L.fire.x-50,x1:L.fire.x+50});for(const it of pzList(deco)){const d=PZ[it.id];if(!d||!d.top||it._drag)continue;let x=it.x,y=d.s==='ceil'?pzCeilY(L):it.y;if(it.p){if(dep>3)continue;const pp=pzPos0(it,deco,L,d,dep);x=pp.x;y=pp.y}out.push({p:it.u,y:y+d.top.dy,x0:x-d.top.hw,x1:x+d.top.hw})}return out}
+function spPoint(e,L){const deco=typeof curDeco==='function'?curDeco():null;const s=pzSurfaces(deco||{},L).find(q=>q.p===e.sp.p);if(!s)return null;return{x:clamp(s.x0+(s.x1-s.x0)/2+(e.sp.dx||0),s.x0,s.x1),y:s.y}}
 /* ---- drawing ---- */
-function pzDraw(c,it,deco,L,t,still){const d=PZ[it.id];if(!d)return;const p=pzPos(it,deco,L),col=d.cols[it.c||0],on=it.on!==false;c.save();c.translate(p.x,p.y);if(it.f)c.scale(-1,1);const g=it.g?1+it.g*.08:1;if(g!==1)c.scale(g,g);c.lineJoin='round';c.lineCap='round';const lw=2.2;const W=d.w,H=d.h;
+function pzDraw(c,it,deco,L,t,still){const d=PZ[it.id];if(!d)return;const p=pzPos(it,deco,L),col=d.cols[it.c||0],on=it.on!==false;c.save();c.translate(p.x,p.y);if(it._sw&&d.s==='ceil'){const a=t-it._sw;if(a<3000)c.rotate(.22*Math.exp(-a/700)*Math.sin(a*.011));else delete it._sw}if(it._land){const a=t-it._land;if(a<260){const k=Math.sin(a/260*Math.PI)*(1-a/260);c.scale(1+.14*k,1-.16*k)}else delete it._land}if(it._drag){c.translate(0,-3);c.scale(1.06,1.06)}if(it.f)c.scale(-1,1);const g=it.g?1+it.g*.08:1;if(g!==1)c.scale(g,g);c.lineJoin='round';c.lineCap='round';const lw=2.2;const W=d.w,H=d.h;
  const sh=()=>{if(d.s==='floor'||d.s==='top'){c.fillStyle='rgba(30,15,5,.2)';ell(c,0,0,W*.5,W*.12);c.fill()}};sh();
  switch(it.id){
  case'p_frame':rr(c,-W/2,-H/2,W,H,3);fs(c,col,OL,lw);rr(c,-W/2+5,-H/2+5,W-10,H-10,2);fs(c,'#BFE6FF',OL,1.4);c.fillStyle='#7EC8A4';c.beginPath();c.moveTo(-W/2+5,H/2-5);c.lineTo(-6,-4);c.lineTo(2,4);c.lineTo(8,-6);c.lineTo(W/2-5,H/2-5);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-9,-1);c.lineTo(-6,-4);c.lineTo(-3,-1);c.fill();ell(c,W/2-12,-H/2+11,3.5,3.5);c.fillStyle='#FFD23F';c.fill();break;
@@ -3309,9 +3312,9 @@ function drawPlacedLights(c,L,deco,t){const list=deco.pl;if(list&&list.length){c
  if(list)for(const it of list){if(it.id==='t_player'&&RS.pzAnim&&RS.pzAnim[it.u]&&t<RS.pzAnim[it.u].until&&Math.random()<.025){const b=pzBox(it,deco,L);pzPart(b[0]+b[2]/2,b[1],'note',1)}}
  pzFx(c,t)}
 /* ---- room particles ---- */
-function pzPart(x,y,kind,n=6){for(let i=0;i<n;i++)PZX.push({x,y,vx:(Math.random()-.5)*(kind==='note'?.6:1.6),vy:kind==='drop'?Math.random()*.5:-(.6+Math.random()*1.2),k:kind,t0:performance.now()+i*(kind==='note'?260:30),life:kind==='note'?1800:1000,c:['#FF6F9E','#FFD23F','#8CC8F5','#7EE07F'][i%4]})}
+function pzPart(x,y,kind,n=6){for(let i=0;i<n;i++)PZX.push({x,y,vx:(Math.random()-.5)*(kind==='note'?.6:1.6),vy:kind==='drop'?Math.random()*.5:kind==='dust'?-(.1+Math.random()*.3):-(.6+Math.random()*1.2),k:kind,t0:performance.now()+i*(kind==='note'?260:30),life:kind==='note'?1800:1000,c:['#FF6F9E','#FFD23F','#8CC8F5','#7EE07F'][i%4]})}
 function pzFx(c,t){for(let i=PZX.length-1;i>=0;i--){const p=PZX[i],a=t-p.t0;if(a<0)continue;if(a>p.life){PZX.splice(i,1);continue}const q=a/p.life,x=p.x+p.vx*a*.03+(p.k==='note'?Math.sin(a*.006)*6:0),y=p.y+p.vy*a*.03+(p.k==='drop'?a*a*.00012:0);c.save();c.globalAlpha=1-q;
- if(p.k==='heart'){c.fillStyle=p.c;c.font='12px serif';c.textAlign='center';c.fillText('♥',x,y)}else if(p.k==='note'){c.fillStyle=p.c;c.font='900 14px serif';c.textAlign='center';c.fillText(['♪','♫','♬'][i%3],x,y)}else if(p.k==='drop'){ell(c,x,y,2,3);c.fillStyle='#7FC4FF';c.fill()}else if(p.k==='food'){ell(c,x,y,1.4,1.4);c.fillStyle='#C98A44';c.fill()}else{c.fillStyle='#FFF6C0';star4(c,x,y,3.4*(1-q)+1);c.fill()}c.restore()}}
+ if(p.k==='heart'){c.fillStyle=p.c;c.font='12px serif';c.textAlign='center';c.fillText('♥',x,y)}else if(p.k==='note'){c.fillStyle=p.c;c.font='900 14px serif';c.textAlign='center';c.fillText(['♪','♫','♬'][i%3],x,y)}else if(p.k==='drop'){ell(c,x,y,2,3);c.fillStyle='#7FC4FF';c.fill()}else if(p.k==='dust'){ell(c,x,y,3*(1-q)+1,2*(1-q)+.6);c.fillStyle='rgba(200,180,150,.7)';c.fill()}else if(p.k==='food'){ell(c,x,y,1.4,1.4);c.fillStyle='#C98A44';c.fill()}else{c.fillStyle='#FFF6C0';star4(c,x,y,3.4*(1-q)+1);c.fill()}c.restore()}}
 /* ---- interactions in normal mode ---- */
 function placedHit(x,y){const deco=curDeco(),L=APP.L;if(!deco||!deco.pl||!L)return null;let best=null;for(const it of deco.pl){if(!PZ[it.id])continue;const[bx,by,bw,bh]=pzBox(it,deco,L);if(x>=bx-4&&x<=bx+bw+4&&y>=by-4&&y<=by+bh+4){if(!best||PZ[it.id].s==='top'||PZ[best.id].s==='wall')best=it}}return best}
 function placedTap(it){const d=PZ[it.id],deco=curDeco(),L=APP.L;if(!d)return;const[bx,by,bw,bh]=pzBox(it,deco,L),cx2=bx+bw/2,cy2=by+bh/2,now=performance.now();RS.pzAnim=RS.pzAnim||{};const anim=(k,ms)=>RS.pzAnim[it.u]={k,until:now+ms};
@@ -3327,6 +3330,19 @@ function placedTap(it){const d=PZ[it.id],deco=curDeco(),L=APP.L;if(!d)return;con
  case'boing':anim('boing',900);osc(300,.2,'sine',.08,520);pzPart(cx2,by,'heart',4);break;
  default:pzPart(cx2,cy2,'heart',6);SFX.tap();anim('love',900)}}
 function placedUyut(rid){const d=S.deco[rid];if(!d||!d.pl)return 0;let u=0;for(const it of d.pl){const p=PZ[it.id];if(p)u+=p.u*(it.g?1+it.g*.1:1)}return Math.round(u)}
+
+/* ===== physics: target resolution with gravity, collisions, capacity ===== */
+function exSmall(d){return d&&!d.wall&&!d.pseat&&d.sz&&d.sz[0]<=70&&d.sz[1]<=90}
+function onSurf(deco,L,p,self){const out=[];for(const it of pzList(deco)){if(it===self||it.p!==p||!PZ[it.id])continue;const q=pzPos0(it,deco,L,PZ[it.id]);out.push({x:q.x,w:PZ[it.id].w})}for(const e of(deco.extra||[])){if(e===self||!e.sp||e.sp.p!==p||!EXI[e.id])continue;const q=spPoint(e,L);if(q)out.push({x:q.x,w:EXI[e.id].sz[0]*.8})}return out}
+function freeX(want,w,x0,x1,others){const fits=x=>others.every(o=>Math.abs(x-o.x)>=(w+o.w)/2-3);const lo=x0,hi=x1;want=clamp(want,lo,hi);if(fits(want))return want;for(let s=2;s<=hi-lo;s+=2){if(want-s>=lo&&fits(want-s))return want-s;if(want+s<=hi&&fits(want+s))return want+s}return null}
+function pzTarget(kind,w,h,fx,fy,self,deco,L){const fl=pzFloor(L);const cx=v=>clamp(v,w/2+2,398-w/2);
+ if(kind==='wall'){const wl=pzWall(L);return{t:'wall',x:cx(fx),y:clamp(fy,wl.y0+h/2,wl.y1-h/2),ok:true}}
+ if(kind==='ceil')return{t:'ceil',x:cx(fx),ok:true};
+ if(kind==='top'){let best=null,bd=1e9;for(const s of pzSurfaces(deco,L)){if(self&&s.p===self.u)continue;if(fx<s.x0-18||fx>s.x1+18)continue;const dy=s.y-fy;if(dy<-14||dy>220)continue;if(dy<bd){bd=dy;best=s}}
+  if(best){const x=freeX(fx,w,best.x0,best.x1,onSurf(deco,L,best.p,self));if(x==null)return{t:'surf',x:fx,y:best.y,ok:false,s:best};return{t:'surf',p:best.p,dx:Math.round(x-(best.x0+(best.x1-best.x0)/2)),x,y:best.y,ok:true,s:best}}}
+ let y=clamp(Math.max(fy,fl.y0),fl.y0,fl.y1),x=cx(fx);
+ if(kind==='floor'){for(let pass=0;pass<3;pass++)for(const it of pzList(deco)){if(it===self||it.p||!PZ[it.id]||PZ[it.id].s!=='floor')continue;const d=PZ[it.id];if(Math.abs(it.y-y)>24)continue;const need=(w+d.w)/2+2;if(Math.abs(x-it.x)<need)x=cx(x<it.x?it.x-need:it.x+need)}}
+ return{t:'floor',x,y,ok:true}}
 /* ===== design mode «Обустроить» ===== */
 const PZI={};
 function pzIcon(id,col=0){const k=id+col;if(PZI[k])return PZI[k];const d=PZ[id],S2=112,cv=mkCanvas(S2,S2),c=cv.getContext('2d');const sc=Math.min(80/d.w,80/d.h,2.4);c.translate(S2/2,S2/2);c.scale(sc,sc);const L0={fl:400,VH:700,win:null};const it={id,u:'icon',x:0,y:d.s==='wall'?0:d.s==='ceil'?-d.h/2:d.h/2,c:col};
@@ -3335,7 +3351,7 @@ function pzDefPos(d,deco,L){const fl=pzFloor(L),w=pzWall(L);if(d.s==='wall')retu
 function showPlace(){APP.scr='decor';APP.move.on=false;APP.pz={on:true,sel:null,cat:APP.pz&&APP.pz.cat||'wall'};DS.room=S.rooms.cur;ensureDeco(DS.room);const pzs=Math.min(1,(APP.H-250)/APP.H);tween(APP.view,{x:APP.W*(1-pzs)/2,y:8,s:pzs},450,E.inOut);APP.roomDirty=true;
  APP.scrEl.innerHTML=`<div class="layer" id="decor"><div class="dtop"><button class="btn small green" data-a="pzoff">Готово ✓</button><span class="sp"></span><span class="pzuy">🏡 уют +${placedUyut(DS.room)}</span></div><div class="pzbar" id="pzbar"></div></div>`;pzBar()}
 function pzBar(){const b=$('#pzbar');if(!b)return;const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);
- const tool=sel?`<div class="pztool"><b>${esc(PZ[sel.id].n)}</b><div class="irow"><button class="btn small blue" data-a="pzflip">↔ Отразить</button><button class="btn small pink" data-a="pzcol">🎨 Цвет</button><button class="btn small ghost2" data-a="pzdel">📦 Убрать</button></div></div>`:`<div class="pzhint">Нажми на вещь в каталоге — она появится в комнате. Перетаскивай пальцем: зелёным подсвечено, куда можно поставить.</div>`;
+ const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);const tool=xs?`<div class="pztool"><b>${esc(EXI[xs.id].n)}</b><div class="irow"><button class="btn small ghost2" data-a="pzxdel">📦 Убрать в запас</button></div></div>`:sel?`<div class="pztool"><b>${esc(PZ[sel.id].n)}</b><div class="irow"><button class="btn small blue" data-a="pzflip">↔ Отразить</button><button class="btn small pink" data-a="pzcol">🎨 Цвет</button><button class="btn small ghost2" data-a="pzdel">📦 Убрать</button></div></div>`:`<div class="pzhint">Нажми на вещь в каталоге — она появится в комнате. Перетаскивай пальцем: зелёным подсвечено, куда можно поставить.</div>`;
  const inv=S.pinv||{};const items=Object.keys(PZ).filter(id=>PZ[id].s===APP.pz.cat);
  b.innerHTML=tool+`<div class="pztabs">${PZC.map(c=>`<button class="pztab ${c.id===APP.pz.cat?'on':''}" data-a="pzcat" data-id="${c.id}">${c.ic} ${c.n}</button>`).join('')}</div><div class="pzrow">${items.map(id=>{const d=PZ[id],n=inv[id]||0;return`<button class="pzcard" data-a="pzbuy" data-id="${id}"><img src="${pzIcon(id)}" alt=""><small>${esc(d.n)}</small><i>${n?'в запасе: '+n:d.p+' 🦴'}</i></button>`}).join('')}</div>`;const u=$('.pzuy');if(u)u.textContent='🏡 уют +'+placedUyut(DS.room)}
 function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&APP.pz.sel&&list.find(i=>i.u===APP.pz.sel);
@@ -3345,27 +3361,42 @@ function pzAct(a,b){const deco=curDeco(),L=APP.L,list=pzList(deco),sel=APP.pz&&A
  case'pzcat':SFX.tap();APP.pz.cat=b.dataset.id;pzBar();return true;
  case'pzbuy':{const id=b.dataset.id,d=PZ[id];S.pinv=S.pinv||{};if(!(S.pinv[id]>0)){if(S.bones<d.p){toast('Нужно '+d.p+' 🦴 — пройди ещё пару уровней!');SFX.nope&&SFX.nope();return true}S.bones-=d.p;SFX.buy?SFX.buy():SFX.chime&&SFX.chime(2)}else S.pinv[id]--;
   const it=Object.assign({u:'z'+Date.now().toString(36)+Math.floor(Math.random()*999),id,c:0,f:0},pzDefPos(d,deco,L));list.push(it);APP.pz.sel=it.u;save();const bx=pzBox(it,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',12);vib(15);pzBar();refreshChips&&refreshChips();return true}
+ case'pzxdel':{const e=(deco.extra||[]).find(q=>'x:'+q.u===APP.pz.sel);if(e&&EXI[e.id].sig){toast('Это часть комнаты — её можно только двигать 🙂');return true}if(e){for(const o of(deco.extra||[]))if(o.sp&&o.sp.p===e.u)delete o.sp;deco.extra=deco.extra.filter(q=>q!==e);S.inv=S.inv||{};S.inv[e.id]=(S.inv[e.id]||0)+1;APP.pz.sel=null;APP.roomDirty=true;save();SFX.tap();pzBar()}return true}
  case'pzflip':if(sel){sel.f=sel.f?0:1;save();SFX.tap()}return true;
  case'pzcol':if(sel){sel.c=((sel.c||0)+1)%PZ[sel.id].cols.length;save();SFX.tap();const bx=pzBox(sel,deco,L);pzPart(bx[0]+bx[2]/2,bx[1]+bx[3]/2,'spark',5)}return true;
  case'pzdel':if(sel){for(const ch of list)if(ch.p===sel.u){const pp=pzPos(ch,deco,L);delete ch.p;ch.x=pp.x;ch.y=pzFloor(L).y0+30}deco.pl=list.filter(i=>i!==sel);S.pinv=S.pinv||{};S.pinv[sel.id]=(S.pinv[sel.id]||0)+1;APP.pz.sel=null;save();SFX.tap();pzBar()}return true}
  return false}
 function refreshChips(){const t=$('.chips');if(t&&typeof chips==='function')t.outerHTML=chips()}
-function pzDown(p){const sc=APP.W/400,v=APP.view,x=(p.x-v.x)/v.s/sc,y=(p.y-v.y)/v.s/sc;const deco=curDeco(),L=APP.L;let hit=null;for(const it of pzList(deco)){if(!PZ[it.id])continue;const[bx,by,bw,bh]=pzBox(it,deco,L);if(x>=bx-6&&x<=bx+bw+6&&y>=by-6&&y<=by+bh+6){if(!hit||PZ[it.id].s==='top'||(PZ[hit.id].s!=='top'&&PZ[it.id].s==='floor'))hit=it}}
- APP.pz.sel=hit?hit.u:null;pzBar();if(!hit)return null;const pp=pzPos(hit,deco,L);SFX.tap();vib(10);return{it:hit,ox:x-pp.x,oy:y-pp.y}}
-function pzMove(drag,p){const sc=APP.W/400,v=APP.view,x=(p.x-v.x)/v.s/sc-drag.ox,y=(p.y-v.y)/v.s/sc-drag.oy;const deco=curDeco(),L=APP.L,it=drag.it,d=PZ[it.id];
- const cx2=v=>clamp(v,d.w/2+2,398-d.w/2);
- if(d.s==='wall'){const w=pzWall(L);it.x=Math.round(cx2(x));it.y=Math.round(clamp(y,w.y0+d.h/2,w.y1-d.h/2))}
- else if(d.s==='ceil'){it.x=Math.round(cx2(x))}
- else if(d.s==='floor'){const f=pzFloor(L);it.x=Math.round(cx2(x));it.y=Math.round(clamp(y,f.y0,f.y1))}
- else{let best=null,bd=46;for(const s of pzSurfaces(deco,L)){if(s.p===it.u)continue;if(x<s.x0-20||x>s.x1+20)continue;const dd=Math.abs(y-s.y);if(dd<bd){bd=dd;best=s}}if(best){it.p=best.p;it.dx=Math.round(clamp(x,best.x0,best.x1)-(best.x0+(best.x1-best.x0)/2))}else{const f=pzFloor(L);delete it.p;it.x=Math.round(cx2(x));it.y=Math.round(clamp(y,f.y0,f.y1))}}
+function pzRoomPt(p){const sc=APP.W/400,v=APP.view;return{x:(p.x-v.x)/v.s/sc,y:(p.y-v.y)/v.s/sc}}
+function exBox(e,L){const d=EXI[e.id],q=xpos(e,L);return d.wall?[q.x-d.sz[0]/2,q.y-d.sz[1]/2,d.sz[0],d.sz[1]]:[q.x-d.sz[0]/2,q.y-d.sz[1],d.sz[0],d.sz[1]]}
+function pzDown(p){const{x,y}=pzRoomPt(p);const deco=curDeco(),L=APP.L;let hit=null,hs=-1;const score=(k)=>k==='top'?3:k==='ceil'?2.5:k==='floor'?2:1;
+ for(const it of pzList(deco)){if(!PZ[it.id])continue;const[bx,by,bw,bh]=pzBox(it,deco,L);if(x>=bx-6&&x<=bx+bw+6&&y>=by-6&&y<=by+bh+6){const sc2=score(PZ[it.id].s)+(it.p?1:0);if(sc2>=hs){hs=sc2;hit={kind:'pl',it}}}}
+ for(const e of(deco.extra||[])){const d=EXI[e.id];if(!d||!d.sz)continue;const[bx,by,bw,bh]=exBox(e,L);if(x>=bx-4&&x<=bx+bw+4&&y>=by-4&&y<=by+bh+4){const sc2=(exSmall(d)?2.6:d.wall?1:1.8)+(e.sp?1:0);if(sc2>hs){hs=sc2;hit={kind:'ex',it:e}}}}
+ APP.pz.sel=hit?(hit.kind==='ex'?'x:'+hit.it.u:hit.it.u):null;pzBar();if(!hit)return null;SFX.tap();vib(10);
+ const it=hit.it;if(hit.kind==='pl'){const pp=pzPos(it,deco,L);return{kind:'pl',it,ox:x-pp.x,oy:y-pp.y,snap:JSON.stringify({x:it.x,y:it.y,p:it.p,dx:it.dx})}}
+ const q=xpos(it,L);return{kind:'ex',it,ox:x-q.x,oy:y-q.y,snap:JSON.stringify({x:it.x,fy:it.fy,sp:it.sp})}}
+function pzKind(drag){if(drag.kind==='pl')return PZ[drag.it.id].s;const d=EXI[drag.it.id];return d.wall?'wall':exSmall(d)?'top':'floor0'}
+function pzSize(drag){if(drag.kind==='pl'){const d=PZ[drag.it.id];return[d.w,d.h]}const d=EXI[drag.it.id];return[d.sz[0]*.8,d.sz[1]]}
+function pzMove(drag,p){const r=pzRoomPt(p),fx=r.x-drag.ox,fy=r.y-drag.oy;const deco=curDeco(),L=APP.L,it=drag.it;const k=pzKind(drag),[w,h]=pzSize(drag);
+ if(drag.kind==='pl'){it._drag=1;it._fx=clamp(fx,w/2,400-w/2);it._fy=fy;drag.tg=pzTarget(k,w,h,fx,fy,it,deco,L)}
+ else{const d=EXI[it.id];if(k==='wall'){const[x0,x1,y0,y1]=exLimits(d,L);it.x=Math.round(clamp(fx,x0,x1));it.fy=Math.round(clamp(fy-L.fl,y0,y1));delete it.sp;drag.tg=null}
+  else{const tg=pzTarget(k==='top'?'top':'floor',w,h,fx,fy,it,deco,L);drag.tg=tg;if(tg.t==='surf'&&tg.ok){it.sp={p:tg.p,dx:tg.dx}}else{delete it.sp;const[x0,x1,y0,y1]=exLimits(d,L);it.x=Math.round(clamp(tg.x,x0,x1));it.fy=Math.round(clamp(tg.y-L.fl,y0,y1))}APP.roomDirty=true}}
  drag.moved=true}
-function drawPzMarks(c,L,now){const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);const p=.55+.45*Math.sin(now*.006);c.save();c.setLineDash([6,5]);c.lineWidth=2;
+function pzUp(drag){if(!drag)return;const deco=curDeco(),L=APP.L,it=drag.it;const tg=drag.tg;
+ if(drag.kind==='pl'){const fy=it._fy;delete it._drag;if(!drag.moved||!tg){return}
+  if(!tg.ok){Object.assign(it,JSON.parse(drag.snap));if(!it.p)delete it.p;toast('Тут нет места — вещи мешают друг другу');SFX.nope&&SFX.nope();return}
+  if(tg.t==='surf'){it.p=tg.p;it.dx=tg.dx}else{delete it.p;delete it.dx;it.x=Math.round(tg.x);if(tg.y!=null)it.y=Math.round(tg.y)}
+  if(tg.t==='ceil')it._sw=performance.now();else if(tg.t!=='wall'){const to=pzPos0(it,deco,L,PZ[it.id]);if(to.y-fy>6)it._fall={y0:fy,t0:performance.now()};else{it._land=performance.now()}}
+  else{it._land=performance.now();osc(520,.05,'sine',.04)}}
+ else{APP.roomDirty=true;if(tg&&!tg.ok){Object.assign(it,JSON.parse(drag.snap));if(!it.sp)delete it.sp;toast('Тут нет места');APP.roomDirty=true}else{osc(180,.08,'sine',.05,120);const q=xpos(it,L);pzPart(q.x,q.y,'dust',6)}}}
+function drawPzMarks(c,L,now){const deco=curDeco(),sel=APP.pz.sel&&pzList(deco).find(i=>i.u===APP.pz.sel);const xs=APP.pz.sel&&APP.pz.sel.startsWith('x:')&&(deco.extra||[]).find(e=>'x:'+e.u===APP.pz.sel);if(xs&&EXI[xs.id]){const p2=.55+.45*Math.sin(now*.006);c.save();const dd=EXI[xs.id];if(exSmall(dd)){c.strokeStyle=`rgba(80,200,120,${.5+.4*p2})`;c.lineWidth=4;for(const s2 of pzSurfaces(deco,L)){c.beginPath();c.moveTo(s2.x0-6,s2.y);c.lineTo(s2.x1+6,s2.y);c.stroke()}}const[bx,by,bw,bh]=exBox(xs,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p2})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke();if(PD&&PD.pz&&PD.pz.tg&&!PD.pz.tg.ok){c.strokeStyle='rgba(240,80,80,.95)';rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}c.restore()}const p=.55+.45*Math.sin(now*.006);c.save();c.setLineDash([6,5]);c.lineWidth=2;
  if(sel){const d=PZ[sel.id];c.strokeStyle=`rgba(80,200,120,${.5+.4*p})`;c.fillStyle='rgba(80,200,120,.08)';
   if(d.s==='wall'){const w=pzWall(L);rr(c,4,w.y0,392,w.y1-w.y0,10);c.fill();c.stroke()}
   else if(d.s==='ceil'){const y=pzCeilY(L);c.beginPath();c.moveTo(6,y+2);c.lineTo(394,y+2);c.stroke()}
   else if(d.s==='floor'){const f=pzFloor(L);rr(c,4,f.y0-14,392,f.y1-f.y0+20,10);c.fill();c.stroke()}
   else{c.setLineDash([]);c.lineWidth=4;for(const s of pzSurfaces(deco,L)){if(s.p===sel.u)continue;c.beginPath();c.moveTo(s.x0-6,s.y);c.lineTo(s.x1+6,s.y);c.stroke()}}
-  c.setLineDash([]);const[bx,by,bw,bh]=pzBox(sel,deco,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}
+  c.setLineDash([]);if(PD&&PD.pz&&PD.pz.tg&&PD.pz.it===sel){const tg=PD.pz.tg,d2=PZ[sel.id];if(tg.t!=='wall'&&tg.t!=='ceil'){c.strokeStyle=tg.ok?'rgba(80,200,120,.95)':'rgba(240,80,80,.95)';c.lineWidth=3;c.beginPath();c.moveTo(tg.x-d2.w/2,tg.y);c.lineTo(tg.x+d2.w/2,tg.y);c.stroke();c.setLineDash([3,4]);c.lineWidth=1.5;c.beginPath();c.moveTo(tg.x,sel._fy);c.lineTo(tg.x,tg.y);c.stroke();c.setLineDash([])}}
+  const[bx,by,bw,bh]=pzBox(sel,deco,L);c.strokeStyle=`rgba(255,214,90,${.7+.3*p})`;c.lineWidth=2.5;rr(c,bx-5,by-5,bw+10,bh+10,8);c.stroke()}
  c.restore()}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
@@ -3649,7 +3680,7 @@ function onMove(e){if(!PD)return;const p=ptOf(e);const dx=p.x-PD.x,dy=p.y-PD.y;i
  if(PD.drag&&PD.drag.x){const sc=APP.W/400,v=APP.view,e=PD.drag.x,L0=baseLayout(APP.H/sc),[x0,x1,y0,y1]=exLimits(EXI[e.id],L0);e.x=Math.round(clamp(PD.drag.ox+dx/v.s/sc,x0,x1));e.fy=Math.round(clamp(PD.drag.ofy+dy/v.s/sc,y0,y1));APP.roomDirty=true;return}
  if(PD.drag){const sc=APP.W/400,v=APP.view,d=curDeco(),k=PD.drag.k;const L0=baseLayout(APP.H/sc);const[x0,x1,y0,y1]=movLimits(L0,k);const nx=clamp(L0[k].x+PD.drag.ox+dx/v.s/sc,x0,x1),ny=clamp(L0[k].y+PD.drag.oy+dy/v.s/sc,y0,y1);d.pos[k]={dx:Math.round(nx-L0[k].x),dy:Math.round(ny-L0[k].y)};APP.roomDirty=true;return}if(Math.hypot(dx,dy)>10){PD.moved=true;clearTimeout(PD.long)}
  if(PD.cell&&!PD.swiped&&G.sel&&!G.busy&&T(PD.cell[0],PD.cell[1])===G.sel){const th=G.cs*.35;if(Math.abs(dx)>th||Math.abs(dy)>th){PD.swiped=true;const[r,c]=PD.cell;let r2=r,c2=c;if(Math.abs(dx)>Math.abs(dy))c2+=dx>0?1:-1;else r2+=dy>0?1:-1;G.sel=null;if(T(r2,c2))trySwap(r,c,r2,c2)}}}
-function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.longFired)return;if(d.pz){const pb=$('#pzbar');if(pb)pb.classList.remove('drag');save();pzBar();return}if(d.drag){save();return}
+function onUp(){if(!PD)return;clearTimeout(PD.long);const d=PD;PD=null;if(d.longFired)return;if(d.pz){const pb=$('#pzbar');if(pb)pb.classList.remove('drag');pzUp(d.pz);save();pzBar();return}if(d.drag){save();return}
  if(d.cell){if(G.target&&!G.busy){useTarget(d.cell);return}if(d.desel&&!d.swiped)G.sel=null;return}
  if(d.hit&&!d.moved)roomTap(d.hit,d.x,d.y)}
 
@@ -3710,7 +3741,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 09:16';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 09:28';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function chk(){if(busy)return;busy=1;fetch('version.txt?'+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=0;t=(t||'').trim();if(!t||t===V)return;
 if(location.search.indexOf('v='+encodeURIComponent(t))>=0)return;if(inGame()){window.__upd=t;return}try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}).catch(function(){busy=0})}
