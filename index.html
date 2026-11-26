@@ -559,6 +559,16 @@ button.chip{cursor:pointer;font-family:inherit}
 .fq-r{margin-top:8px;font-weight:800;color:#2E8B3A}
 .fq-g{margin:10px 0;font-weight:700}.fq-g small{display:block;margin-top:4px;opacity:.7;font-weight:600}
 .fq-bar{height:10px;border-radius:6px;background:#0002;margin-top:6px;overflow:hidden}.fq-bar i{display:block;height:100%;background:#8BE36E}
+.ft{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px!important;font-size:12px!important}.fib{width:30px;height:30px}
+.fside button img,.fs img{display:block;margin:0 auto}.fside button img{width:30px;height:30px}
+.ffe{display:inline-flex;align-items:center;margin-left:6px;font-size:13px}.ffe img{width:18px;height:18px}
+.fev{position:absolute;left:10px;right:62px;top:calc(env(safe-area-inset-top,0px) + 100px);z-index:3;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:14px;font:800 12.5px Nunito,sans-serif;color:#fff;box-shadow:0 3px 0 #0003;animation:fpulse 1.6s ease-in-out infinite}.fev[hidden]{display:none}.fev img{width:26px;height:26px}.fev span{flex:1}
+.fev.frost{background:linear-gradient(#6FB8F0,#3E8BD0)}.fev.heat{background:linear-gradient(#FFA84A,#E5702A)}.fev.crows{background:linear-gradient(#5A5A72,#33334A)}
+.ffish{position:absolute;inset:0;z-index:12;background:#0a2a4acc;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;color:#fff}
+.ffish canvas{width:min(80vw,300px);height:auto;border-radius:18px;box-shadow:0 10px 30px #0008}
+.ff-t{text-align:center;margin-bottom:10px;padding:0 20px}.ff-t b{display:block;font-size:24px}.ff-t small{font-weight:700;opacity:.9}
+.ff-x{position:absolute;right:14px;top:calc(env(safe-area-inset-top,0px) + 14px);background:#fff;color:#3a2a1a}
+.fh-p{white-space:nowrap;font-size:13px!important;padding:8px 10px!important}.fh-l{min-width:58px}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -4909,9 +4919,9 @@ const FCROP={
  sunflower:{n:'Подсолнух',e:'🌻',seed:16,sell:46,min:30,lv:3},
  berry:{n:'Клубника',e:'🍓',seed:20,sell:62,min:40,lv:4},
  pumpkin:{n:'Тыква',e:'🎃',seed:30,sell:100,min:60,lv:5}};
-const FEX={egg:['🥚','Яйца',15,2],honey:['🍯','Мёд',40,3],fish:['🐟','Рыба',35,2]};
+const FEX={egg:['🥚','Яйца',15,2],honey:['🍯','Мёд',40,3],fish:['🐟','Карась',35,2],perch:['🐠','Окунь',55,3],carp:['🐡','Карп',85,4],gold:['✨','Золотая рыбка',250,8]};
 const FKEYS=Object.keys(FCROP),FPRICE=1500,FEGG=15,FPLOT=[0,0,0,0,300,500,800,1200,1600];
-function farmS(){if(!S.farm)S.farm={on:0,seeds:{},inv:{},pl:Array(9).fill(null),sel:'carrot',dg:0,tot:0};const f=S.farm;f.st=f.st||{};f.q=f.q||{i:0,b:0};f.ac=f.ac||{};f.dec=f.dec||{};if(!f.pl||f.pl.length<9)f.pl=Array(9).fill(null).map((_,i)=>(f.pl&&f.pl[i])||null);return f}
+function farmS(){if(!S.farm)S.farm={on:0,seeds:{},inv:{},pl:Array(9).fill(null),sel:'carrot',dg:0,tot:0};const f=S.farm;f.st=f.st||{};f.q=f.q||{i:0,b:0};if(f.q.v!==2){if(f.q.v==null&&f.q.i>=9)f.q.i+=1;if(f.q.v==null&&f.q.i>=15)f.q.i+=1;f.q.v=2}f.ac=f.ac||{};f.dec=f.dec||{};if(!f.pl||f.pl.length<9)f.pl=Array(9).fill(null).map((_,i)=>(f.pl&&f.pl[i])||null);return f}
 function farmPlotOpen(f,i){return i<4||(f.u||[]).includes(i)}
 function farmPlotMs(p){return FCROP[p.c].min*60000}
 function farmState(p){if(!p)return'empty';if(!p.w)return'dry';const left=farmPlotMs(p)-(Date.now()-p.w);return left<=0?'ripe':'grow'}
@@ -4919,7 +4929,7 @@ function farmLv(f){return f.lv||1}
 function farmNeed(l){return 20+10*l}
 function farmInc(f,k,n){f.st[k]=(f.st[k]||0)+(n==null?1:n)}
 function farmOpenK(f,k){return FCROP[k].lv<=farmLv(f)}
-function farmDrop(){const f=farmS();if(!f.on)return;const pool=['carrot','carrot','flower','flower','tomato','sunflower','berry','pumpkin'].filter(k=>farmOpenK(f,k));const g=[pick(pool)];if(Math.random()<.35)g.push(pick(pool));g.forEach(k=>f.seeds[k]=(f.seeds[k]||0)+1);save();toast('Семена для фермы: '+g.map(k=>FCROP[k].e).join(' ')+' 🌱')}
+function farmDrop(){const f=farmS();if(!f.on)return;const pool=['carrot','carrot','flower','flower','tomato','sunflower','berry','pumpkin'].filter(k=>farmOpenK(f,k));const g=[pick(pool)];if(Math.random()<.35)g.push(pick(pool));g.forEach(k=>f.seeds[k]=(f.seeds[k]||0)+1);if(Math.random()<.5)f.fert=(f.fert||0)+1;save();toast('Семена для фермы: '+g.map(k=>FCROP[k].e).join(' ')+' 🌱')}
 function farmEntryHtml(){const f=farmS();return`<button class="farmbtn" data-a="farm">${f.on?'🌱 На ферму':'🌱 Огород'}</button>`}
 function farmAct(){const f=farmS();SFX.tap&&SFX.tap();if(f.on){farmOpen(false);return}
  ask(`<div class="center"><div class="bic">🌱</div><h2 class="lob">Участок под огород</h2><p>Своя ферма за домом: сажаешь, поливаешь, собираешь урожай. Всё растёт без спешки, ничего не вянет.</p><div class="reward">${FPRICE} <span>🦴</span></div></div>`,[{t:'Купить',c:'green',v:1,dis:S.bones<FPRICE},{t:'Позже',c:'ghost',v:0}]).then(v=>{if(!v)return;if(S.bones<FPRICE)return;S.bones-=FPRICE;f.on=1;f.seeds={carrot:4,flower:2,tomato:1};save();SFX.coin&&SFX.coin();farmOpen(true)})}
@@ -4969,7 +4979,23 @@ function fCrop(c,k,x,y,s,f,t){const sw=Math.sin(t*2+x*.3)*.05;c.save();c.transla
  else if(k==='berry'){[-1,0,1].forEach(a=>leaf(a*.7,7+4*f,'#3E9B3E'));if(f>.55)[[-5,-1],[5,-2],[0,2]].forEach(p=>{c.fillStyle='#E0364B';c.beginPath();c.moveTo(p[0]-3.6,p[1]-3);c.quadraticCurveTo(p[0],p[1]+7,p[0]+3.6,p[1]-3);c.closePath();c.fill();fEll(c,p[0],p[1]-3.5,2.6,1.4,'#3E9B3E')})}
  else if(k==='pumpkin'){leaf(-1.2,8+6*f,'#3E9B3E');leaf(1.2,8+6*f,'#3E9B3E');if(f>.4){const q=R?1:.6;fEll(c,0,-4*q,11*q,9*q,'#F08A24');c.strokeStyle='#C96A12';c.lineWidth=1.4;[-5,0,5].forEach(d=>{c.beginPath();c.ellipse(d*q,-4*q,3*q,8.5*q,0,0,7);c.stroke()});c.fillStyle='#4A8F2E';c.fillRect(-1.5,-15*q,3,5)}else fEll(c,0,-3,4,3,'#58BE4A')}
  c.restore()}
-function farmIcon(k){FICON=window.FICON||(window.FICON={});if(FICON[k])return FICON[k];const cv=mkCanvas(64,64),c=cv.getContext('2d');fCrop(c,k,32,44,2,1,0);return FICON[k]=cv.toDataURL()}
+function farmIcon(k){FICON=window.FICON||(window.FICON={});if(FICON[k])return FICON[k];const cv=mkCanvas(80,80),c=cv.getContext('2d');const g=c.createRadialGradient(40,34,4,40,40,38);g.addColorStop(0,'#fff');g.addColorStop(.7,'#FFF3C9');g.addColorStop(1,'#F6D88A');c.fillStyle=g;c.beginPath();c.arc(40,40,37,0,7);c.fill();c.strokeStyle='#E0B85A';c.lineWidth=2;c.stroke();fEll(c,40,66,20,5,'#0002');c.save();c.shadowColor='#0004';c.shadowBlur=4;c.shadowOffsetY=2;fCrop(c,k,40,58,2.5,1,0);c.restore();return FICON[k]=cv.toDataURL()}
+function fIco(n){FICON=window.FICON||(window.FICON={});const key='i_'+n;if(FICON[key])return FICON[key];const cv=mkCanvas(64,64),c=cv.getContext('2d');c.lineJoin='round';c.lineCap='round';
+ const ln=(w,col)=>{c.lineWidth=w;c.strokeStyle=col};
+ if(n==='can'){c.fillStyle='#4FA3E0';fRR(c,14,24,30,26,6);c.fill();c.fillStyle='#7CC4F2';fRR(c,17,27,8,20,4);c.fill();ln(5,'#4FA3E0');c.beginPath();c.moveTo(44,32);c.lineTo(58,18);c.stroke();c.fillStyle='#2E7DB0';c.beginPath();c.moveTo(54,12);c.lineTo(62,20);c.lineTo(56,24);c.closePath();c.fill();ln(4,'#2E7DB0');c.beginPath();c.arc(14,34,9,1.57,4.7);c.stroke();fEll(c,60,34,2,3,'#7CC4F2');fEll(c,56,40,2,3,'#7CC4F2');fEll(c,62,44,2,3,'#7CC4F2')}
+ else if(n==='basket'){ln(4,'#B07A38');c.beginPath();c.arc(32,28,17,3.14,6.28);c.stroke();fEll(c,24,24,6,6,'#E5392F');fEll(c,36,22,5,5,'#F28A2E');fEll(c,31,26,5,5,'#58BE4A');c.fillStyle='#D9A55B';c.beginPath();c.moveTo(8,30);c.lineTo(56,30);c.lineTo(50,54);c.lineTo(14,54);c.closePath();c.fill();ln(2,'#B07A38');for(let i=0;i<4;i++){c.beginPath();c.moveTo(10,34+i*6);c.lineTo(54,34+i*6);c.stroke()}}
+ else if(n==='box'){c.fillStyle='#C99A55';fRR(c,8,16,48,38,4);c.fill();ln(2.5,'#8a5a2b');c.strokeRect(8,16,48,38);c.beginPath();c.moveTo(8,30);c.lineTo(56,30);c.moveTo(32,16);c.lineTo(32,54);c.stroke();c.fillStyle='#fff';fRR(c,22,36,20,12,2);c.fill();fEll(c,32,42,3,3,'#E5392F')}
+ else if(n==='stall'){c.fillStyle='#8a5a2b';c.fillRect(12,28,4,28);c.fillRect(48,28,4,28);c.fillStyle='#D9A55B';fRR(c,10,42,44,12,2);c.fill();for(let i=0;i<6;i++){c.fillStyle=i%2?'#fff':'#E5392F';c.beginPath();c.moveTo(8+i*8,14);c.lineTo(16+i*8,14);c.lineTo(16+i*8,28);c.quadraticCurveTo(12+i*8,34,8+i*8,28);c.closePath();c.fill()}fEll(c,24,40,5,4,'#E5392F');fEll(c,36,40,5,4,'#F28A2E');fEll(c,44,41,4,3,'#58BE4A')}
+ else if(n==='book'){c.fillStyle='#D8466F';fRR(c,6,12,52,40,4);c.fill();c.fillStyle='#FFF6E0';c.beginPath();c.moveTo(32,18);c.quadraticCurveTo(20,12,10,16);c.lineTo(10,48);c.quadraticCurveTo(20,44,32,50);c.quadraticCurveTo(44,44,54,48);c.lineTo(54,16);c.quadraticCurveTo(44,12,32,18);c.fill();ln(1.6,'#C9B58A');for(let i=0;i<3;i++){c.beginPath();c.moveTo(14,24+i*7);c.lineTo(28,26+i*7);c.moveTo(36,26+i*7);c.lineTo(50,24+i*7);c.stroke()}}
+ else if(n==='cup'){c.fillStyle='#F5B63A';c.beginPath();c.moveTo(18,10);c.lineTo(46,10);c.lineTo(44,30);c.quadraticCurveTo(32,42,20,30);c.closePath();c.fill();ln(4,'#F5B63A');c.beginPath();c.arc(16,20,7,1.4,4.8);c.moveTo(48,20);c.arc(48,20,7,4.6,1.7);c.stroke();c.fillStyle='#E09A1E';c.fillRect(29,38,6,10);fRR(c,20,48,24,7,3);c.fill();c.fillStyle='#FFE27A';fStar(c,32,22,7,0)}
+ else if(n==='bow'){c.fillStyle='#FF6FA5';c.beginPath();c.moveTo(32,32);c.quadraticCurveTo(6,6,8,30);c.quadraticCurveTo(8,52,32,32);c.moveTo(32,32);c.quadraticCurveTo(58,6,56,30);c.quadraticCurveTo(56,52,32,32);c.fill();fEll(c,32,32,7,7,'#E0457F');c.fillStyle='#FF6FA5';c.beginPath();c.moveTo(28,36);c.lineTo(20,58);c.lineTo(30,52);c.lineTo(32,38);c.moveTo(36,36);c.lineTo(44,58);c.lineTo(34,52);c.lineTo(32,38);c.fill()}
+ else if(n==='fert'){c.fillStyle='#7BC96F';fRR(c,16,20,32,36,6);c.fill();c.fillStyle='#fff';fRR(c,20,30,24,14,3);c.fill();ln(3,'#3E9B3E');c.beginPath();c.moveTo(32,26);c.lineTo(32,40);c.moveTo(26,33);c.lineTo(38,33);c.stroke();c.fillStyle='#8a5a2b';fRR(c,22,12,20,8,3);c.fill()}
+ else if(n==='snow'){ln(3.5,'#8FD0FF');for(let i=0;i<3;i++){const a=i*1.047;c.beginPath();c.moveTo(32+Math.cos(a)*22,32+Math.sin(a)*22);c.lineTo(32-Math.cos(a)*22,32-Math.sin(a)*22);c.stroke()}fEll(c,32,32,4,4,'#fff')}
+ else if(n==='sun'){c.fillStyle='#FFB52E';for(let i=0;i<8;i++){const a=i*.785;c.beginPath();c.arc(32+Math.cos(a)*22,32+Math.sin(a)*22,3.4,0,7);c.fill()}fEll(c,32,32,14,14,'#FFD23F')}
+ else if(n==='crow'){fEll(c,30,36,18,12,'#2B2B3A');fEll(c,48,26,8,8,'#2B2B3A');c.fillStyle='#F5A623';c.beginPath();c.moveTo(54,24);c.lineTo(62,27);c.lineTo(54,30);c.fill();fEll(c,50,24,1.6,1.6,'#fff');fEll(c,24,34,10,6,'#444458',-.4);ln(2,'#F5A623');c.beginPath();c.moveTo(28,46);c.lineTo(28,54);c.moveTo(36,46);c.lineTo(36,54);c.stroke()}
+ else if(n==='fish'){c.fillStyle='#4FA3E0';c.beginPath();c.moveTo(8,32);c.quadraticCurveTo(30,8,46,32);c.quadraticCurveTo(30,56,8,32);c.fill();c.beginPath();c.moveTo(44,32);c.lineTo(58,20);c.lineTo(58,44);c.fill();fEll(c,20,28,2.4,2.4,'#fff');fEll(c,20,28,1,1,'#222');ln(1.6,'#2E7DB0');c.beginPath();c.moveTo(28,22);c.quadraticCurveTo(34,32,28,42);c.stroke()}
+ return FICON[key]=cv.toDataURL()}
+function fBtn(n,t){return`<img class="fib" src="${fIco(n)}" alt=""><span>${t}</span>`}
 function fPlotXY(i){return[FPX+(i%3)*(FPS+FPG),FPY+Math.floor(i/3)*(FPS+FPG)]}
 const FPOS={carrot:[[-.5,-.45],[.5,-.45],[-.5,.1],[.5,.1],[0,-.2]],flower:[[-.5,-.45],[.5,-.45],[-.5,.15],[.5,.15]],tomato:[[-.5,-.2],[.5,-.2],[0,.35]],sunflower:[[-.5,-.1],[.5,-.1],[0,.4]],berry:[[-.5,-.4],[.5,-.4],[-.5,.15],[.5,.15],[0,-.1]],pumpkin:[[-.45,0],[.5,.1]]};
 function fDrawPlot(c,i,f,t){const[x,y]=fPlotXY(i),w=FPS;
@@ -5003,7 +5029,7 @@ function farmFrame(d){if(!d.isConnected)return;requestAnimationFrame(()=>farmFra
  c.setTransform(k,0,0,k,0,0);c.fillStyle='#6CBF47';c.fillRect(0,0,W,H);c.save();c.translate(ox,0);c.scale(sc,sc);c.drawImage(d._bg,0,0,FW,FH);
  for(let i=0;i<2;i++){const cx=((t*(9+i*5)+i*220)%(FW+260))-130;fEll(c,cx,200+i*260,90,34,'#00000010')}
  const pw=Math.sin(t*.7)*2;c.strokeStyle='#ffffff55';c.lineWidth=1.5;c.beginPath();c.ellipse(300,640,34+pw,14+pw/2,0,0,7);c.stroke();
- for(let i=0;i<9;i++)fDrawPlot(c,i,f,t);farmDecorDraw(c,t,f,ta,now);
+ for(let i=0;i<9;i++)fDrawPlot(c,i,f,t);farmDecorDraw(c,t,f,ta,now);farmEvDraw(c,t,f,w,now);
  /* искры спелых */if(now-w.sp>260){w.sp=now;f.pl.forEach((p,i)=>{if(farmState(p)==='ripe'){const[x,y]=fPlotXY(i);farmPa({x:x+14+Math.random()*(FPS-28),y:y+14+Math.random()*(FPS-30),vy:-.5,life:1100,type:'star',col:'#FFE27A',size:4})}})}
  c.fillStyle='#E6C97A';fRR(c,34,598,168,84,12);c.fill();c.strokeStyle='#C9A752';c.lineWidth=2;for(let i=0;i<7;i++){c.beginPath();c.moveTo(40+i*23,602+(i%2)*3);c.lineTo(46+i*23,676);c.stroke()}fFence(c,28,208,588,6);fFence(c,28,208,690,6);
  fEll(c,60,654,26,12,'#D4AE55');for(let i=0;i<f.eg.n;i++){fEll(c,50+i*12,652+(i%2)*3,5,6.5,'#FFF4DD');fEll(c,48.5+i*12,650+(i%2)*3,1.6,2,'#fff')}
@@ -5023,6 +5049,7 @@ function farmFrame(d){if(!d.isConnected)return;requestAnimationFrame(()=>farmFra
  c.restore();
  /* свет: закат/ночь */c.save();c.translate(ox,0);c.scale(sc,sc);if(ta>.01){c.globalAlpha=ta;c.fillStyle=tc;c.fillRect(0,0,FW,FH);c.globalAlpha=1}
  if(ta>.18)for(let i=0;i<16;i++){const x=frnd(i)*FW+Math.sin(t*.7+i)*18,y=170+frnd(i+4)*500+Math.cos(t*.6+i*2)*14,gl=.4+.6*Math.abs(Math.sin(t*1.5+i)),r=c.createRadialGradient(x,y,0,x,y,11);r.addColorStop(0,'rgba(255,240,140,'+gl+')');r.addColorStop(1,'rgba(255,240,140,0)');c.fillStyle=r;c.fillRect(x-11,y-11,22,22)}
+ if(w.rb&&now>w.rb&&now<w.rb+70000){const ra=Math.min(1,(w.rb+70000-now)/6000,(now-w.rb)/1500);c.globalAlpha=ra*.5;['#FF5A5A','#FFA84A','#FFE24A','#6BD66B','#4FB8FF','#8A6BFF'].forEach((col,i)=>{c.strokeStyle=col;c.lineWidth=7;c.beginPath();c.arc(195,300,175-i*7,3.3,6.1);c.stroke()});c.globalAlpha=1}
  /* дождь */const rn=w.rain;if(now<rn.b){const ra=Math.min(1,(now-rn.a)/1500,(rn.b-now)/2000);c.globalAlpha=ra*.2;c.fillStyle='#294a78';c.fillRect(0,0,FW,FH);c.globalAlpha=ra*.7;c.strokeStyle='#CFE8FF';c.lineWidth=1.2;c.beginPath();for(let i=0;i<110;i++){const x=(frnd(i)*FW*1.2+t*50)%(FW+40)-20,y=(frnd(i+5)*FH+t*(600+frnd(i)*200))%FH;c.moveTo(x,y);c.lineTo(x-3,y+13)}c.stroke();c.globalAlpha=1}
  /* частицы */w.pa=w.pa.filter(q=>now-q.t<q.life);w.pa.forEach(q=>{const a=(now-q.t)/q.life;if(q.type==='item'){const e=a*a*(3-2*a),x=q.x+(q.tx-q.x)*e,y=q.y+(q.ty-q.y)*e-Math.sin(a*3.14)*60;fCrop(c,q.k,x,y+10,1.2*(1-a*.5),1,0);return}
   q.x+=q.vx;q.y+=q.vy;q.vy+=q.g;c.globalAlpha=Math.max(0,1-a*a);c.fillStyle=q.col;if(q.type==='star')fStar(c,q.x,q.y,q.size*(1.2-a*.6),a*5);else if(q.type==='drop'){c.beginPath();c.ellipse(q.x,q.y,q.size*.6,q.size,0,0,7);c.fill()}else{c.beginPath();c.arc(q.x,q.y,q.size*(1-a*.4),0,7);c.fill()}c.globalAlpha=1});
@@ -5049,21 +5076,21 @@ function farmPlotAt(x,y){for(let i=0;i<9;i++){const[px,py]=fPlotXY(i);if(x>=px&&
 function farmClose(){const d=$('#farm');if(d)d.remove();APP.farmOpen=false;clearInterval(farmOpen.iv);try{refreshRoomNav()}catch(e){}}
 function farmDraw(d){const f=farmS();farmProd(f);
  const seeds=FKEYS.map(k=>`<button class="fs" data-f="sel" data-i="${k}"><img src="${farmIcon(k)}" alt=""><b></b><em></em></button>`).join('');
- d.innerHTML=`<canvas id="fcv"></canvas><div class="fhud"><button class="fh-b" data-f="home">🏠</button><span class="fh-p" id="fbn"></span><span class="fh-p fh-l" id="fbl"><b></b><u><i></i></u></span><span class="fh-p" id="fbt"></span></div><button class="fgoal" id="fgoal" data-f="quest"></button><div class="fside"><button data-f="quest" id="fsq">📖</button><button data-f="ach" id="fsa">🏆</button><button data-f="dec">🎀</button></div><div class="fhint" id="fhint">Выбери семена и нажми на грядку</div><div class="fbar"><div class="fseeds">${seeds}</div><div class="ftools"><button class="btn" data-f="water">💧 Полить</button><button class="btn" data-f="reap">🧺 Собрать</button><button class="btn" data-f="ord">📦 Заказы</button><button class="btn" data-f="shop">🏪 Лавка</button></div></div><div class="fshop" id="fshop" hidden></div>`;farmTick(d)}
+ d.innerHTML=`<canvas id="fcv"></canvas><div class="fhud"><button class="fh-b" data-f="home">🏠</button><span class="fh-p" id="fbn"></span><span class="fh-p fh-l" id="fbl"><b></b><u><i></i></u></span><span class="fh-p" id="fbt"></span></div><button class="fgoal" id="fgoal" data-f="quest"></button><div class="fev" id="fev" hidden></div><div class="fside"><button data-f="quest" id="fsq"><img src="${fIco('book')}" alt=""></button><button data-f="ach" id="fsa"><img src="${fIco('cup')}" alt=""></button><button data-f="dec"><img src="${fIco('bow')}" alt=""></button></div><div class="fhint" id="fhint">Выбери семена и нажми на грядку</div><div class="fbar"><div class="fseeds">${seeds}</div><div class="ftools"><button class="btn ft" data-f="water">${fBtn('can','Полить')}</button><button class="btn ft" data-f="reap">${fBtn('basket','Собрать')}</button><button class="btn ft" data-f="ord">${fBtn('box','Заказы')}</button><button class="btn ft" data-f="shop">${fBtn('stall','Лавка')}</button></div></div><div class="fshop" id="fshop" hidden></div>`;farmTick(d)}
 function farmHint(t){const h=$('#fhint');if(h)h.textContent=t}
 function farmTick(d){if(!d.isConnected){clearInterval(farmOpen.iv);return}const f=farmS();farmGoalUi(d,f);farmProd(f);const w=farmWorld(d),now=Date.now();
  if(now>w.rain.b&&Math.random()<1/600)farmRain(d);
- const bn=$('#fbn',d),bt=$('#fbt',d),bl=$('#fbl',d);if(bn)bn.textContent='🦴 '+S.bones;const g=gtInfo();if(bt)bt.textContent='день '+g.d+' · '+String(g.h).padStart(2,'0')+':'+String(g.m).padStart(2,'0');
+ const bn=$('#fbn',d),bt=$('#fbt',d),bl=$('#fbl',d);if(bn)bn.innerHTML='🦴 '+S.bones+(f.fert?' <span class="ffe"><img src="'+fIco('fert')+'" alt="">'+f.fert+'</span>':'');farmEvTick(d,f);const g=gtInfo();if(bt)bt.textContent='день '+g.d+' · '+String(g.h).padStart(2,'0')+':'+String(g.m).padStart(2,'0');
  if(bl){bl.querySelector('b').textContent='Ур. '+farmLv(f);bl.querySelector('i').style.width=Math.round((f.xp||0)/farmNeed(farmLv(f))*100)+'%'}
  d.querySelectorAll('.fs').forEach(b=>{const k=b.dataset.i,n=f.seeds[k]||0,op=farmOpenK(f,k);b.querySelector('b').textContent=op?n:'';b.querySelector('em').textContent=op?'':'🔒'+FCROP[k].lv;b.classList.toggle('on',f.sel===k);b.classList.toggle('no',!n||!op)})}
-function farmRain(d){const w=farmWorld(d),f=farmS(),n=Date.now();w.rain={a:n,b:n+45000};farmInc(f,'rn');let k=0;f.pl.forEach((p,i)=>{if(p&&!p.w){p.w=n;k++}});save();toast(k?'Пошёл дождик! Грядки политы 🌧':'Пошёл дождик 🌧')}
+function farmRain(d){const w=farmWorld(d),f=farmS(),n=Date.now();w.rain={a:n,b:n+45000};w.rb=n+45000;farmInc(f,'rn');let k=0;f.pl.forEach((p,i)=>{if(p&&!p.w){p.w=n;k++}});save();toast(k?'Пошёл дождик! Грядки политы 🌧':'Пошёл дождик 🌧')}
 function farmCanvasTap(d,x,y){if(d.classList.contains('fintro'))return;const f=farmS(),w=farmWorld(d);
  const g=w.dog;if(Math.hypot(x-g.x,y-g.y)<34){farmClick(d,'dog');return}
  if(x>28&&x<208&&y>585&&y<695){const n=f.eg.n;if(n>0){f.eg.n=0;f.eg.t=Date.now();f.inv.egg=(f.inv.egg||0)+n;farmInc(f,'eg',n);save();farmFx(110,640,'+'+n+' яйцо');fBurst(110,640,8,{col:'#FFF4DD',size:3});SFX.chime&&SFX.chime(2);farmHint('Яиц в корзине: '+f.inv.egg)}else{farmFx(110,640,'ко-ко!');farmHint('Курочки несут яйца примерно раз в 12 минут')}return}
  if(x>330&&x<376&&y>145&&y<205){const n=f.hn.n;if(n>0){f.hn.n=0;f.hn.t=Date.now();f.inv.honey=(f.inv.honey||0)+n;farmInc(f,'hn',n);save();farmFx(352,150,'+'+n+' мёд');fBurst(352,170,8,{col:'#FFD23F',size:3});SFX.chime&&SFX.chime(2);farmHint('Мёд: '+f.inv.honey)}else{farmFx(352,150,'ж-ж-ж');farmHint('Пчёлки делают мёд примерно раз в 20 минут')}return}
  if(x>20&&x<170&&y>50&&y<170){farmClick(d,'ord');return}
  if(x>225&&x<375&&y>605&&y<675){const fs=w.fish;if(fs.st===0){fs.st=1;fs.t=Date.now()+2000+Math.random()*3500;farmHint('Ждём поклёвку...');farmFx(292,625,'заброс');fBurst(292,642,6,{type:'drop',col:'#CFE8FF',size:3})}
-  else if(fs.st===2){fs.st=0;f.inv.fish=(f.inv.fish||0)+1;farmInc(f,'fi');save();farmFx(292,615,'+1 рыбка!');fBurst(292,640,12,{type:'drop',col:'#CFE8FF',size:4});SFX.coin&&SFX.coin();farmXp(f,4);farmHint('Рыбок: '+f.inv.fish)}else farmHint('Ещё не клюёт, подожди');return}
+  else if(fs.st===2){fs.st=0;fBurst(292,640,12,{type:'drop',col:'#CFE8FF',size:4});farmFish(d)}else farmHint('Ещё не клюёт, подожди');return}
  const i=farmPlotAt(x,y);if(i>=0)farmClick(d,'plot',i)}
 function farmClick(d,a,i){const f=farmS();
  if(a==='enter'){d.classList.remove('fintro');d.querySelectorAll('.fi-t,.fi-go').forEach(e=>e.remove());if(!f.q.seen){f.q.seen=1;save();setTimeout(()=>farmQuest(d),500)}return}
@@ -5071,12 +5098,13 @@ function farmClick(d,a,i){const f=farmS();
  if(a==='home'){farmClose();return}
  if(a==='sel'){f.sel=i;save();farmTick(d);farmHint(farmOpenK(f,i)?FCROP[i].n+': растёт '+FCROP[i].min+' мин':'Откроется на уровне фермы '+FCROP[i].lv);SFX.tap&&SFX.tap();return}
  if(a==='plot'){const n=+i,[px,py]=fPlotXY(n),cx=px+FPS/2,cy=py+FPS/2;
+  if(farmEvTap(d,n,cx,cy))return;
   if(!farmPlotOpen(f,n)){const c=FPLOT[n];ask(`<div class="center"><div class="bic">🌾</div><h2 class="lob">Новая грядка</h2><div class="reward">${c} <span>🦴</span></div></div>`,[{t:'Купить',c:'green',v:1,dis:S.bones<c},{t:'Позже',c:'ghost',v:0}]).then(v=>{if(!v||S.bones<c)return;S.bones-=c;f.u=(f.u||[]).concat(n);save();SFX.coin&&SFX.coin();fBurst(cx,cy,14,{type:'star',col:'#FFE27A',size:5});farmTick(d)});return}
   const p=f.pl[n],st=farmState(p);
   if(st==='empty'){const k=f.sel;if(!farmOpenK(f,k)){farmHint('Эта культура откроется на уровне фермы '+FCROP[k].lv);return}if(!(f.seeds[k]>0)){farmHint('Нет таких семян. Выиграй уровень или загляни в лавку');return}f.seeds[k]--;f.pl[n]={c:k,w:0,a:Date.now()};farmInc(f,'pl');save();fBurst(cx,cy+8,10,{col:'#8a5a2b',size:3.4});farmFx(cx,cy,'посажено');SFX.tap&&SFX.tap()}
   else if(st==='dry'){p.w=Date.now();p.a=p.w;farmInc(f,'wa');save();fBurst(cx,cy-30,12,{type:'drop',col:'#7CC4F2',size:4});for(let q=0;q<8;q++)farmPa({x:cx-30+q*9,y:cy-46,vy:2+Math.random(),g:.15,type:'drop',col:'#7CC4F2',size:3.5,life:600});SFX.pop&&SFX.pop();farmHint(FCROP[p.c].n+' поливается и растёт')}
   else if(st==='ripe'){farmReap(n,cx,cy)}
-  else{const left=Math.ceil((farmPlotMs(p)-(Date.now()-p.w))/60000);farmHint(FCROP[p.c].n+': ещё около '+left+' мин')}
+  else{if(f.fert>0){f.fert--;p.w-=Math.max(0,farmPlotMs(p)-(Date.now()-p.w))*.5;save();fBurst(cx,cy,14,{type:'star',col:'#8BE36E',size:5});farmFx(cx,cy,'удобрено');SFX.pop&&SFX.pop();farmHint('Удобрение ускорило рост вдвое')}else{const left=Math.ceil((farmPlotMs(p)-(Date.now()-p.w))/60000);farmHint(FCROP[p.c].n+': ещё около '+left+' мин. Удобрение даётся за победы в уровнях')}}
   farmTick(d);return}
  if(a==='water'){let n=0;f.pl.forEach((p,k)=>{if(p&&!p.w){p.w=Date.now();n++;farmInc(f,'wa');const[px,py]=fPlotXY(k);fBurst(px+FPS/2,py+20,10,{type:'drop',col:'#7CC4F2',size:4})}});save();farmHint(n?'Полито грядок: '+n:'Поливать нечего');if(n)SFX.pop&&SFX.pop();return}
  if(a==='reap'){let n=0;f.pl.forEach((p,k)=>{if(farmState(p)==='ripe'){const[px,py]=fPlotXY(k);farmReap(k,px+FPS/2,py+FPS/2,1);n++}});if(n){save();SFX.chime&&SFX.chime(3);farmHint('Собрано: '+n)}else farmHint('Пока ничего не созрело');farmTick(d);return}
@@ -5106,23 +5134,26 @@ const FQ=[
 {ch:'Глава 2. Хозяйство растёт',t:'Собрать 4 томата',ty:'harv',k:'tomato',n:4,rw:{b:180,xp:12},intro:[['her','Из своих томатов суп будет вкуснее любого магазинного!']],done:[['her','Сочные! Тео, не трогай, это для супа.']]},
 {ch:'Глава 2. Хозяйство растёт',t:'Поймать 2 рыбки',ty:'fish',n:2,rw:{b:150,xp:12},intro:[['him','В пруду водится рыба. Нажми на воду и жди, пока появится «!».']],done:[['teo','Гав! (Я тоже поймал одну, просто она убежала)']]},
 {ch:'Глава 2. Хозяйство растёт',t:'Выполнить 2 заказа',ty:'order',n:2,rw:{b:250,xp:15},intro:[['her','Соседи заказали овощи. Загляни в амбар, там список заказов.']],done:[['her','Нас уже знают по всей округе!']]},
+{ch:'Глава 2. Хозяйство растёт',t:'Справиться с погодой: 1 событие',ty:'ev',n:1,rw:{b:200,xp:15,seed:{carrot:4}},intro:[['him','Иногда на ферме бывает непогода: заморозки, жара или вороны. Следи за плашкой под целью и успей помочь грядкам.'],['teo','Гав! (Ворон я прогоню)']],done:[['her','У нас получилось! Ничего не пропало.']]},
 {ch:'Глава 2. Хозяйство растёт',t:'Достичь 3 уровня фермы',ty:'lv',n:3,rw:{b:200,xp:0},intro:[['him','Дальше откроются подсолнухи. Саша, ведь это твои любимые?']],done:[['her','Дима, ты помнишь! Я обожаю подсолнухи.']]},
 {ch:'Глава 2. Хозяйство растёт',t:'Собрать 3 подсолнуха',ty:'harv',k:'sunflower',n:3,rw:{b:250,xp:15,dec:'lights'},intro:[['her','Они всегда смотрят на солнце. Хочу целое поле!']],done:[['him','Держи подарок: гирлянда для нашего забора. Вечером будет волшебно.']]},
 {ch:'Глава 2. Хозяйство растёт',t:'Собрать 2 порции мёда',ty:'honey',n:2,rw:{b:250,xp:15},intro:[['teo','Гав! (Здесь жужжит. Не нравится. Нравится мёд.)'],['him','Нажми на улей, когда в нём появятся соты.']],done:[['her','Мёд пахнет летом. Спасибо, пчёлки!']]},
 {ch:'Глава 3. Праздник на ферме',t:'Достичь 4 уровня фермы',ty:'lv',n:4,rw:{b:300,xp:0},intro:[['him','Саша, у меня есть секрет. Я готовлю для тебя особенное место на ферме.'],['her','Какой секрет?! Говори!']],done:[['him','Ещё немного терпения.']]},
 {ch:'Глава 3. Праздник на ферме',t:'Собрать 5 клубник',ty:'harv',k:'berry',n:5,rw:{b:300,xp:20},intro:[['her','Клубника к чаю на закате. Мечта.']],done:[['her','Самая сладкая в мире. Потому что наша.']]},
 {ch:'Глава 3. Праздник на ферме',t:'Достичь 5 уровня фермы',ty:'lv',n:5,rw:{b:400,xp:0},intro:[['him','Остался последний рывок. Выращивай тыквы!']],done:[['him','Почти всё готово.']]},
+{ch:'Глава 3. Праздник на ферме',t:'Поймать 3 рыбки любого вида',ty:'fish',n:3,rw:{b:300,xp:20,seed:{pumpkin:2}},intro:[['her','Говорят, в нашем пруду живёт золотая рыбка. Попробуй вытянуть её, но придётся поспорить с течением!']],done:[['her','Если поймаем золотую, загадаю желание. Я уже знаю какое.']]},
+{ch:'Глава 3. Праздник на ферме',t:'Справиться с 4 погодными событиями',ty:'ev',n:4,rw:{b:400,xp:20},intro:[['him','Ферма закаляет. Выдержишь ещё несколько капризов погоды?']],done:[['him','Настоящий фермер. Дождь, мороз и вороны нам нипочём.']]},
 {ch:'Глава 3. Праздник на ферме',t:'Собрать 3 тыквы',ty:'harv',k:'pumpkin',n:3,rw:{b:400,xp:25},intro:[['her','Огромные! Тео в них спрячется.']],done:[['teo','Гав! (Уже спрятался)']]},
 {ch:'Глава 3. Праздник на ферме',t:'Собрать ещё 30 урожаев',ty:'harv',k:'any',n:30,rw:{b:1000,xp:30,dec:'arch'},intro:[['him','Саша, закрой глаза. Последнее задание: собери урожай для праздничного стола.']],done:[['him','Саша, под этой аркой, среди цветов и подсолнухов, я хочу провести самый красивый день нашей жизни.'],['her','Я согласна на всю жизнь. Вместе с тобой и Тео.'],['teo','Гав! (Я несу кольца!)']]}];
 const FAC=[
 ['first','Первый урожай','Собери 1 урожай','h',1,50],['h50','Фермер','Собери 50 урожаев','h',50,150],['h200','Агроном','Собери 200 урожаев','h',200,400],
 ['eg10','Птичница','Собери 10 яиц','eg',10,100],['hn5','Пчеловод','Собери 5 мёда','hn',5,120],['fi10','Рыбак','Поймай 10 рыб','fi',10,200],
 ['od5','Торговец','Выполни 5 заказов','od',5,150],['od20','Купец','Выполни 20 заказов','od',20,400],['sold2000','Богатей','Продай товара на 2000 🦴','sold',2000,300],
-['dg10','Друг Тео','Поиграй с Тео 10 раз','dg',10,80],['rn3','Дождливый день','Дождь пройдёт 3 раза','rn',3,100],['lv5','Опытный фермер','Достигни 5 уровня','lv',5,300],['dec3','Дизайнер','Купи 3 украшения','dec',3,200],['story','Мечта сбылась','Пройди все главы сюжета','story',1,500]];
+['ev5','Защитник урожая','Справься с 5 событиями погоды','ev',5,200],['gold1','Золотая рыбка','Поймай золотую рыбку','gf',1,400],['dg10','Друг Тео','Поиграй с Тео 10 раз','dg',10,80],['rn3','Дождливый день','Дождь пройдёт 3 раза','rn',3,100],['lv5','Опытный фермер','Достигни 5 уровня','lv',5,300],['dec3','Дизайнер','Купи 3 украшения','dec',3,200],['story','Мечта сбылась','Пройди все главы сюжета','story',1,500]];
 const FDEC={lights:{n:'Гирлянда на заборе',p:300,d:'Вечером светится'},flower:{n:'Клумба',p:200,d:'Яркие цветы у дороги'},bench:{n:'Скамейка',p:350,d:'Посидеть вдвоём'},ducks:{n:'Утки на пруду',p:400,d:'Плавают по кругу'},statue:{n:'Золотой Тео',p:700,d:'Памятник лучшему псу'},arch:{n:'Праздничная арка',p:0,d:'Награда за сюжет'}};
-function farmCnt(f,o){switch(o.ty){case'harv':return o.k&&o.k!=='any'?(f.st['h_'+o.k]||0):(f.st.h||0);case'plant':return f.st.pl||0;case'water':return f.st.wa||0;case'egg':return f.st.eg||0;case'honey':return f.st.hn||0;case'fish':return f.st.fi||0;case'order':return f.st.od||0;case'sold':return f.st.sold||0}return 0}
+function farmCnt(f,o){switch(o.ty){case'harv':return o.k&&o.k!=='any'?(f.st['h_'+o.k]||0):(f.st.h||0);case'plant':return f.st.pl||0;case'water':return f.st.wa||0;case'egg':return f.st.eg||0;case'honey':return f.st.hn||0;case'fish':return f.st.fi||0;case'order':return f.st.od||0;case'sold':return f.st.sold||0;case'ev':return f.st.ev||0}return 0}
 function farmQProg(f){const q=FQ[f.q.i];if(!q)return[0,1,0];const v=q.ty==='lv'?farmLv(f):farmCnt(f,q)-f.q.b;return[Math.min(q.n,Math.max(0,v)),q.n,v>=q.n]}
-function farmAcVal(f,id){const a=FAC.find(x=>x[0]===id);if(a[3]==='lv')return farmLv(f);if(a[3]==='story')return f.q.i>=FQ.length?1:0;if(a[3]==='dec')return Object.keys(f.dec).filter(k=>f.dec[k]&&k!=='arch').length;return f.st[a[3]]||0}
+function farmAcVal(f,id){const a=FAC.find(x=>x[0]===id);if(a[3]==='lv')return farmLv(f);if(a[3]==='gf')return f.st.gf||0;if(a[3]==='story')return f.q.i>=FQ.length?1:0;if(a[3]==='dec')return Object.keys(f.dec).filter(k=>f.dec[k]&&k!=='arch').length;return f.st[a[3]]||0}
 function farmGoalUi(d,f){const g=$('#fgoal',d);if(!g)return;const q=FQ[f.q.i];let rd=0;if(q){const[v,n,ok]=farmQProg(f);rd=ok;g.className='fgoal'+(ok?' rd':'');g.innerHTML=ok?'Цель выполнена! Забрать награду':'Цель: '+q.t+' <b>'+v+'/'+n+'</b>';if(ok&&!d._qr){d._qr=1;SFX.chime&&SFX.chime(3);toast('Цель выполнена! Загляни в 📖')}if(!ok)d._qr=0}else{g.className='fgoal';g.textContent='Все главы пройдены'}
  const sq=$('#fsq',d),sa=$('#fsa',d);if(sq)sq.classList.toggle('rd',!!rd);const ac=FAC.some(a=>!f.ac[a[0]]&&farmAcVal(f,a[0])>=a[4]);if(sa)sa.classList.toggle('rd',ac)}
 function fDlg(l){const nm={her:S.her||'Саша',him:S.him||'Дима',teo:'Тео'};return l.map(x=>`<div class="fq-l"><b class="w-${x[0]}">${nm[x[0]]}</b><span>${x[1]}</span></div>`).join('')}
@@ -5153,6 +5184,46 @@ function farmDecorDraw(c,t,f,ta,now){const D=f.dec;
   for(let i=0;i<18;i++){const u=i/17,px=(1-u)*(1-u)*(x-28)+2*u*(1-u)*x+u*u*(x+28),py=(1-u)*(1-u)*(y-44)+2*u*(1-u)*(y-82)+u*u*(y-44),sw=Math.sin(t*1.5+i)*.8;fEll(c,px+sw,py-1,4.2,4.2,['#FF9EC4','#fff','#FFD23F','#FF6FA5'][i%4])}
   for(let i=0;i<6;i++){const yy=y-6-i*7;fEll(c,x-28,yy,3.2,3.2,['#FF9EC4','#fff'][i%2]);fEll(c,x+28,yy,3.2,3.2,['#fff','#FF9EC4'][i%2])}
   c.fillStyle='#FF4F7F';const hy=y-66+Math.sin(t*2)*1.5;c.beginPath();c.moveTo(x,hy+6);c.bezierCurveTo(x-10,hy-4,x-4,hy-10,x,hy-3);c.bezierCurveTo(x+4,hy-10,x+10,hy-4,x,hy+6);c.fill();if(Math.sin(t*3.1)>.96)farmPa({x:x+(Math.random()-.5)*50,y:y-50+Math.random()*30,vy:-.4,life:1000,type:'star',col:'#FFE27A',size:4})}}
+/* ---------- события погоды ---------- */
+const FEV={frost:{ico:'snow',t:'Заморозки! Укрой грядки (нажми на каждую)',ms:240000},heat:{ico:'sun',t:'Жара! Полей грядки (нажми на каждую)',ms:240000},crows:{ico:'crow',t:'Вороны! Прогони их (нажми на ворон)',ms:200000}};
+function farmEvTick(d,f){const w=farmWorld(d),now=Date.now(),b=$('#fev',d);if(!b)return;let e=w.ev;
+ if(e&&now>e.until){w.ev=e=null}
+ if(!e&&f.q.i>=2&&!d.classList.contains('fintro')&&Math.random()<1/360){const pl=f.pl.map((p,i)=>p?i:-1).filter(i=>i>=0);const op=[0,1,2,3,4,5,6,7,8].filter(i=>farmPlotOpen(f,i));if(pl.length){const k=pick(['frost','heat','crows']);w.ev=e={k,until:now+FEV[k].ms,need:k==='crows'?Math.min(3,op.length):pl.length,set:[],cr:k==='crows'?op.slice().sort(()=>Math.random()-.5).slice(0,Math.min(3,op.length)):[],pl};SFX.chime&&SFX.chime(2)}}
+ if(!e){b.hidden=true;return}b.hidden=false;b.className='fev '+e.k;b.innerHTML=`<img src="${fIco(FEV[e.k].ico)}" alt=""><span>${FEV[e.k].t}</span><b>${e.set.length}/${e.need}</b>`}
+function farmEvDone(d,f){const w=farmWorld(d);w.ev=null;S.bones+=60;farmInc(f,'ev');save();SFX.chime&&SFX.chime(5);try{confetti(30)}catch(e){}farmXp(f,10);farmFx(195,300,'Событие пройдено! +60 🦴');farmTick(d)}
+function farmEvTap(d,n,cx,cy){const w=farmWorld(d),e=w.ev,f=farmS();if(!e||e.set.includes(n))return 0;
+ if(e.k==='crows'){if(!e.cr.includes(n))return 0;e.set.push(n);fBurst(cx,cy-10,14,{col:'#2B2B3A',size:3.4});farmFx(cx,cy,'кыш!');SFX.pop&&SFX.pop()}
+ else if(f.pl[n]&&e.pl.includes(n)){e.set.push(n);if(e.k==='frost'){fBurst(cx,cy,12,{type:'star',col:'#BFE6FF',size:5});farmFx(cx,cy,'укрыто')}else{fBurst(cx,cy-24,12,{type:'drop',col:'#7CC4F2',size:4});farmFx(cx,cy,'полито')}SFX.pop&&SFX.pop()}
+ else return 0;
+ if(e.set.length>=e.need)farmEvDone(d,f);else farmTick(d);return 1}
+function fCrow(c,x,y,t,s){c.save();c.translate(x,y);c.scale(s||1,s||1);fEll(c,0,12,12,3.4,'#0003');const fl=Math.sin(t*12)*5;fEll(c,0,0,11,7,'#2B2B3A');fEll(c,9,-6,5.4,5.4,'#2B2B3A');c.fillStyle='#F5A623';c.beginPath();c.moveTo(13,-7);c.lineTo(20,-5);c.lineTo(13,-3);c.fill();fEll(c,10.5,-7.5,1.2,1.2,'#fff');c.fillStyle='#444458';c.beginPath();c.ellipse(-3,-3,9,3.5+Math.abs(fl)*.4,-.5-fl*.05,0,7);c.fill();c.restore()}
+function farmEvDraw(c,t,f,w,now){const e=w.ev;if(!e)return;
+ if(e.k==='frost'){c.fillStyle='#BFE6FF22';c.fillRect(0,0,FW,FH);for(let i=0;i<30;i++){const x=(frnd(i)*FW+Math.sin(t+i)*14)%FW,y=((frnd(i+3)*FH)+t*(25+i))%FH;fEll(c,x,y,2.2,2.2,'#ffffffcc')}}
+ else if(e.k==='heat'){c.fillStyle='#FFD23F14';c.fillRect(0,0,FW,FH);const g=c.createRadialGradient(340,40,6,340,40,200);g.addColorStop(0,'#FFE27A55');g.addColorStop(1,'#FFE27A00');c.fillStyle=g;c.fillRect(0,0,FW,FH)}
+ e.pl.forEach(n=>{const[x,y]=fPlotXY(n),done=e.set.includes(n);if(e.k==='frost'){if(done){c.fillStyle='#9FD8F5ee';fRR(c,x+4,y+4,FPS-8,FPS-8,10);c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.setLineDash([5,4]);fRR(c,x+10,y+10,FPS-20,FPS-20,8);c.stroke();c.setLineDash([]);c.strokeStyle='#ffffff99';c.beginPath();c.moveTo(x+10,y+FPS/2);c.lineTo(x+FPS-10,y+FPS/2);c.stroke()}else{c.fillStyle='#E6F6FF55';fRR(c,x+4,y+4,FPS-8,FPS-8,10);c.fill();c.drawImage(fIconImg('snow'),x+FPS-30,y+2,26,26)}}
+  else if(e.k==='heat'&&!done){c.strokeStyle='#4a2b1288';c.lineWidth=1.6;c.beginPath();c.moveTo(x+16,y+30);c.lineTo(x+34,y+44);c.lineTo(x+26,y+60);c.moveTo(x+70,y+26);c.lineTo(x+60,y+46);c.lineTo(x+78,y+64);c.stroke();c.drawImage(fIconImg('sun'),x+FPS-30,y+2,26,26)}});
+ if(e.k==='crows')e.cr.forEach(n=>{if(e.set.includes(n))return;const[x,y]=fPlotXY(n);fCrow(c,x+FPS/2+Math.sin(t*2+n)*6,y+FPS/2-6+Math.sin(t*5+n)*2,t,1.5)});
+ if(e.k!=='crows'&&e.set.length<e.need){const left=Math.max(0,Math.ceil((e.until-now)/1000));if(left<30){c.fillStyle='#fff';c.font='800 14px Nunito,sans-serif';c.textAlign='center';c.strokeStyle='#0008';c.lineWidth=3;c.strokeText(left+' с',195,208);c.fillText(left+' с',195,208)}}}
+function fIconImg(n){window.FIMG=window.FIMG||{};if(FIMG[n])return FIMG[n];const im=new Image();im.src=fIco(n);return FIMG[n]=im}
+/* ---------- рыбалка: мини-игра ---------- */
+const FFISH=[{k:'fish',w:45,sp:1,sz:.2},{k:'perch',w:30,sp:1.5,sz:.17},{k:'carp',w:18,sp:2.1,sz:.15},{k:'gold',w:7,sp:2.9,sz:.12}];
+function farmFishDraw(c,x,y,s,col,dir,t,gold){c.save();c.translate(x,y);c.scale(dir*s,s);c.fillStyle=col;c.beginPath();c.moveTo(-16,0);c.quadraticCurveTo(0,-14,16,0);c.quadraticCurveTo(0,14,-16,0);c.fill();c.beginPath();c.moveTo(14,0);c.lineTo(26,-9+Math.sin(t*14)*3);c.lineTo(26,9+Math.sin(t*14)*3);c.fill();fEll(c,-8,-2,2.4,2.4,'#fff');fEll(c,-8,-2,1,1,'#222');c.fillStyle='#ffffff55';c.beginPath();c.ellipse(0,-4,9,3,0,0,7);c.fill();if(gold)fStar(c,2,0,5,t*3);c.restore()}
+function farmFish(d){const f=farmS(),w=farmWorld(d);let tot=0;const rb=Date.now()<w.rain.b?2:1;const pool=FFISH.map(x=>({x,w:x.k==='gold'?x.w*rb:x.w}));pool.forEach(p=>tot+=p.w);let r=Math.random()*tot,ft=pool[0].x;for(const p of pool){if(r<p.w){ft=p.x;break}r-=p.w}
+ const ov=el('div','ffish');ov.innerHTML=`<div class="ff-t"><b class="lob">Клюёт: ${FEX[ft.k][1]}!</b><small>Держи палец на экране, чтобы поднимать крючок, и не отпускай рыбу из зелёной зоны</small></div><canvas id="ffc" width="300" height="440"></canvas><button class="x ff-x">✕</button>`;d.appendChild(ov);
+ const cv=$('#ffc',ov),c=cv.getContext('2d'),W=300,H=440,TX=60,TW=150,TH=400,TY=20;let hold=false,zp=.2,zv=0,fp=.5,ft2=.5,tm=0,pr=.3,done=0,t0=Date.now(),zh=.24+(ft.sz>.17?0:0);
+ const zs=.26-ft.sp*.02;ov.onpointerdown=()=>{hold=true};ov.onpointerup=ov.onpointercancel=()=>{hold=false};
+ const fin=ok=>{if(done)return;done=1;ov.classList.add('end');if(ok){f.inv[ft.k]=(f.inv[ft.k]||0)+1;farmInc(f,'fi');if(ft.k==='gold')farmInc(f,'gf');save();SFX.coin&&SFX.coin();try{confetti(ft.k==='gold'?60:20)}catch(e){}farmXp(f,FEX[ft.k][3]);ov.querySelector('.ff-t').innerHTML=`<b class="lob">Поймали: ${FEX[ft.k][1]}!</b><small>Продай её в лавке за ${FEX[ft.k][2]} 🦴</small>`;farmHint('Поймано: '+FEX[ft.k][1])}else{ov.querySelector('.ff-t').innerHTML='<b class="lob">Сорвалась...</b><small>Ничего, в пруду ещё много рыбы</small>'}
+  setTimeout(()=>{ov.remove();farmTick(d)},1700)};
+ ov.querySelector('.ff-x').onclick=e=>{e.stopPropagation();fin(0)};
+ (function loop(){if(!ov.isConnected)return;requestAnimationFrame(loop);const dt=.016,t=(Date.now()-t0)/1000;if(!done){tm-=dt;if(tm<=0){tm=.5+Math.random()*1.1;ft2=Math.random()}const df=ft2-fp;fp+=Math.sign(df)*Math.min(Math.abs(df),.2*ft.sp*dt*(1.4+Math.random()*.4));
+  zv+=(hold?1.5:-1.3)*dt*1.7;zv=Math.max(-1.1,Math.min(1.1,zv));zp+=zv*dt;if(zp<0){zp=0;zv=0}if(zp>1-zs){zp=1-zs;zv=0}
+  const inz=fp>=zp&&fp<=zp+zs;pr+=(inz?.22:-.12)*dt;if(pr>=1){pr=1;fin(1)}else if(pr<=0){pr=0;fin(0)}}
+  const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#8FDDF2');g.addColorStop(1,'#1F6FA8');c.fillStyle=g;fRR(c,0,0,W,H,18);c.fill();
+  c.save();fRR(c,TX,TY,TW,TH,14);c.clip();const g2=c.createLinearGradient(0,0,0,H);g2.addColorStop(0,'#5CC3E8');g2.addColorStop(1,'#12507F');c.fillStyle=g2;c.fillRect(TX,TY,TW,TH);for(let i=0;i<10;i++){c.fillStyle='#ffffff14';c.fillRect(TX+i*16+Math.sin(t+i)*5,TY,5,TH)}for(let i=0;i<14;i++){const bx=TX+frnd(i)*TW,by=TY+TH-((t*30+frnd(i+8)*TH)%TH);fEll(c,bx+Math.sin(t*2+i)*4,by,2+frnd(i+2)*2,2+frnd(i+2)*2,'#ffffff55')}
+  const zy=TY+TH-(zp+zs)*TH,zhh=zs*TH;c.fillStyle=hold?'#8BE36Ecc':'#6FCB5Faa';fRR(c,TX+4,zy,TW-8,zhh,10);c.fill();c.strokeStyle='#fff';c.lineWidth=2;fRR(c,TX+4,zy,TW-8,zhh,10);c.stroke();
+  const fy=TY+TH-fp*TH;farmFishDraw(c,TX+TW/2+Math.sin(t*3)*16,fy,1.5-ft.sz*2,{fish:'#E8A33A',perch:'#4FB36A',carp:'#E5603A',gold:'#FFD23F'}[ft.k],Math.sin(t*3+1)>0?1:-1,t,ft.k==='gold');c.restore();
+  c.fillStyle='#0004';fRR(c,TX+TW+24,TY,26,TH,10);c.fill();c.fillStyle=pr>.66?'#8BE36E':pr>.33?'#FFD23F':'#FF6B5A';const ph=Math.max(0,pr*TH);fRR(c,TX+TW+24,TY+TH-ph,26,ph,10);c.fill();c.drawImage(fIconImg('fish'),TX+TW+20,TY-4,34,34);
+  c.fillStyle='#fff';c.font='800 13px Nunito,sans-serif';c.textAlign='center';c.fillText(hold?'тянем!':'отпускай, крючок падает',TX+TW/2,TY+TH+18)})()}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -5515,7 +5586,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='26.11 16:44';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='26.11 16:49';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
