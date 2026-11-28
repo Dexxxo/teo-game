@@ -731,6 +731,29 @@ body.wide #app{max-width:none;left:0;transform:none}
 .goal.wait{opacity:.45;filter:grayscale(.7)}.goal.cur{transform:scale(1.12);filter:drop-shadow(0 0 6px #FFD23F)}.bosstag.hard{background:linear-gradient(#9B6BFF,#6C3FD6)}
 
 .farm>.modal,.cafe>.modal{z-index:95}
+
+/* ===== кухня и потребности ===== */
+.ncards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 8px}.ncard{background:#fff8ea;border:2px solid #E8D5AE;border-radius:14px;padding:8px 10px}.ncard>b{display:block;margin-bottom:4px;color:#5a3a1a}
+.nb{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:13px}.nb span{width:20px}.nb b{width:26px;text-align:right;font-size:12px;color:#7a5a38}.nbar{flex:1;height:10px;border-radius:6px;background:#EADFC4;overflow:hidden}.nbar i{display:block;height:100%;border-radius:6px;transition:width .4s}
+.ckbtns{display:flex;gap:8px;flex-wrap:wrap}.ckbtns .btn{flex:1;font-size:13px;padding:9px 6px}
+.dshelf{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.dsh{width:74px;border:2px solid #E3CFA0;background:#fff8ea;border-radius:12px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;font-family:inherit}.dsh.on{border-color:#4CAF50;background:#E9F8DE}.dsh span{font-size:26px}.dsh small{font-size:10px;line-height:1.1;color:#5a3a1a;text-align:center}.dsh i{font-style:normal;font-size:9px}
+.eatrow{display:flex;gap:8px;margin:8px 0}.eatrow .btn{flex:1;font-size:13px;padding:9px 4px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}.rcard{position:relative;text-align:left;border:2px solid #E3CFA0;background:#fffaf0;border-radius:14px;padding:8px 8px 8px;font-family:inherit;color:#3a2a1a;display:flex;flex-direction:column;gap:2px}.rcard.ok{border-color:#7BC96B;background:#F1FBE9}.rcard .ri{font-size:26px;line-height:1}.rcard b{font-size:13px}.rcard small{font-size:11px;display:flex;flex-wrap:wrap;gap:3px}.rcard em{font-style:normal;border-radius:6px;padding:0 3px;background:#EEE}.rcard em.y{background:#DDF3CF}.rcard em.n{background:#FFE0DA}.rcard i{font-style:normal;font-size:10px;color:#9a7a48}.rcard u{text-decoration:none;font-size:10px;color:#B8441F;font-weight:800}
+.ckov{position:fixed;inset:0;z-index:150;background:radial-gradient(circle at 50% 30%,#FFE9B8,#E9B676);display:flex;flex-direction:column;font-family:Nunito,sans-serif;color:#3a2a1a;touch-action:none;user-select:none;-webkit-user-select:none}
+.ckh{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 6px}.ckh .lob{flex:1;font-size:22px}.ckx{width:38px;height:38px;border-radius:50%;border:0;background:#fff;font-size:16px;box-shadow:0 3px 0 #0003}.ckst{font-weight:800;font-size:12px;color:#7a5a38}
+.cktxt{text-align:center;font-weight:800;font-size:16px;padding:4px 18px 0;min-height:44px}
+.ckstage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
+.ckpan{position:relative;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6a5a50,#2f2724);border:8px solid #4a3a32;box-shadow:0 10px 0 #0003,inset 0 0 30px #0008;display:flex;align-items:center;justify-content:center;transition:transform .15s}.ckpan.hot{transform:scale(1.08);box-shadow:0 0 0 6px #FFE27A,0 10px 0 #0003}.ckpan.splash{animation:ckspl .3s}.ckpan.burn{background:radial-gradient(circle at 40% 35%,#8a3a2a,#3a1710)}
+@keyframes ckspl{50%{transform:scale(1.12)}}.ckem{font-size:92px;filter:drop-shadow(0 4px 3px #0006)}
+.ckfire{position:absolute;left:50%;bottom:-30px;width:120px;height:26px;margin-left:-60px;border-radius:50%;background:radial-gradient(#FFB02E,#FF5A1F00 70%);opacity:calc(.25 + var(--h,.3)*.75);filter:blur(4px)}
+.cksteam{position:absolute;inset:-6px;pointer-events:none}
+.ckctl{width:100%;max-width:380px;min-height:150px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.cktray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:10px;background:#fff8e8;border-radius:18px;box-shadow:0 4px 0 #0002;min-width:180px}.ckchip{width:58px;height:58px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 3px 0 #0003;touch-action:none;transition:transform .2s}.ckchip.drag{transition:none;z-index:5;position:relative}.ckchip.gone{opacity:0;pointer-events:none}
+.ckgauge{position:relative;width:100%;height:46px;border-radius:23px;background:linear-gradient(90deg,#7ab8ff,#ffe27a,#ff7a5a);box-shadow:inset 0 3px 6px #0004,0 3px 0 #0003;overflow:hidden}.ckzone{position:absolute;top:0;bottom:0;background:rgba(80,200,90,.78);border-left:3px solid #1c7a2a;border-right:3px solid #1c7a2a;transition:left .1s,width .1s}.ckneedle{position:absolute;top:-2px;bottom:-2px;width:8px;margin-left:-4px;border-radius:4px;background:#fff;box-shadow:0 0 0 2px #3a2a1a}.ckneedle.bad{background:#FFD0C8}
+.ckprog{width:100%;height:14px;border-radius:8px;background:#0002;overflow:hidden}.ckprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8BE36E,#4CAF50);border-radius:8px}
+.ckhold{width:100%;height:84px;border:0;border-radius:22px;background:linear-gradient(#FF9E5A,#F0642A);color:#fff;font-weight:900;font-size:20px;font-family:inherit;box-shadow:0 6px 0 #9a3a14;touch-action:none}.ckhold.on{transform:translateY(4px);box-shadow:0 2px 0 #9a3a14;background:linear-gradient(#FFB36B,#FF7A32)}
+.ckstir{display:flex;justify-content:center}.ckbowl{width:230px;height:230px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff8ea,#E7C98B);border:8px solid #fff;box-shadow:0 6px 0 #0003;display:flex;align-items:center;justify-content:center;touch-action:none}.ckspoon{font-size:70px;transition:transform .05s;pointer-events:none}
+.ckres{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}.ckbig{font-size:110px;animation:ckpop .5s}.ckstars{font-size:34px}.ckres .eatrow{width:100%;max-width:340px}@keyframes ckpop{from{transform:scale(0)}60%{transform:scale(1.2)}to{transform:scale(1)}}
 </style></head><body>
 <div id="splash"><b>Тео и друзья</b><small>Саша, это для тебя 💛</small><div class="paws"><i></i><i></i><i></i></div></div>
 <div id="app"><canvas id="cv"></canvas><div id="ui"><div id="scr"></div><div id="mods"></div></div><canvas id="fx"></canvas></div>
@@ -2134,7 +2157,7 @@ function tapActor(a,px,py){if(!ACT.H)return;if(a.who&&PPL.away){callCouple();toa
  if(ACT.cur){if(ACT.q.length>=3){heartsAt(px,py-20,3);return}ACT.q.push(a);say(a,'Сейчас моя очередь! ⏳',1600);heartsAt(px,py-20,4);if(a.i!=null)dogBark(a.i);return}
  ACT.q.push(a);heartsAt(px,py-20,6);runQ()}
 async function runQ(){if(ACT.cur||!ACT.q.length)return;const a=ACT.q.shift();const tok=ACT.tok;ACT.cur={a};if(a.micro){a.pose=a.micro.p0;a.face=a.micro.f0;a.micro=null}
- try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f){const ic='x:'+a.obj.id,P=[PPL.her,PPL.him].filter(Boolean);P.forEach(p=>p._act=ic);let okx=false;try{await f(a.obj,L,deco,tok,a);okx=true}finally{P.forEach(p=>p._act=null)}if(okx)P.forEach(p=>{try{const w=(S.wants||{})[actorKey(p)];if(w&&w.id===ic)wantDone(p,ic)}catch(e){}})}}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
+ try{const L=APP.L,deco=curDeco();if(a.obj){const f=EXTAP[a.obj.id];if(f){const ic='x:'+a.obj.id,P=[PPL.her,PPL.him].filter(Boolean);P.forEach(p=>p._act=ic);let okx=false;try{await f(a.obj,L,deco,tok,a);okx=true}finally{P.forEach(p=>p._act=null)}if(okx)P.forEach(p=>{try{const w=(S.wants||{})[actorKey(p)];if(w&&w.id===ic)wantDone(p,ic)}catch(e){}});if(okx)try{needFx(null,ic)}catch(e){}}}else{const list=a.who?PACTS[a.who]:DACTS[a.i];const k=a.key;let n=ACT.idx[k]||0;let ok=false;
   for(let tries=0;tries<list.length&&!ok;tries++){const id=list[n%list.length];n++;ok=await doAct(a,id,L,deco,tok)}ACT.idx[k]=n}}
  catch(e){if(e!==ABORT)console.error(e)}
  if(tok===ACT.tok){ACT.cur=null;setTimeout(runQ,250)}}
@@ -4014,6 +4037,7 @@ const WANTL={carry:['взять собачку на ручки','🥰'],pzwater:
 /* ---- домашние дела и желания (без особых предметов) ---- */
 const LIFE={
  /* Саша */
+ nap:{t:'вздремнуть',ic:'💤',w:'both1',sp:'sofa',pose:'tea',say:['Прилягу на пять минуточек 💤','Сладкий сон… 😴'],say2:['Как же хорошо отдохнул(а) ✨'],ms:3600},
  cook:{t:'приготовить ужин',ic:'🍳',w:'her',sp:'kit',pose:'back',say:['Сегодня готовлю ужин! 🍳','Шеф-повар Саша на связи 👩‍🍳'],say2:['Почти не пригорело 😅','Пахнет вкусно! 😋'],ms:3200},
  tea:{t:'выпить чаю',ic:'🍵',w:'her',sp:'sofa',pose:'tea',say:['Чайку бы горяченького ☕','Чай, плед и тишина 🍵'],say2:['Идеально 😌'],ms:3000},
  bake:{t:'испечь печенье',ic:'🍪',w:'her',sp:'kit',pose:'back',say:['Печём печеньки! 🍪','Мука везде, но это нормально 😄'],say2:['Первая партия — для собачек! 🐶','Ну вот, половина уже съедена 🤭'],ms:3200},
@@ -4047,14 +4071,14 @@ const LIFE={
  pancakes:{t:'печь блинчики',ic:'🥞',w:'both',sp:'kit',pose:'back',say:['Блинчики! 🥞','Кто первый перевернёт? 🥞'],say2:['Первый блин собачкам 🐶'],ms:3400}
 };
 for(const k in LIFE)WANTL[k]=[LIFE[k].t,LIFE[k].ic];
-function lifePool(who,deco,night){return Object.keys(LIFE).filter(k=>{const d=LIFE[k];return(d.w===who||d.w==='both')&&(!d.night||night)})}
+function lifePool(who,deco,night){return Object.keys(LIFE).filter(k=>{const d=LIFE[k];return(d.w===who||d.w==='both'||d.w==='both1')&&(!d.night||night)})}
 function lifeSpot(sp,L,deco,i){const k=(deco.extra||[]).find(e=>e.id==='x_kitchen'||e.id==='x_coffeebar');const side=i?20:-20;
  if(sp==='kit'&&k)return{x:clamp(k.x+(i?26:-26),30,370),y:clamp(L.fl+(k.fy||60)+4,L.fl+40,L.VH-100)};
  if(sp==='win'){const w=windowSpot(L,deco);return{x:clamp(w.x+(i?18:-18),30,370),y:w.y}}
  if(sp==='sofa'&&deco.sofa&&L.sofa)return{x:clamp(L.sofa.x+(i?20:-20),40,360),y:L.sofa.y+48};
  return{x:clamp(L.rug.x+side,90,310),y:clamp(L.rug.y-4,L.fl+70,L.VH-110)}}
 async function lifeAct(p,id,L,deco,tok,hn){const D=LIFE[id];if(!D)return false;const night=['night','evening'].includes(dayPhase());if(D.night&&!night)return false;
- const H=PPL.her,M=PPL.him;const ps=D.w==='both'?[H,M]:[p];
+ const H=PPL.her,M=PPL.him;const ps=D.w==='both'?[H,M]:[p];needFx(p,id);if(D.w==='both')needFx(null,id);
  say(p,pick(D.say),2800);await Promise.all(ps.map(x=>pStand(x,tok)));
  await Promise.all(ps.map((x,i)=>{const s=lifeSpot(D.sp,L,deco,i);return pTo(x,s.x,s.y,tok)}));
  ps.forEach((x,i)=>{x.face=D.sp==='win'?x.face:(ps.length>1?(i?-1:1):x.face);x.pose=D.pose});
@@ -4068,9 +4092,9 @@ function moodOf(k){S.mood=S.mood||{};if(S.mood[k]==null)S.mood[k]=80;return S.mo
 function moodTick(){S.mood=S.mood||{};const now=Date.now();const last=S.moodT||now;const h=(now-last)/3600000;if(h>0.02){for(const k in S.mood)S.mood[k]=Math.max(25,S.mood[k]-h*5);S.moodT=now}if(!S.moodT)S.moodT=now}
 function moodMoves(){const a=(moodOf('her')+moodOf('him'))/2;return a>=90?2:a>=75?1:0}
 function wantPool(a,deco){const has=id=>pzList(deco).some(i=>i.id===id);const plants=['f_tree','c_plant','t_cactus'].some(has),player=has('t_player'),pretty=pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish'].includes(PZ[i.id].act));
- if(a.who){const base=['dance','selfie','pet','window','hug'];try{const lp=lifePool(a.who,deco,['night','evening'].includes(dayPhase()));lp.forEach(k=>base.push(k,k))}catch(e){}if(a.who==='her')base.push('carry','read');else base.push('fetch','carry');try{for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id]&&WANTL['x:'+e.id]&&e.id!=='x_bigbed'){base.push('x:'+e.id,'x:'+e.id)}}catch(e){}if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
+ if(a.who){const base=['dance','selfie','pet','window','hug'];try{const lp=lifePool(a.who,deco,['night','evening'].includes(dayPhase()));lp.forEach(k=>base.push(k,k));const nl=needLow(a.who);if(nl==='f')base.push('cook','cook','cook','grill','bake','pancakes','coffee');if(nl==='e')base.push('nap','nap','nap','tea','tea')}catch(e){}if(a.who==='her')base.push('carry','read');else base.push('fetch','carry');try{for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id]&&WANTL['x:'+e.id]&&e.id!=='x_bigbed'){base.push('x:'+e.id,'x:'+e.id)}}catch(e){}if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
  const ids=(AUTOACT[a.i]||['roll']).filter(x=>x!=='howl').concat(pzAutoIds(deco).filter(x=>x!=='pzmusic'));return ids.filter(x=>WANTL[x])}
-function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep||PPL.away)return;moodTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
+function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep||PPL.away)return;moodTick();needsTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
  for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wantLast=S.wantLast||{};const lst=S.wantLast[k]||[];let cand=pool.filter(x=>!lst.includes(x));if(!cand.length)cand=pool;const nid=pick(cand);S.wantLast[k]=lst.concat(nid).slice(-4);S.wants[k]={id:nid,room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
 function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();try{const sp=scrPt(a.x,a.y-120);flyReward('bone',sp.x,sp.y,r)}catch(e){}famXP(15);heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
@@ -4100,18 +4124,18 @@ const cap=t=>t[0].toUpperCase()+t.slice(1);
 const DL={beg:'Дать вкусняшку',roll:'Почесать пузико',sofa:'Позвать на диван',lap:'Посадить на ручки',zoom:'Побегать',fetch:'Поиграть в апорт',snack:'Покормить',paw:'Дай лапу!',guard:'Охранять дом',window:'Посмотреть в окно',fire:'Погреться у камина',dance:'Потанцевать',howl:'Спеть луне',pzpouf:'Поспать на пуфике',pzaqua:'Посмотреть на рыбок',pztoys:'Поиграть игрушками',pzplant:'Понюхать листики'};
 function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();const want=k=>{const w=(S.wants||{})[k];return w&&w.id};
  const add=(t,ic,fn,hot,sec)=>o.push({t,ic,fn,hot,sec:sec||''});
- if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);if(wi&&WANTL[wi]){if(wi.startsWith('x:')){const ex=((deco.extra)||[]).find(e=>'x:'+e.id===wi);if(ex)add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runObj(ex),1)}else add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1)}
+ if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);add('Как самочувствие? Кухня','🍲',()=>ckOpen());if(wi&&WANTL[wi]){if(wi.startsWith('x:')){const ex=((deco.extra)||[]).find(e=>'x:'+e.id===wi);if(ex)add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runObj(ex),1)}else add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1)}
   const ids=[...new Set(PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her'],['window']).concat(deco.fire?['fire']:[]))].filter(id=>id!=='kiss'||(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on)).filter(id=>id!=='read'||p.sitH).filter(id=>WANTL[id]);
   for(const id of ids)if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Вдвоём');
   for(const id of lifePool(p.who,deco,['night','evening'].includes(dayPhase())))if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Дела');
-  for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате')}
+  for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате');if(e.id==='x_kitchen')add('Готовить блюдо','🍲',()=>ckOpen(),0,'В комнате')}
   const seen=new Set();for(const it of pzList(deco)){const d=PZ[it.id];if(!d)continue;let t=null,id=null,ic='';if(d.act==='water'){t='Полить: '+d.n.toLowerCase();id='pzwater';ic='💧'}else if(d.act==='music'){t='Поставить пластинку';id='pzmusic';ic='🎶'}else if(d.light&&!seen.has('light')){seen.add('light');t=(it.on===false?'Включить: ':'Выключить: ')+d.n.toLowerCase();id='pzlight';ic='💡'}else if(['love','shine','fish','spin','flutter'].includes(d.act)&&!seen.has('look')){seen.add('look');t='Полюбоваться вещами';id='pzlook';ic='😍'}if(!t||seen.has(t))continue;seen.add(t);const u=it.u;if(id===wi)continue;add(t,ic,()=>{PZT=u;runAct(p,id)},0,'С вещами')}
   return o}
  if(kind==='dog'){const w=obj,k=actorKey(w),wi=null;{const mates=freeMates(w);if(mates.length){const mt=mates.sort((a,b)=>Math.hypot(a.x-w.x,a.y-w.y)-Math.hypot(b.x-w.x,b.y-w.y))[0];for(const gid of Object.keys(DGAMES)){if(gid==='dcuddle'&&friendLv(friendPts(w.i,mt.i))<2)continue;add(DGAMES[gid][0]+' с '+dnameI(mt.i),DGAMES[gid][1],()=>{DGM=mt;runAct(w,gid)},0,'С друзьями')}}}
   if(famS().lvl>=3)for(const T of TRICKS){if(T.lvl>famS().lvl)continue;const pr=trickProg(w.i,T.id);if(pr>=3)add('Показать: '+T.n,T.ic,()=>runAct(w,'sh_'+T.id),0,'Трюки');else add(`Учить: ${T.n} (${pr}/3)`,T.ic,()=>runAct(w,'tr_'+T.id),0,'Трюки')}
   const ids=[...new Set((DACTS[w.i]||[]).concat(AUTOACT[w.i]||[]).filter(x=>WANTL[x]&&!(x==='howl'&&dayPhase()!=='night'&&dayPhase()!=='evening')))];for(const id of ids)if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'Игры');
   for(const id of pzAutoIds(deco).filter(x=>x!=='pzmusic'&&WANTL[x]))if(id!==wi)add(DL[id]||cap(WANTL[id][0]),WANTL[id][1],()=>runAct(w,id),0,'С вещами');return o}
- if(kind==='xobj'){const e=obj,[l,ic]=xLabel(e);add(l,ic,()=>runObj(e));add('Переставить','✋',()=>{showPlace();APP.pz.sel='x:'+e.u;pzBar()});return o}
+ if(kind==='xobj'){const e=obj,[l,ic]=xLabel(e);add(l,ic,()=>runObj(e));if(e.id==='x_kitchen')add('Готовить блюдо','🍲',()=>ckOpen());add('Переставить','✋',()=>{showPlace();APP.pz.sel='x:'+e.u;pzBar()});return o}
  const it=obj,d=PZ[it.id],tap=()=>placedTap(it);
  const her=(id,t,ic)=>add(`${S.her}: ${t}`,ic,()=>{PZT=it.u;runAct(H,id)},want('her')===id),him=(id,t,ic)=>add(`${S.him}: ${t}`,ic,()=>{PZT=it.u;runAct(M,id)},want('him')===id);
  switch(d.act){
@@ -6298,6 +6322,120 @@ async function alarmTick(){const ks=allCells(t=>t&&t.cd!=null);if(!ks.length)ret
 function sprintTick(dt){const L=G.lv;if(!L||!L.time||!G.timeOn||G.over)return;if(APP.mods&&APP.mods.querySelector('.modal'))return;G.time-=dt/1000;const sec=Math.ceil(Math.max(0,G.time));if(sec!==G._ts){G._ts=sec;updHUD();if(sec<=5&&sec>0)SFX.tap&&SFX.tap()}
  if(G.time<=0){G.time=0;G.timeOn=false;if(G.busy)G.timeUp=true;else{G.busy=true;wait(250).then(()=>outOfMoves())}}}
 function genLevel(n){const k=specialKind(n);return k?genSpecial(n,k):genLevelBase(n)}
+/* ===== готовка на плите + потребности (сытость, энергия) ===== */
+const CKFISH=['fish','roach','perch','bream','carp','pike','trout','catfish','gold','sturgeon'];
+/* t: heat=жарить/варить/печь с контролем жара, stir=смешать; h: сытость; m: настроение; e: энергия; v: цена блюда */
+const CK=[
+ {id:'omelet',n:'Омлет',ic:'🍳',t:'heat',k:'fry',ing:[['egg',2]],h:28,m:3,v:40,dt:'Классика на завтрак'},
+ {id:'pancake',n:'Блинчики',ic:'🥞',t:'heat',k:'fry',ing:[['egg',1],['honey',1]],h:30,m:6,v:62,dt:'С мёдом, как любит Саша'},
+ {id:'sunseeds',n:'Жареные семечки',ic:'🌻',t:'heat',k:'fry',ing:[['sunflower',2]],h:12,m:4,v:90,dt:'Для уютного вечера'},
+ {id:'popcorn',n:'Попкорн',ic:'🍿',t:'heat',k:'fry',ing:[['corn',1]],h:12,m:8,v:80,dt:'Для кино дома'},
+ {id:'eggrolls',n:'Баклажанные рулетики',ic:'🍆',t:'heat',k:'fry',ing:[['eggplant',2]],h:30,m:3,v:340,dt:'Сочные и хрустящие'},
+ {id:'friedfish',n:'Жареная рыба',ic:'🐟',t:'heat',k:'fry',ing:[['@fish',1]],h:34,m:3,v:80,dt:'Улов с золотой корочкой'},
+ {id:'carrotsoup',n:'Морковный суп',ic:'🥕',t:'heat',k:'boil',ing:[['carrot',3]],h:26,m:2,v:80,dt:'Тёплый и лёгкий'},
+ {id:'tomatosoup',n:'Томатный суп',ic:'🍅',t:'heat',k:'boil',ing:[['tomato',3]],h:28,m:3,v:130,dt:'Со вкусом лета'},
+ {id:'pumpkinsoup',n:'Тыквенный суп',ic:'🎃',t:'heat',k:'boil',ing:[['pumpkin',1],['carrot',1]],h:34,m:4,v:140,dt:'Осенний крем-суп'},
+ {id:'fishsoup',n:'Уха',ic:'🍲',t:'heat',k:'boil',ing:[['@fish',2]],h:42,m:3,v:150,dt:'Настоящая, с дымком'},
+ {id:'cornporridge',n:'Кукурузная каша',ic:'🌽',t:'heat',k:'boil',ing:[['corn',2]],h:36,m:2,v:290,dt:'Сытная и жёлтая'},
+ {id:'jam',n:'Клубничное варенье',ic:'🍓',t:'heat',k:'boil',ing:[['berry',3],['honey',1]],h:10,m:10,v:280,dt:'На зиму и на сейчас'},
+ {id:'lavtea',n:'Лавандовый чай',ic:'💜',t:'heat',k:'boil',ing:[['lavender',1],['honey',1]],h:4,m:8,e:30,v:360,dt:'Успокаивает и бодрит',},
+ {id:'flowtea',n:'Цветочный чай',ic:'🌷',t:'heat',k:'boil',ing:[['flower',2]],h:3,m:5,e:16,v:55,dt:'Лёгкий и ароматный'},
+ {id:'cookies',n:'Печенье',ic:'🍪',t:'heat',k:'bake',ing:[['egg',1],['honey',1]],h:14,m:8,v:55,dt:'Вкусно пахнет на весь дом'},
+ {id:'honeycake',n:'Медовик',ic:'🍯',t:'heat',k:'bake',ing:[['honey',2],['egg',2]],h:26,m:12,v:110,dt:'Слоёный и нежный'},
+ {id:'pumpkinpie',n:'Тыквенный пирог',ic:'🥧',t:'heat',k:'bake',ing:[['pumpkin',1],['egg',1],['honey',1]],h:38,m:10,v:190,dt:'С корицей и теплом'},
+ {id:'stuffedpepper',n:'Фаршированный перец',ic:'🌶',t:'heat',k:'bake',ing:[['pepper',2],['tomato',1]],h:44,m:4,v:340,dt:'Сытное горячее'},
+ {id:'ratatouille',n:'Рататуй',ic:'🍆',t:'heat',k:'bake',ing:[['eggplant',1],['tomato',2],['pepper',1]],h:46,m:6,v:420,dt:'Овощи в духовке'},
+ {id:'bakedfish',n:'Запечённая рыба',ic:'🐠',t:'heat',k:'bake',ing:[['@fish',2],['tomato',1]],h:48,m:5,v:180,dt:'С овощами и травами'},
+ {id:'pizza',n:'Овощная пицца',ic:'🍕',t:'heat',k:'bake',ing:[['tomato',2],['pepper',1],['corn',1]],h:50,m:10,v:420,dt:'Тянется сыр (мысленно)'},
+ {id:'strawcake',n:'Клубничный торт',ic:'🍰',t:'heat',k:'bake',ing:[['berry',3],['egg',2],['honey',1]],h:32,m:16,v:330,dt:'Праздничный десерт'},
+ {id:'salad',n:'Овощной салат',ic:'🥗',t:'stir',k:'mix',ing:[['tomato',1],['carrot',1]],h:22,m:3,v:60,dt:'Свежий и хрустящий'},
+ {id:'berrybowl',n:'Клубника с мёдом',ic:'🍓',t:'stir',k:'mix',ing:[['berry',2],['honey',1]],h:14,m:12,v:200,dt:'Сладко и просто'},
+ {id:'melonsorbet',n:'Арбузный сорбет',ic:'🍉',t:'stir',k:'mix',ing:[['melon',1]],h:14,m:12,v:260,dt:'Холодный и освежающий'},
+ {id:'cornsalad',n:'Салат с кукурузой',ic:'🥗',t:'stir',k:'mix',ing:[['corn',1],['tomato',1],['pepper',1]],h:28,m:4,v:240,dt:'Яркий и сочный'},
+ {id:'feast',n:'Праздничный ужин',ic:'🍽️',t:'heat',k:'bake',ing:[['pumpkin',1],['eggplant',1],['@fish',2],['honey',1]],h:70,m:22,v:700,dt:'Для особенного вечера'}];
+const CKK={fry:['🍳','Сковородка','Держи жар в зелёной зоне'],boil:['🍲','Кастрюля','Следи, чтобы не убежало'],bake:['🥘','Духовка','Не пересуши и не недопеки'],mix:['🥣','Миска','Перемешивай по кругу']};
+function ckF(){return S.farm&&S.farm.on?S.farm:null}
+function ckHave(k){const f=ckF();if(!f)return 0;if(k==='@fish')return CKFISH.reduce((a,x)=>a+(f.inv[x]||0),0);return f.inv[k]||0}
+function ckNm(k){if(k==='@fish')return['🐟','Любая рыба'];if(FCROP[k])return[FCROP[k].e,FCROP[k].n];if(FEX[k])return[FEX[k][0],FEX[k][1]];return['❔',k]}
+function ckUnit(k){if(k==='@fish')return 55;if(FCROP[k])return Math.round(FCROP[k].sell*1.5);if(FEX[k])return Math.round(FEX[k][2]*1.5);return 30}
+function ckMiss(r){let cost=0,miss=[];for(const[k,n]of r.ing){const m=Math.max(0,n-ckHave(k));if(m){cost+=m*ckUnit(k);miss.push([k,m])}}return{cost,miss}}
+function ckTake(r){const f=ckF();for(const[k,n]of r.ing){let need=n;if(k==='@fish'){for(const x of CKFISH){const t=Math.min(need,(f&&f.inv[x])||0);if(t){f.inv[x]-=t;need-=t}}}else if(f){const t=Math.min(need,f.inv[k]||0);f.inv[k]-=t;need-=t}}}
+/* ---------- потребности ---------- */
+function needsOf(k){S.needs=S.needs||{};if(!S.needs[k])S.needs[k]={f:75,e:75};return S.needs[k]}
+function needsTick(){S.needs=S.needs||{};const now=Date.now(),last=S.needsT||now,h=(now-last)/3600000;if(h>0.01){for(const k of['her','him']){const n=needsOf(k);n.f=Math.max(8,n.f-h*4);n.e=Math.max(8,n.e-h*3);if(n.f<25||n.e<25){S.mood=S.mood||{};moodOf(k);S.mood[k]=Math.max(25,S.mood[k]-h*3)}}S.needsT=now}if(!S.needsT)S.needsT=now}
+const NEEDFX={nap:{e:38,m:3},tea:{e:6,f:4},coffee:{e:14},cook:{f:10},grill:{f:12},bake:{f:8},pancakes:{f:12,m:2},dinner2:{f:18,m:4},picnic:{f:14,m:6},cookies:{f:6},x_bigbed:{e:45},x_hammock:{e:20},x_kotatsu:{e:12},x_bathtub:{e:15,m:6},x_cafetable:{e:10,f:3},x_coffeebar:{e:14},x_pizza:{f:25,m:4},x_dtable:{f:20,m:4},x_caketable:{f:10,m:6},x_cakecase:{f:8,m:3},x_kitchen:{f:6}};
+function needFx(p,id){try{const fx=NEEDFX[id.replace(/^x:/,'')];if(!fx)return;const ks=p===PPL.her||(p&&p.who==='her')?['her']:p===PPL.him||(p&&p.who==='him')?['him']:['her','him'];needApply(ks,fx)}catch(e){}}
+function needApply(ks,fx,q){const mult=q||1;for(const k of ks){const n=needsOf(k);if(fx.f)n.f=Math.min(100,n.f+fx.f*mult);if(fx.e)n.e=Math.min(100,n.e+fx.e*mult);if(fx.m){S.mood=S.mood||{};moodOf(k);S.mood[k]=Math.min(100,S.mood[k]+fx.m*mult)}}save()}
+function needLow(k){const n=needsOf(k);return n.f<35?'f':n.e<35?'e':null}
+function needTalk(){try{if(APP.scr!=='menu'||document.hidden||FULLOV()||(APP.mods&&APP.mods.querySelector('.modal'))||(typeof ACT!=='undefined'&&ACT.cur))return;S.needsT2=S.needsT2||{};const now=Date.now();for(const k of['her','him']){const w=needLow(k);if(!w)continue;if(now-(S.needsT2[k]||0)<240000)continue;S.needsT2[k]=now;const p=PPL[k];if(!p)continue;say(p,w==='f'?pick(['Так хочется кушать 🍽️','Может, приготовим что-нибудь? 🍳','Живот урчит…']):pick(['Что-то я устал(а)… 😴','Было бы здорово вздремнуть 💤','Глаза слипаются…']),3500);return}}catch(e){}}
+setInterval(needTalk,30000);
+/* ---------- кухня: экран ---------- */
+const CKSTAR=['','⭐','⭐⭐','⭐⭐⭐'];
+function ckBar(l,v,c){return`<div class="nb"><span>${l}</span><div class="nbar"><i style="width:${Math.round(v)}%;background:${c}"></i></div><b>${Math.round(v)}</b></div>`}
+function ckNeedsHtml(){return['her','him'].map(k=>{const n=needsOf(k),m=Math.round(moodOf(k));return`<div class="ncard"><b>${k==='her'?S.her:S.him}</b>${ckBar('🍽️',n.f,'#F0A33A')}${ckBar('⚡',n.e,'#5AB8F2')}${ckBar('💛',m,'#F26B8A')}</div>`}).join('')}
+function ckShelfHtml(){const D=S.dishes||[];if(!D.length)return'<p class="soft small center">Полка пуста. Приготовь что-нибудь вкусное 👇</p>';return`<div class="dshelf">${D.map((d,i)=>{const r=CK.find(x=>x.id===d.id);return r?`<button class="dsh${ckSel===i?' on':''}" data-eat="${i}"><span>${r.ic}</span><small>${r.n}</small><i>${CKSTAR[d.q]}</i></button>`:''}).join('')}</div>${ckSel!=null&&D[ckSel]?`<div class="eatrow"><button class="btn green" data-who="her">${S.her}</button><button class="btn green" data-who="him">${S.him}</button><button class="btn" data-who="both">Вместе 💞</button></div>`:'<p class="soft small center">Выбери блюдо, потом кого накормить</p>'}`}
+function ckRecipesHtml(){const best=S.cooked||{};const grp=[['fry','Сковорода'],['boil','Кастрюля'],['bake','Духовка'],['mix','Миска']];return grp.map(([k,t])=>`<h4>${CKK[k][0]} ${t}</h4><div class="rgrid">${CK.filter(r=>r.k===k).map(r=>{const ms=ckMiss(r),ok=ms.miss.length===0,b=best[r.id]||0;return`<button class="rcard${ok?' ok':''}" data-cook="${r.id}"><span class="ri">${r.ic}</span><b>${r.n}</b><small>${r.ing.map(([x,n])=>`<em class="${ckHave(x)>=n?'y':'n'}">${ckNm(x)[0]}${ckHave(x)}/${n}</em>`).join(' ')}</small><i>${b?CKSTAR[b]:'не готовил'}</i>${ok?'':`<u>докупить ${ms.cost} 🦴</u>`}</button>`}).join('')}</div>`).join('')}
+let ckSel=null;
+function ckOpen(){ckSel=null;ckPage()}
+function ckPage(){const f=ckF();const m=openPage('cook','🍳 Кухня и самочувствие',`<h4>Как они</h4><div class="ncards">${ckNeedsHtml()}</div><div class="ckbtns"><button class="btn" data-nap="her">${S.her}: вздремнуть 💤</button><button class="btn" data-nap="him">${S.him}: вздремнуть 💤</button></div><h4>Блюда на полке</h4>${ckShelfHtml()}${f?'':'<p class="soft small center">Фермы пока нет, поэтому продукты докупаются за 🦴 дороже</p>'}<h3>Рецепты</h3>${ckRecipesHtml()}<p class="soft small center">Приготовлено блюд: ${S.cookN||0}</p>`);
+ m.onclick=e=>{const b=e.target.closest('button');if(!b)return;const x=e.target.closest('.x');if(x){m.remove();return}
+  if(b.dataset.nap){m.remove();runAct(PPL[b.dataset.nap],'nap');return}
+  if(b.dataset.eat!=null){SFX.tap&&SFX.tap();ckSel=ckSel===+b.dataset.eat?null:+b.dataset.eat;const sc=m.querySelector('.pgb').scrollTop;ckPage();const m2=APP.mods.querySelector('.page[data-page="cook"]');if(m2)m2.querySelector('.pgb').scrollTop=sc;return}
+  if(b.dataset.who){ckEat(b.dataset.who);return}
+  if(b.dataset.cook){const r=CK.find(x=>x.id===b.dataset.cook);ckStart(r)}}}
+function ckEat(who){const d=(S.dishes||[])[ckSel];if(d==null)return;const r=CK.find(x=>x.id===d.id);if(!r)return;const ks=who==='both'?['her','him']:[who];const q=[0,.8,1,1.25][d.q]||1;
+ needApply(ks,{f:r.h,e:r.e||0,m:r.m+(who==='both'?3:0)},q);S.dishes.splice(ckSel,1);ckSel=null;S.eaten=(S.eaten||0)+1;SFX.chime&&SFX.chime(2);vib(15);
+ const m=APP.mods.querySelector('.page[data-page="cook"]');if(m){m.remove()}
+ for(const k of ks){const p=PPL[k];if(p)say(p,pick(['Очень вкусно! '+r.ic,'Спасибо, это мега! 😋','Вкуснятина '+r.ic,'Ммм… как дома 💛']),3200)}
+ if(PPL.her)heartsBurstV(PPL.her.x,PPL.her.y-120);toast(`${r.ic} ${r.n}: сытость +${Math.round(r.h*q)}`);save()}
+/* ---------- мини-игра ---------- */
+function ckStart(r){const ms=ckMiss(r);if(ms.cost>S.bones){toast('Не хватает костей на продукты 🦴');SFX.nope&&SFX.nope();return}
+ const m=APP.mods.querySelector('.page[data-page="cook"]');if(m)m.remove();
+ const ov=document.createElement('div');ov.id='ckov';ov.className='ckov';const K=CKK[r.k];
+ ov.innerHTML=`<div class="ckh"><button class="ckx" data-x>✕</button><b class="lob">${r.ic} ${r.n}</b><span class="ckst"></span></div><div class="cktxt"></div><div class="ckstage"><div class="ckpan" data-pan><span class="ckem">${K[0]}</span><div class="ckfire"></div><div class="cksteam"></div></div><div class="ckctl"></div></div>`;
+ document.body.appendChild(ov);
+ const st={r,ov,stage:0,score:0,in:[],alive:true,paid:ms.cost};
+ const done=ok=>{st.alive=false;clearInterval(st.iv);ov.remove();if(!ok){ckPage()}};
+ ov.querySelector('[data-x]').onclick=()=>{if(st.stage<2){done(false)}};
+ ckStage1(st,done)}
+function ckStage1(st,done){const{r,ov}=st;ov.querySelector('.ckst').textContent='Шаг 1 из 2';ov.querySelector('.cktxt').textContent='Перетащи продукты в '+CKK[r.k][1].toLowerCase();
+ const ctl=ov.querySelector('.ckctl');const items=[];r.ing.forEach(([k,n])=>{for(let i=0;i<n;i++)items.push(ckNm(k)[0])});
+ ctl.innerHTML=`<div class="cktray">${items.map((e,i)=>`<div class="ckchip" data-i="${i}">${e}</div>`).join('')}</div>`;
+ const pan=ov.querySelector('[data-pan]');let left=items.length,drag=null;
+ ctl.onpointerdown=e=>{const c=e.target.closest('.ckchip');if(!c||c.classList.contains('gone'))return;drag={c,pid:e.pointerId,x0:e.clientX,y0:e.clientY};try{c.setPointerCapture(e.pointerId)}catch(_){}c.classList.add('drag');SFX.tap&&SFX.tap();vib(6)};
+ ctl.onpointermove=e=>{if(!drag||e.pointerId!==drag.pid)return;drag.c.style.transform=`translate(${e.clientX-drag.x0}px,${e.clientY-drag.y0}px) scale(1.25)`;const r2=pan.getBoundingClientRect();pan.classList.toggle('hot',e.clientX>r2.left&&e.clientX<r2.right&&e.clientY>r2.top-30&&e.clientY<r2.bottom)};
+ const end=e=>{if(!drag||e.pointerId!==drag.pid)return;const c=drag.c,r2=pan.getBoundingClientRect(),inn=e.clientX>r2.left&&e.clientX<r2.right&&e.clientY>r2.top-30&&e.clientY<r2.bottom;drag=null;pan.classList.remove('hot');c.classList.remove('drag');
+  if(inn){c.classList.add('gone');c.style.transform='scale(0)';left--;SFX.pop&&SFX.pop();vib(14);pan.classList.add('splash');setTimeout(()=>pan.classList.remove('splash'),300);if(left<=0)setTimeout(()=>{if(st.alive)(st.r.t==='stir'?ckStir:ckHeat)(st,done)},450)}else c.style.transform=''};
+ ctl.onpointerup=end;ctl.onpointercancel=end}
+function ckHeat(st,done){const{r,ov}=st;const K=r.k;ov.querySelector('.ckst').textContent='Шаг 2 из 2';ov.querySelector('.cktxt').textContent=K==='fry'?'Держи жар в зелёной зоне: жми 🔥 и отпускай':K==='boil'?'Не дай убежать: поддерживай кипение':'Выпекай: держи температуру в зоне';
+ const T={fry:7500,boil:9000,bake:10000}[K],zw={fry:.2,boil:.24,bake:.22}[K],rise={fry:.0022,boil:.0015,bake:.0012}[K],fall={fry:.0015,boil:.0011,bake:.0009}[K];
+ const ctl=ov.querySelector('.ckctl');ctl.onpointerdown=ctl.onpointermove=ctl.onpointerup=ctl.onpointercancel=null;
+ ctl.innerHTML=`<div class="ckgauge"><div class="ckzone"></div><div class="ckneedle"></div></div><div class="ckprog"><i></i></div><button class="ckhold">🔥 Держи, чтобы греть</button>`;
+ const zone=ctl.querySelector('.ckzone'),nd=ctl.querySelector('.ckneedle'),pr=ctl.querySelector('.ckprog i'),hb=ctl.querySelector('.ckhold'),pan=ov.querySelector('[data-pan]');
+ let heat=.3,hold=false,t0=performance.now(),last=t0,inz=0,zc=.55,zt=Math.random(),sz=0;
+ hb.onpointerdown=e=>{hold=true;hb.classList.add('on');try{hb.setPointerCapture(e.pointerId)}catch(_){}vib(5)};const up=()=>{hold=false;hb.classList.remove('on')};hb.onpointerup=up;hb.onpointercancel=up;
+ st.iv=setInterval(()=>{if(!st.alive)return;const n=performance.now(),dt=Math.min(60,n-last);last=n;heat+=(hold?rise:-fall)*dt;heat=Math.max(0,Math.min(1,heat));
+  zt-=dt/1000;if(zt<=0){zt=1.6+Math.random()*1.6;zc=.32+Math.random()*.4}sz+=(zc-sz)*.04;const lo=sz-zw/2,hi=sz+zw/2;const ok=heat>=lo&&heat<=hi;if(ok)inz+=dt;
+  zone.style.left=(lo*100)+'%';zone.style.width=(zw*100)+'%';nd.style.left=(heat*100)+'%';nd.classList.toggle('bad',!ok);pan.classList.toggle('burn',heat>hi+.1);pan.style.setProperty('--h',heat);
+  const el=n-t0;pr.style.width=Math.min(100,el/T*100)+'%';if(!ok&&Math.random()<.04)vib(4);
+  if(el>=T){clearInterval(st.iv);st.score=inz/T;ckResult(st,done)}},40)}
+function ckStir(st,done){const{r,ov}=st;ov.querySelector('.ckst').textContent='Шаг 2 из 2';ov.querySelector('.cktxt').textContent='Води пальцем по кругу, перемешивай!';
+ const T=9000,need=Math.PI*2*5;const ctl=ov.querySelector('.ckctl');ctl.onpointerdown=ctl.onpointermove=ctl.onpointerup=ctl.onpointercancel=null;
+ ctl.innerHTML=`<div class="ckstir"><div class="ckbowl"><span class="ckspoon">🥄</span></div></div><div class="ckprog"><i></i></div>`;
+ const bowl=ctl.querySelector('.ckbowl'),sp=ctl.querySelector('.ckspoon'),pr=ctl.querySelector('.ckprog i');let ang=null,tot=0,t0=performance.now(),dn=false,pid=null,ph=0;
+ const pol=e=>{const b=bowl.getBoundingClientRect();return Math.atan2(e.clientY-(b.top+b.height/2),e.clientX-(b.left+b.width/2))};
+ bowl.onpointerdown=e=>{dn=true;pid=e.pointerId;ang=pol(e);try{bowl.setPointerCapture(e.pointerId)}catch(_){}};
+ bowl.onpointermove=e=>{if(!dn||e.pointerId!==pid)return;const a=pol(e);let d=a-ang;if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;ang=a;tot+=Math.abs(d);ph+=d;sp.style.transform=`rotate(${ph*57}deg)`;if(Math.random()<.12){vib(3);SFX.tap&&SFX.tap()}pr.style.width=Math.min(100,tot/need*100)+'%';
+  if(tot>=need&&st.alive){const left=Math.max(0,1-(performance.now()-t0)/T);st.score=.55+.45*left;clearInterval(st.iv);ckResult(st,done)}};
+ const upp=()=>{dn=false};bowl.onpointerup=upp;bowl.onpointercancel=upp;
+ st.iv=setInterval(()=>{if(!st.alive)return;if(performance.now()-t0>T*1.8){clearInterval(st.iv);st.score=Math.min(.5,tot/need*.5);ckResult(st,done)}},100)}
+function ckResult(st,done){const{r,ov}=st;const q=st.score>=.72?3:st.score>=.42?2:1;
+ const ms=ckMiss(r);S.bones-=ms.cost;ckTake(r);S.dishes=S.dishes||[];if(S.dishes.length<40)S.dishes.push({id:r.id,q});S.cooked=S.cooked||{};if((S.cooked[r.id]||0)<q)S.cooked[r.id]=q;S.cookN=(S.cookN||0)+1;
+ const first=!(S.cookedOnce||(S.cookedOnce={}))[r.id];S.cookedOnce[r.id]=1;if(first){S.hearts=(S.hearts||0)+(q===3?1:0)}
+ const bonus=q===3?r.v*.4:0;if(bonus)S.bones+=Math.round(bonus);save();SFX.chime&&SFX.chime(q===3?4:2);vib(q===3?40:20);if(q===3&&typeof confetti==='function')confetti(24);
+ ov.querySelector('.cktxt').textContent='';ov.querySelector('.ckst').textContent='';
+ ov.querySelector('.ckstage').innerHTML=`<div class="ckres"><div class="ckbig">${r.ic}</div><h2 class="lob">${r.n}</h2><div class="ckstars">${CKSTAR[q]}</div><p>${q===3?'Идеально! Саша и Дима будут в восторге.':q===2?'Получилось вкусно!':'Съедобно, но в следующий раз выйдет лучше.'}</p>${bonus?`<p class="soft">+${Math.round(bonus)} 🦴 за мастерство</p>`:''}${first&&q===3?'<p class="soft">Новый рецепт на 3 звезды: +1 💗</p>':''}<div class="eatrow"><button class="btn green" data-a2="eat">Подать сейчас 💞</button><button class="btn" data-a2="shelf">На полку</button></div></div>`;
+ ov.onclick=e=>{const b=e.target.closest('[data-a2]');if(!b)return;if(b.dataset.a2==='eat'){ov.remove();ckSel=S.dishes.length-1;ckEat('both')}else{ov.remove();ckSel=null;ckPage()}}}
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -6636,12 +6774,13 @@ function act(a,b){
  }}
 
 /* ===== loop ===== */
+function houseMoving(){try{if(APP.rslide||PD||TW.length||PT.length)return true;const H=PPL.her,M=PPL.him;if(H&&(H.mode==='walk'||H.pose==='walk'))return true;if(M&&(M.mode==='walk'||M.pose==='walk'))return true;for(const w of WK.list)if(!w.hidden&&(w.mode==='walk'||w.mode==='zoom'||w.jump>0||w.mode==='jdown'||w.mode==='jup'))return true}catch(e){}return false}
 function FULLOV(){return !!(document.getElementById('farm')||document.getElementById('cafe'))}
 
 function renderRoomCache(){const D=APP.DPR,W=APP.W,H=APP.H;if(!APP.rc)APP.rc=mkCanvas(1,1);const rc=APP.rc;rc.width=Math.round(W*D);rc.height=Math.round(H*D);const c=rc.getContext('2d');const sc=W/400;c.setTransform(D*sc,0,0,D*sc,0,0);const rid=roomId();APP.L=drawRoomStatic(c,H/sc,ROOM[rid],curDeco());APP.roomDirty=false;if(typeof renderGlassMask==='function')renderGlassMask()}
-function frame(now){if(document.hidden||FULLOV()){APP.last=now;APP._ft=now;requestAnimationFrame(frame);return}{const gap=now-(APP._ft||0);if(gap<(APP.scr==='game'?((!G.busy&&!TW.length&&!PT.length&&!PD)?28:13):28)){requestAnimationFrame(frame);return}APP._ft=now}
+function frame(now){if(document.hidden||FULLOV()){APP.last=now;APP._ft=now;requestAnimationFrame(frame);return}{const gap=now-(APP._ft||0);if(gap<(APP.scr==='game'?((!G.busy&&!TW.length&&!PT.length&&!PD)?28:13):(houseMoving()?13:28))){requestAnimationFrame(frame);return}APP._ft=now}
  try{if(APP.scr!=='game'){const pg=APP.mods&&APP.mods.querySelector('.modal.page');if(pg&&!APP.roomDirty){if(now-(APP.idleT||0)<400){requestAnimationFrame(frame);return}APP.idleT=now}
- else if(!TW.length&&!PT.length&&!APP.rslide&&!PD&&!APP.roomDirty&&!(APP.pz&&APP.pz.on)){APP.skip=!APP.skip;if(APP.skip){requestAnimationFrame(frame);return}}}
+ else if(!TW.length&&!PT.length&&!APP.rslide&&!PD&&!APP.roomDirty&&!(APP.pz&&APP.pz.on)){}}
  const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
  const c=APP.ctx,D=APP.DPR,W=APP.W,H=APP.H;if(APP.curtAnim)APP.roomDirty=true;{const ph=dayPhase();if(APP.ph!==ph){APP.ph=ph;APP.roomDirty=true}}if(APP.roomDirty||!APP.rc)renderRoomCache();ensureWalkers(APP.L,roomId());updWalkers(dt,APP.L,curDeco());ensurePeople(APP.L,roomId(),curDeco());updPeople(dt,APP.L,curDeco());updCouple(dt);if(RS.fw>0)RS.fw-=dt;
  c.setTransform(D,0,0,D,0,0);c.fillStyle='#1d120b';c.fillRect(0,0,W,H);
@@ -6664,7 +6803,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='28.11 12:04';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='28.11 12:14';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'||!!APP.cafeOpen||!!APP.farmOpen||!!document.getElementById('cafe')||!!document.querySelector('.farm')}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
