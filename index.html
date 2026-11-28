@@ -2974,7 +2974,7 @@ function comboFx(){if(G.combo<2)return;const k=Math.min(G.combo,6);bigText(CTXT[
 /* ===== core resolve ===== */
 function hitFloor(r,c){const e=cellAt(r,c);if(!e||!e.fl)return;e.fl--;floorFx(r,c);goalAdd('floor',0,r,c)}
 function removeTile(r,c,t){G.grid[r][c].t=null;t.dead=true;G.dying.push(t);tween(t,{s:1.28},70).then(()=>tween(t,{s:0,a:0},170,E.in)).then(()=>{const i=G.dying.indexOf(t);if(i>=0)G.dying.splice(i,1)});
- if(t.k==='dog'){goalAdd('dog',t.d,r,c);S.stats.dogs[t.d]=(S.stats.dogs[t.d]||0)+1;dailyAdd(t.d);scoreAdd(r,c)}popFx(r,c,t);hitFloor(r,c)}
+ if(t.k==='dog'){goalAdd('dog',t.d,r,c);S.stats.dogs[t.d]=(S.stats.dogs[t.d]||0)+1;dailyAdd(t.d);scoreAdd(r,c);if(t.gold&&!G.over){G.moves++;updHUD();addP({type:'text',text:'+1 ход!',x:cx(c),y:cy(r)-G.cs*.3,size:20,max:1000,rise:44,c1:'#FFFFFF',c2:'#F0A300'});SFX.chime&&SFX.chime(3);vib(20)}}popFx(r,c,t);hitFloor(r,c)}
 function hitBlock(r,c,set){const k=K(r,c);if(set&&set.has(k))return;if(set)set.add(k);const t=T(r,c);if(!isBlock(t))return;t.hp-=1;blockFx(r,c,t);if(t.hp<=0&&t.k==='sleepy'){wakeSleepy(r,c,t);return}if(t.hp<=0){if(t.k==='mud')G.mudHit=true;onBlockGone(t,r,c);removeTile(r,c,t);goalAdd(t.cd!=null?'alarm':t.k,0,r,c)}else{t.s=1.25;tween(t,{s:1},220,E.back)}}
 function frisTarget(r,c,excl){const near=new Set([K(r,c),K(r+1,c),K(r-1,c),K(r,c+1),K(r,c-1)]);if(excl)excl.forEach(k=>near.add(k));const tiers=[[],[],[],[]];
  for(const k of allCells()){if(near.has(k))continue;const t=T(KR(k),KC(k));const e=G.grid[KR(k)][KC(k)];if(!t)continue;if(t.k==='treat')continue;if(isBlock(t)||t.ice)tiers[0].push(k);else if(e.fl&&G.goals.some(g=>g.type==='floor'&&g.have<g.need))tiers[1].push(k);else if(t.k==='dog'&&G.goals.some(g=>g.type==='dog'&&g.d===t.d&&g.have<g.need))tiers[2].push(k);else tiers[3].push(k)}
@@ -3088,18 +3088,19 @@ const SEASONS=[
  {id:'autumn',n:'Осень',ic:'🍂',frame:['#F6C27E','#C8702E','#7A3A14'],inner:['rgba(78,42,22,.86)','rgba(40,20,10,.93)'],cell:'255,235,210',fall:'leaf',floorN:'Листья',boxN:'Тыква',boxCol:'#F08A2C',floorFx:['#F2A65A','#D9622A','#F6D06A']}];
 const SEASON_LEN=15;
 function seasonOf(n){return SEASONS[Math.floor((n-1)/SEASON_LEN)%4]}
+const SHW=w=>w.map(n=>'.'.repeat((8-n)/2)+'#'.repeat(n)+'.'.repeat((8-n)/2));
 const SHAPES2=[
  {n:'Сердечко ❤️',m:['........','.##..##.','########','########','########','.######.','..####..','...##...']},
  {n:'Косточка 🦴',m:['###..###','########','.######.','..####..','..####..','.######.','########','###..###']},
- {n:'Лапка 🐾',m:['##.##.##','##.##.##','........','.######.','########','########','.######.','..####..']},
- {n:'Две половинки 💞',m:['###..###','###..###','###..###','###..###','###..###','###..###','###..###','###..###']},
- {n:'Бублик 🍩',m:['..####..','.######.','###..###','##....##','##....##','###..###','.######.','..####..']},
- {n:'Домик 🏠',m:['...##...','..####..','.######.','########','#.####.#','########','###..###','###..###']},
- {n:'Бабочка 🦋',m:['##....##','###..###','########','.######.','.######.','########','###..###','##....##']},
  {n:'Крестик ✚',m:['..####..','..####..','########','########','########','########','..####..','..####..']},
- {n:'Сырок 🧀',m:['########','#.####.#','########','###.####','####.###','########','#.####.#','########']},
  {n:'Ромбик 💎',m:['...##...','..####..','.######.','########','########','.######.','..####..','...##...']},
- {n:'Восьмиугольник',m:['..####..','.######.','########','########','########','########','.######.','..####..']}];
+ {n:'Восьмиугольник',m:['..####..','.######.','########','########','########','########','.######.','..####..']},
+ {n:'Домик 🏠',m:['...##...','..####..','.######.','########','########','########','###..###','###..###']},
+ {n:'Ёлочка 🎄',m:SHW([2,4,4,6,6,8,8,8])},
+ {n:'Купол 🔔',m:SHW([4,6,8,8,8,8,8,8])},
+ {n:'Скруглённый квадрат',m:SHW([6,8,8,8,8,8,8,6])},
+ {n:'Склон ⛰',m:['####....','#####...','######..','#######.','########','########','########','########']},
+ {n:'Полное поле',m:['########','########','########','########','########','########','########','########']}];
 const SHAPES=SHAPES2.map(x=>x.m);
 const PATS={center:(r,c)=>r>=2&&r<=5&&c>=1&&c<=6,ring:(r,c)=>((r===1||r===6)&&c>=1&&c<=6)||((c===1||c===6)&&r>=1&&r<=6),corners:(r,c)=>(r<2||r>5)&&(c<2||c>5),diamond:(r,c)=>Math.abs(r-3.5)+Math.abs(c-3.5)<=3,checker:(r,c)=>(r+c)%2===0&&r>=1&&r<=6,cross:(r,c)=>r===3||r===4||c===3||c===4,bottom:(r,c)=>r>=5,top:(r,c)=>r<=2,sides:(r,c)=>c<=1||c>=6,mid:(r,c)=>r===3||r===4,frame:(r,c)=>r===0||r===7||c===0||c===7,xx:(r,c)=>r===c||r===7-c};
 const RECIPES=[
@@ -3132,12 +3133,13 @@ function genLevelBase(n,rcO){const R=srand(n*7919+13);const se=seasonOf(n);const
   L.ice=L.ice.filter(x=>run(x[0],x[1]));if(L.floor.length){L.floor=L.floor.filter(x=>run(x[0],x[1]));const g=L.goals.find(x=>x.type==='floor');if(g){const nn=L.floor.reduce((q,x)=>q+x[2],0);if(nn)g.need=nn;else L.goals.splice(L.goals.indexOf(g),1)}}}
  if(L.ice.length){const occ=new Set();for(const x of[...L.boxes,...L.wool,...L.mud,...L.ss])occ.add(x[0]*8+x[1]);L.ice=L.ice.filter(([r,c])=>on(r,c)&&!occ.has(r*8+c));const g=L.goals.find(x=>x.type==='ice');if(g){if(L.ice.length)g.need=L.ice.length;else L.goals.splice(L.goals.indexOf(g),1)}}
  const dogGoals=rc.g.filter(g=>g==='dog').length;const used=[];
- for(let i=0;i<dogGoals;i++){const d=L.colList[i];used.push(d);const need=Math.round(Math.min(18+idx*1.7+cyc*5,48)*(dogGoals>1?.75:1));L.goals.push({type:'dog',d,need})}
+ for(let i=0;i<dogGoals;i++){const d=L.colList[i];used.push(d);const need=Math.round(Math.min(16+idx*1.5+cyc*4.5,42)*(dogGoals>1?.75:1)*(L.shape?.94:1));L.goals.push({type:'dog',d,need})}
  L.goals=L.goals.filter(g=>g.need>0);if(!L.goals.length)L.goals.push({type:'dog',d:L.colList[0],need:15});
  if(rc.boss){L.cat=true;L.bossK=(se.id==='spring'||se.id==='autumn')?'raccoon':'cat';L.goals.push({type:L.bossK,need:3})}
  if(se.id==='winter'&&rc.fin)L.muts.push('blizzard');if(se.id==='autumn'&&rc.g.includes('wool'))L.muts.push('yarn');
- let mv=17;for(const g of L.goals){if(g.type==='floor')mv+=g.need/3;if(g.type==='ice')mv+=g.need/2.4;if(g.type==='box')mv+=L.boxes.reduce((a,x)=>a+x[2],0)/3;if(g.type==='wool')mv+=g.need/3;if(g.type==='treat')mv+=g.need*3;if(g.type==='dog')mv+=g.need/7;if(g.type==='cat')mv+=4;if(g.type==='raccoon')mv+=6;if(g.type==='mud')mv+=g.need/1.8;if(g.type==='comb'||g.type==='shell')mv+=g.need/1.6;if(g.type==='lantern')mv+=g.need/2.6;if(g.type==='sleepy')mv+=g.need*1.4;if(g.type==='feed')mv+=g.need*1.8}
- if(L.goals.length>=3)mv+=3;if(L.shape)mv+=3;if(L.shape&&L.boxes.length)mv+=2;if(rc.hard)mv-=1;mv-=cyc*1.5;mv=clamp(Math.round(mv),18,45);
+ let mv=17;for(const g of L.goals){if(g.type==='floor')mv+=g.need/3;if(g.type==='ice')mv+=g.need/2.4;if(g.type==='box')mv+=L.boxes.reduce((a,x)=>a+x[2],0)/2.4;if(g.type==='wool')mv+=g.need/3;if(g.type==='treat')mv+=g.need*3.6;if(g.type==='dog')mv+=g.need/7;if(g.type==='cat')mv+=4;if(g.type==='raccoon')mv+=6;if(g.type==='mud')mv+=g.need/1.8;if(g.type==='comb'||g.type==='shell')mv+=g.need/1.6;if(g.type==='lantern')mv+=g.need/2.6;if(g.type==='sleepy')mv+=g.need*1.4;if(g.type==='feed')mv+=g.need*2.4}
+ if(L.goals.length>=3)mv+=3;if(L.shape)mv+=3;if(L.shape&&L.boxes.length)mv+=2;if(rc.hard)mv-=1;mv-=cyc;mv=clamp(Math.round(mv),18,45);
+ L.gold=[];if(n>=18&&!rc.boss&&!L.cat){const occ=new Set();for(const x of[...L.boxes,...L.wool,...L.mud,...L.ss,...L.ice])occ.add(x[0]*8+x[1]);const pool=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(on(r,c)&&!occ.has(r*8+c))pool.push([r,c]);sShuffle(pool,R);L.gold=pool.slice(0,Math.min(4,2+Math.floor(n/70)))}
  L.baseMoves=mv;L.moves=mv+2*S.mercy+setInfo(G.room).moves+moodMoves();
  L.title=rc.boss?(L.bossK==='raccoon'?'Босс: Енот Шнырь':'Босс: Кот Барсик'):'Уровень '+n;return L}
 function setupBoard(L){G.R=8;G.C=8;
@@ -3150,6 +3152,7 @@ function setupBoard(L){G.R=8;G.C=8;
   for(const[r,c]of(L.mud||[]))if(G.grid[r][c].on&&!isBlock(G.grid[r][c].t))G.grid[r][c].t=mkTile('mud');
   for(const[r,c,k]of(L.ss||[]))if(G.grid[r][c].on&&!isBlock(G.grid[r][c].t)){const nt=mkTile(k);if(k==='sleepy')nt.d=pick(G.cols);G.grid[r][c].t=nt}
   for(const[r,c,l]of L.ice){const t=T(r,c);if(t&&t.k==='dog')t.ice=l}
+  for(const[r,c]of(L.gold||[])){const t=T(r,c);if(t&&t.k==='dog'&&!t.ice)t.gold=1}
   if(L.treat){const cs=[3,4];for(const c of cs){let r=0;while(r<8&&!G.grid[r][c].on)r++;const t=T(r,c);if(t&&t.k==='dog'&&!t.ice){G.grid[r][c].t=mkTile('treat');break}}}
   if(!findGroups().length&&findMove())break}
  for(let r=0;r<8;r++)for(let c=0;c<8;c++){const t=T(r,c);if(t){t.x=c;t.y=r-10}}}
@@ -3215,6 +3218,7 @@ function drawTile(c,t,now){const cs=G.cs;const x=G.ox+t.x*cs+cs/2,y=G.oy+t.y*cs+
  let img;if(t.k==='ball'){c.rotate(now*.002);img=SPR.ball}else if(t.k==='wool')img=SPR.wool[t.hp>1?1:0];else if(t.k==='mud')img=mudSpr();else if(t.k==='comb'||t.k==='shell'||t.k==='lantern')img=blockSpr(t.k,t.hp);else if(t.k==='sleepy')img=sleepySpr(t.d,t.hp);else if(t.k==='feed')img=feedSpr(t.hp);else if(t.k==='box')img=SPR.box[Math.min(3,t.hp)-1];else if(t.k==='treat'){c.translate(0,Math.sin(now*.004+t.id)*cs*.03);img=SPR.treat}else img=(t.blink>now||t.sleep)?SPR.dogC[t.d]:SPR.dog[t.d];
  if(img){if(t.a>.5&&!t.dead){c.fillStyle='rgba(0,0,0,.2)';ell(c,0,cs*.4,cs*.34,cs*.07);c.fill()}c.drawImage(img,-cs/2,-cs/2,cs,cs)}
  if(t.k==='ball')c.rotate(-now*.002);if(t.sp)drawSpecialMark(c,t,now,cs);if(t.ice)c.drawImage(t.k==='dog'&&t.d>=0?iceSpr(t.d,t.ice>1?2:1):SPR.ice[t.ice>1?1:0],-cs/2,-cs/2,cs,cs);if(t.ice>1)floorBadge(c,-cs/2,-cs/2,cs,2,1);
+ if(t.gold&&!t.dead){c.save();const pu=.5+.5*Math.sin(now*.006+t.id);c.lineJoin='round';c.strokeStyle='rgba(255,210,63,'+(.35+.3*pu)+')';c.lineWidth=cs*.14;rr(c,-cs*.46,-cs*.46,cs*.92,cs*.92,cs*.26);c.stroke();c.strokeStyle='#FFD23F';c.lineWidth=cs*.06;c.stroke();c.fillStyle='#FFD23F';c.strokeStyle='#8a5a00';c.lineWidth=cs*.03;c.font='900 '+Math.round(cs*.28)+'px Nunito,sans-serif';c.textAlign='center';c.textBaseline='middle';c.strokeText('+1',cs*.28,-cs*.32);c.fillText('+1',cs*.28,-cs*.32);c.restore()}
  if(t.cd!=null&&!t.dead){const hot=t.cd<=2,pu=hot?1+Math.sin(now*.02)*.08:1;c.save();c.scale(pu,pu);c.fillStyle=hot?'#E8453C':'#FFF3D1';c.strokeStyle='#5a3a1a';c.lineWidth=2.4;c.beginPath();c.arc(0,0,cs*.27,0,7);c.fill();c.stroke();c.fillStyle=hot?'#fff':'#5a3a1a';c.font='900 '+Math.round(cs*.36)+'px Nunito,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(t.cd,0,cs*.02);c.font=Math.round(cs*.22)+'px sans-serif';c.fillText('⏰',cs*.3,-cs*.32);c.restore()}
  if(G.sel===t){c.strokeStyle='#fff';c.lineWidth=3;rr(c,-cs*.47,-cs*.47,cs*.94,cs*.94,cs*.24);c.stroke()}
  c.restore()}
@@ -6312,7 +6316,7 @@ function genSpecial(n,kind){const idx=(n-1)%15,cyc=Math.floor((n-1)/60);const in
  if(kind==='sprint'){dogs.forEach(g=>g.need=Math.round(14+Math.min(lvl,60)*.1+cyc*2));L.time=72-Math.min(12,cyc*3);L.moves=999;L.baseMoves=999;return L}
  if(kind==='combo'){L.goals.unshift({type:'combo',need:3});dogs.forEach(g=>g.need=Math.round(g.need*.6));mv=24}
  if(kind==='maker'){L.goals.unshift({type:'special',need:4+Math.min(2,cyc)});dogs.forEach(g=>g.need=Math.round(g.need*.5));mv=23}
- if(kind==='order'){const need=Math.round(10+Math.min(lvl,60)*.08+cyc*2);const cols=L.colList;L.goals=[0,1,2].map(i=>({type:'dog',d:cols[i],need}));L.seq=true;mv=25}
+ if(kind==='order'){const need=Math.round(7+Math.min(lvl,60)*.05+cyc*1.2);const cols=L.colList;L.goals=[0,1,2].map(i=>({type:'dog',d:cols[i],need}));L.seq=true;mv=28}
  if(kind==='score'){L.goals=[{type:'score',need:Math.round((1000+Math.min(lvl,90)*8+cyc*120)/50)*50}];L.score=true;mv=23}
  if(kind==='alarm'){L.shape=null;L.shapeN='';dogs.forEach(g=>g.need=Math.round(g.need*.55));const pick3=[[2,2],[2,5],[5,3],[5,5],[3,4],[4,2]].slice(0,3+(cyc>0?1:0));L.alarms=pick3.map(([r,c])=>[r,c,6]);L.goals.unshift({type:'alarm',need:L.alarms.length});mv=25}
  L.baseMoves=mv;L.moves=mv+2*S.mercy+setInfo(G.room).moves+moodMoves();return L}
@@ -6505,7 +6509,7 @@ async function startLevel(){if(window.__applyUpd&&window.__applyUpd())return;con
  if(preB&&preB.length){applyPreBoosts(preB);await wait(900)}
  if(!findMove())await reshuffle();await introNew(L);G.busy=false;G.idle=0;if(L.time)G.timeOn=true;save()}
 function levelIntro(L,pre){const goals=G.goals.map(g=>`<div class="ig"><img src="${goalImg(g)}" alt=""><b>${g.need}</b></div>`).join('');const muts=L.muts.map(id=>`<div class="mut"><span>${MUT[id].ic}</span><div><b>${MUT[id].n}</b><small>${MUT[id].d}</small></div></div>`).join('');
- const p0=ask(`<div class="center"><div class="seasontag s-${L.se.id}">${L.hair?'💈 Парикмахерская · уровень '+L.n:L.se.ic+' '+L.se.n+' · '+(L.idx+1)+' из '+SEASON_LEN}</div>${L.spTag?'<div class="bosstag hard">'+L.spTag+'</div>':''}${L.boss?'<div class="bosstag">Босс-уровень</div>':L.hard?'<div class="bosstag hard">Сложный уровень</div>':''}<h2 class="lob">${esc(L.title)}</h2>${L.shapeN?`<p class="shapetag">Поле: ${L.shapeN}</p>`:''}${L.boss?`<p class="soft">Уровень ${L.n}</p><p class="streak">🎴 За победу — купон-сюрприз!</p>`:''}<p class="soft">Собери:</p><div class="igoals">${goals}</div>${(()=>{const d=(L.floor||[]).filter(x=>x[2]>1).length;return d?`<p class="soft small">Клеток ${L.floor.length}, но ${d} из них в 2 слоя (значок ×2), их надо очистить дважды</p>`:''})()}${L.spD?`<p class="soft small">${L.spD}</p>`:''}<p>${L.time?'Время: <b>'+L.time+' сек</b>':'Ходов: <b>'+G.moves+'</b>'}</p>${muts}${S.mercy?`<p class="soft small">💛 +${S.mercy*2} хода в подарок за старания</p>`:''}${!L.time&&moodMoves()?`<p class="soft small">💚 Дома хорошее настроение: +${moodMoves()} ход${moodMoves()>1?'а':''}</p>`:''}${pre?preBoostHtml():''}</div>`,[{t:'Поехали!',c:'green',v:1}]);if(!pre)return p0;const m=APP.mods.lastElementChild;bindPreBoost(m);return p0.then(()=>takePreBoost(m))}
+ const p0=ask(`<div class="center"><div class="seasontag s-${L.se.id}">${L.hair?'💈 Парикмахерская · уровень '+L.n:L.se.ic+' '+L.se.n+' · '+(L.idx+1)+' из '+SEASON_LEN}</div>${L.spTag?'<div class="bosstag hard">'+L.spTag+'</div>':''}${L.boss?'<div class="bosstag">Босс-уровень</div>':L.hard?'<div class="bosstag hard">Сложный уровень</div>':''}<h2 class="lob">${esc(L.title)}</h2>${L.shapeN?`<p class="shapetag">Поле: ${L.shapeN}</p>`:''}${L.boss?`<p class="soft">Уровень ${L.n}</p><p class="streak">🎴 За победу — купон-сюрприз!</p>`:''}<p class="soft">Собери:</p><div class="igoals">${goals}</div>${(()=>{const d=(L.floor||[]).filter(x=>x[2]>1).length;return d?`<p class="soft small">Клеток ${L.floor.length}, но ${d} из них в 2 слоя (значок ×2), их надо очистить дважды</p>`:''})()}${L.spD?`<p class="soft small">${L.spD}</p>`:''}${L.gold&&L.gold.length?`<p class="soft small">✨ Золотая рамка: собери такую собачку, и получишь +1 ход</p>`:''}<p>${L.time?'Время: <b>'+L.time+' сек</b>':'Ходов: <b>'+G.moves+'</b>'}</p>${muts}${S.mercy?`<p class="soft small">💛 +${S.mercy*2} хода в подарок за старания</p>`:''}${!L.time&&moodMoves()?`<p class="soft small">💚 Дома хорошее настроение: +${moodMoves()} ход${moodMoves()>1?'а':''}</p>`:''}${pre?preBoostHtml():''}</div>`,[{t:'Поехали!',c:'green',v:1}]);if(!pre)return p0;const m=APP.mods.lastElementChild;bindPreBoost(m);return p0.then(()=>takePreBoost(m))}
 function showGameUI(){const L=G.lv;APP.scrEl.innerHTML=`<div class="layer" id="game"><div class="hud"><button class="ico" data-a="pause" aria-label="Пауза">⏸</button><div class="hudbox goalsBox"><div class="lvl" data-a="lvinfo">${L.se.ic} ${esc(L.title)}${L.boss?' · ур. '+L.n:''}${L.hard?' · сложный':''}${L.muts.map(m=>' · '+MUT[m].ic+' '+MUT[m].n).join('')}</div><div class="goals" id="goals"></div></div><div class="hudbox movesBox"><b id="moves">0</b><small>ходов</small></div></div>
  <div class="boosters" id="boosters">${BOOST.map(b=>`<button class="boost" data-a="boost" data-id="${b.id}" aria-label="${b.n}"><img class="bi" src="${uiIcon(b.id)}" alt=""><i class="bp"></i></button>`).join('')}</div></div>`;updHUD()}
 function layoutBoard(){const hud=$('.hud');const top=hud?hud.getBoundingClientRect().bottom-APP.root.getBoundingClientRect().top+26:120;const cs=Math.floor(Math.min((APP.W-30)/G.C,(APP.H-top-118-(G.lv&&G.lv.hair?118:0))/G.R,70));G.cs=Math.max(24,cs);G.ox=Math.round((APP.W-G.cs*G.C)/2);G.oy=Math.round(top);buildSprites(G.cs);buildBoardSprites(G.cs,G.se||SEASONS[0]);const b=$('#boosters');if(b)b.style.top=(G.oy+G.cs*G.R+22)+'px'}
@@ -6781,7 +6785,7 @@ function renderRoomCache(){const D=APP.DPR,W=APP.W,H=APP.H;if(!APP.rc)APP.rc=mkC
 function frame(now){if(document.hidden||FULLOV()){APP.last=now;APP._ft=now;requestAnimationFrame(frame);return}{const gap=now-(APP._ft||0);if(gap<(APP.scr==='game'?((!G.busy&&!TW.length&&!PT.length&&!PD)?28:13):(houseMoving()?13:28))){requestAnimationFrame(frame);return}APP._ft=now}
  try{if(APP.scr!=='game'){const pg=APP.mods&&APP.mods.querySelector('.modal.page');if(pg&&!APP.roomDirty){if(now-(APP.idleT||0)<400){requestAnimationFrame(frame);return}APP.idleT=now}
  else if(!TW.length&&!PT.length&&!APP.rslide&&!PD&&!APP.roomDirty&&!(APP.pz&&APP.pz.on)){}}
- const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt);updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
+ const dt=Math.min(50,now-(APP.last||now));APP.last=now;updTweens(dt*(APP.spd||1));updP(dt);updRS(dt);if(APP.scr==='game')updGame(dt,now);
  const c=APP.ctx,D=APP.DPR,W=APP.W,H=APP.H;if(APP.curtAnim)APP.roomDirty=true;{const ph=dayPhase();if(APP.ph!==ph){APP.ph=ph;APP.roomDirty=true}}if(APP.roomDirty||!APP.rc)renderRoomCache();ensureWalkers(APP.L,roomId());updWalkers(dt,APP.L,curDeco());ensurePeople(APP.L,roomId(),curDeco());updPeople(dt,APP.L,curDeco());updCouple(dt);if(RS.fw>0)RS.fw-=dt;
  c.setTransform(D,0,0,D,0,0);c.fillStyle='#1d120b';c.fillRect(0,0,W,H);
  const v=APP.view;c.setTransform(D*v.s,0,0,D*v.s,D*v.x,D*v.y);c.drawImage(APP.rc,0,0,W,H);const sc=W/400;c.scale(sc,sc);drawRoomDyn(c,APP.L,ROOM[roomId()],curDeco(),now,false);if(APP.scr==='menu'){drawPieTarget(c,now);drawActivity(c,now)}if(APP.move.on&&APP.scr==='decor')drawMoveMarks(c,APP.L,now);if(APP.pz&&APP.pz.on&&APP.scr==='decor')drawPzMarks(c,APP.L,now);
@@ -6803,7 +6807,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='28.11 12:14';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='28.11 12:24';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'||!!APP.cafeOpen||!!APP.farmOpen||!!document.getElementById('cafe')||!!document.querySelector('.farm')}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
