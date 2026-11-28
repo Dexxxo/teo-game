@@ -2223,6 +2223,46 @@ ACTA.o_switch=(t,e)=>{const s=e.shY,h=e.hw;return{tilt:-.06,look:1,lh:[-h-2,e.hi
 ACTA.o_pet=(t,e)=>{const s=e.shY,hp=e.hipY,h=e.hw,m=SS(t*.011)*7;return{tilt:.12,happy:1,look:1,bob:SS(t*.003)*.6,lh:[-4,hp-2],rh:[h+16+m,hp+16+Math.abs(m)*.2],over(c){aFloat(c,'♥',e.dir>0?26:-26,s-26,t,1700,0,11,'#FF6B8A',20)}}};
 ACTA.o_fire=(t,e)=>{const s=e.shY,hp=e.hipY,h=e.hw,q=(t%4500)/4500,tos=q<.35;const x=tos?[h+10+q/.35*14,hp+4-SS(q/.35*PI_)*8]:[h+18,s+34];return{tilt:.06,bob:0,lh:tos?[h+4,hp+4]:[h+10,s+36],rh:x,post(c){if(tos){c.save();c.translate(x[0],x[1]-2);c.rotate(-.4);rr(c,-9,-3,18,6,3);fs(c,'#8A5A33',OL,1.3);c.restore()}},over(c){if(!tos)aGlow(c,0,s-22,34,'rgba(255,150,60,A)',.16+.05*SS(t*.02));if(tos&&q>.28)aSpark(c,h+26,hp,t,0,5,'#FFB74A')}}};
 ACTA.o_window=(t,e)=>{const s=e.shY,h=e.hw;return{tilt:.08,look:1,bob:SS(t*.002)*.5,lh:[-h-2,e.hipY],rh:[h+13,s-8],over(c){aFloat(c,'✨',e.dir>0?-22:22,s-32,t,2600,0,11,'#fff',16);aFloat(c,'☁',e.dir>0?24:-24,s-46,t,3600,.4,12,'#fff',10)}}};
+/* ---------- новые дела у предметов ---------- */
+function aPot(c,x,y,col){c.save();c.translate(x,y);rr(c,-12,-9,24,12,3);fs(c,col||'#8A8F99',OL,1.5);rr(c,-14,-11,28,4,2);fs(c,'#B8BDC6',OL,1.2);c.restore()}
+ACTA.wash=(t,e)=>{const hp=e.hipY,m=SS(t*.009)*4;return{tilt:.14,bob:SS(t*.003)*.5,lh:[-9+m,hp-2],rh:[9-m,hp-3+CC(t*.009)*2],pre(c){aTable(c,hp+6,78);rr(c,-19,hp-1,38,8,3);fs(c,'#DDEBF5',OL,1.4);c.fillStyle='#fff';for(let i=0;i<6;i++){ell(c,-14+i*5.6,hp-2,3+((i*3)%3),2.4);c.fill()}c.strokeStyle=OL;c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(16,hp-2);c.lineTo(16,hp-15);c.lineTo(9,hp-15);c.stroke()},over(c){for(let k=0;k<3;k++)aFloat(c,'🫧',-12+k*12,hp-10,t,2000,k/3,10,'#fff',34,3)}}};
+ACTA.taste=(t,e)=>{const s=e.shY,hp=e.hipY;if(e.her){const q=(t%3600)/3600,m=q>.35&&q<.75?SS((q-.35)/.4*PI_):0,sp=[aLerp(8,3,m),aLerp(s+26,s-8,m)];return{tilt:m*.08,happy:m>.5?1:0,bob:SS(t*.003)*.5,lh:[-8,hp-10],rh:sp,pre(c){aTable(c,hp+6,76);aPot(c,-16,hp+1,'#C0504D')},post(c){c.save();c.translate(sp[0],sp[1]-2);c.strokeStyle=OL;c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(0,3);c.lineTo(-1,-9);c.stroke();c.strokeStyle='#C8CDD6';c.lineWidth=2;c.beginPath();c.moveTo(0,3);c.lineTo(-1,-9);c.stroke();ell(c,-1,-11,3.4,2.4);fs(c,'#C98B4B',OL,1);c.restore()},over(c){if(m>.7)aFloat(c,'😋',e.dir>0?24:-24,s-30,t,1200,0,13,'#fff',10)}}}
+ const q=(t%3600)/3600,up=q>.55;return{tilt:.06,happy:up?1:0,bob:SS(t*.003)*.5,lh:[-hw0(e),hp],rh:up?[e.hw+10,s-6]:[e.hw+4,hp],pre(c){aTable(c,hp+6,76)},over(c){if(up)aFloat(c,'👍',e.dir>0?24:-24,s-30,t,1300,0,14,'#fff',10);else aFloat(c,'🤔',e.dir>0?24:-24,s-30,t,1300,0,13,'#fff',10)}}};
+function hw0(e){return e.hw+3}
+ACTA.fridge=(t,e)=>{const s=e.shY,hp=e.hipY,q=(t%4800)/4800,peek=q<.5;return{tilt:peek?.16:.04,bob:peek?2:SS(t*.004)*.5,happy:peek?0:1,look:peek?1:0,lh:[-e.hw-4,hp-2],rh:peek?[e.hw+14,s+14]:[3,aLerp(s+26,s-6,Math.abs(SS(t*.0045)))],
+ over(c){if(peek)aFloat(c,'🧊',e.dir>0?24:-24,s-30,t,1400,0,13,'#fff',10);else aFloat(c,'🍰',e.dir>0?24:-24,s-34,t,1400,0,13,'#fff',10)}}};
+ACTA.cards=(t,e)=>{const s=e.shY,hp=e.hipY,d=e.dir,q=(t%4000)/4000,pl=q>.55&&q<.8;const rh=pl?[d*18,hp-4]:[3,s+24];return{tilt:.06+(pl?.06:0),bob:SS(t*.003)*.5,happy:q>.88?1:0,lh:[-6,s+26],rh,
+ pre(c){aTable(c,hp+6,78)},post(c){c.save();c.translate(-6,s+20);for(let i=-2;i<=2;i++){c.save();c.rotate(i*.22);rr(c,-4,-14,8,13,1.5);fs(c,'#fff',OL,1);c.fillStyle=i%2?'#E0565B':'#2B2526';c.fillRect(-2,-11,4,4);c.restore()}c.restore();if(pl){c.save();c.translate(rh[0],rh[1]-6);rr(c,-4,-7,8,13,1.5);fs(c,'#fff',OL,1);c.fillStyle='#E0565B';c.fillRect(-2,-4,4,4);c.restore()}else{c.save();c.translate(d*18,hp-6);rr(c,-4,-7,8,13,1.5);fs(c,'#fff',OL,1);c.fillStyle='#2B2526';c.fillRect(-2,-4,4,4);c.restore()}},over(c){if(q>.88)aFloat(c,'😏',d*24,s-32,t,1000,0,13,'#fff',10);else if(pl)aFloat(c,'🃏',-d*24,s-32,t,1000,0,12,'#fff',10)}}};
+ACTA.breakfast=(t,e)=>{const s=e.shY,hp=e.hipY,d=e.dir,b=Math.abs(SS(t*.0035)),cl=((t%5000)/5000)>.72;const rh=[d*4+3,aLerp(s+26,s-2,b)];return{tilt:.05+b*.04,bob:SS(t*.002)*.6,happy:b>.9||cl?1:0,lh:cl?[d*17,s+10]:[-6,hp-8],rh,
+ post(c){c.save();c.translate(rh[0],rh[1]-3);c.rotate(-.3);c.beginPath();c.moveTo(-6,2);c.quadraticCurveTo(0,-9,7,2);c.quadraticCurveTo(0,-1,-6,2);c.closePath();fs(c,'#E3A857',OL,1.2);c.restore();if(cl)aCup(c,d*17,s+6,0,'#fff')},over(c){aSteam(c,d*17,s-2,t,2);if(b>.93)aFloat(c,'🥐',d*24,s-30,t,1300,0,13,'#fff',10)}}};
+ACTA.cuddle=(t,e)=>{const s=e.shY,d=e.dir;return{tilt:d*(.2+SS(t*.0022)*.03),kx:d*3,happy:1,bob:SS(t*.0022)*1,lh:[-4,s+24],rh:[8*d,s+22],over(c){aFloat(c,'♥',d*22,s-36,t,2200,e.her?0:.5,12,'#FF6B8A',22);aSpark(c,-d*20,s-30,t,e.her?0:1,3.4)}}};
+ACTA.scroll=(t,e)=>{const s=e.shY,fl=Math.floor(t/700)%2,th=SS(t*.012)*2;return{tilt:.17,bob:SS(t*.002)*.5,happy:Math.floor(t/3000)%3===2?1:0,lh:[-5,s+27],rh:[6+th*.3,s+26+th],
+ post(c){c.save();c.translate(0,s+22);rr(c,-6,-9,12,19,2);fs(c,'#2B2526',OL,1.2);rr(c,-4.5,-7,9,13,1);fs(c,fl?'#BFE3FF':'#FFD9E6',null);c.restore()},over(c){aGlow(c,0,s-18,34,'rgba(150,190,255,A)',.15+.05*SS(t*.02));if(Math.floor(t/3000)%3===2)aFloat(c,'😂',e.dir>0?24:-24,s-30,t,1100,0,13,'#fff',10)}}};
+ACTA.plaid=(t,e)=>{const s=e.shY,hp=e.hipY;return{tilt:.1,happy:1,bob:SS(t*.002)*.6,lh:[-12,s+30],rh:[12,s+30],post(c){c.beginPath();c.moveTo(-26,s+14);c.quadraticCurveTo(0,s+4,26,s+14);c.lineTo(30,hp+30);c.lineTo(-30,hp+30);c.closePath();fs(c,'#E8A2B4',OL,1.7);c.save();c.clip();c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=3;for(let i=-30;i<=30;i+=12){c.beginPath();c.moveTo(i,s);c.lineTo(i,hp+30);c.stroke()}for(let j=s+14;j<hp+30;j+=12){c.beginPath();c.moveTo(-30,j);c.lineTo(30,j);c.stroke()}c.restore();aCup(c,e.dir*14,s+22,0,'#fff')},over(c){aSteam(c,e.dir*14,s+14,t,2);aFloat(c,'♥',-e.dir*22,s-34,t,2600,e.her?0:.5,11,'#FF6B8A',20)}}};
+ACTA.bookpick=(t,e)=>{const s=e.shY,hp=e.hipY,q=(t%6600)/6600;const reach=q<.35,rd=q>.5;const rh=reach?[e.hw+12,s-30+SS(q/.35*PI_)*-4]:rd?[4,s+26]:[8,s+10];return{tilt:reach?-.05:.18,bob:reach?-1:SS(t*.002)*.5,look:reach?1:0,happy:q>.9?1:0,lh:reach?[-e.hw-2,hp]:[-5,s+28],rh,
+ post(c){if(!reach){aBook(c,0,s+24,24,16,'#7C5CE0',rd?1:0)}else{aBook(c,rh[0]+2,rh[1]-6,8,14,'#E0565B')}},over(c){if(rd&&Math.floor(t/900)%2)aFloat(c,'📖',e.dir>0?24:-24,s-30,t,1500,0,12,'#fff',8)}}};
+ACTA.laptop=(t,e)=>{const s=e.shY,hp=e.hipY,k=SS(t*.03)*2;return{tilt:.14,bob:SS(t*.003)*.5,happy:Math.floor(t/5000)%3===2?1:0,lh:[-9+k*.4,hp-8],rh:[9-k*.4,hp-8+k*.3],pre(c){aTable(c,hp+6,78)},post(c){c.save();c.translate(0,hp-4);rr(c,-15,-3,30,5,2);fs(c,'#B9BEC8',OL,1.4);c.beginPath();c.moveTo(-13,-3);c.lineTo(13,-3);c.lineTo(11,-24);c.lineTo(-11,-24);c.closePath();fs(c,'#2B2526',OL,1.4);c.fillStyle='#7FB8FF';c.fillRect(-9,-21,18,15);c.fillStyle='rgba(255,255,255,.55)';for(let i=0;i<3;i++)c.fillRect(-7,-19+i*4,8+((i*5)%7),1.6);c.restore()},over(c){aGlow(c,0,s-18,34,'rgba(150,190,255,A)',.12);if(Math.floor(t/5000)%3===2)aFloat(c,'💡',e.dir>0?24:-24,s-34,t,1300,0,14,'#fff',10)}}};
+ACTA.fold=(t,e)=>{const hp=e.hipY,s=e.shY,q=(t%2400)/2400,k=SS(q*PI_*2)*5;return{tilt:.14,bob:SS(t*.003)*.5,lh:[-10+k,hp-6],rh:[10-k,hp-6],pre(c){aTable(c,hp+6,78)},post(c){const n=1+Math.floor(t/2400)%4;for(let i=0;i<n;i++){rr(c,-26,hp-6-i*4,17,5,1.5);fs(c,['#FFB3C8','#9BD3FF','#FFE08A','#C9B8FF'][i%4],OL,1)}c.save();c.translate(0,hp-4);rr(c,-12,-3,24,5,2);fs(c,'#fff',OL,1.2);c.restore()},over(c){aFloat(c,'🧺',e.dir>0?24:-24,s-32,t,2400,0,12,'#fff',8)}}};
+ACTA.dress=(t,e)=>{const s=e.shY,hp=e.hipY,sw=SS(t*.004);return{rot:sw*.04,tilt:sw*.08,happy:1,bob:Math.abs(sw)*1.2,lh:[-8,s+26],rh:[10,s+8],post(c){c.save();c.translate(10,s+2);c.rotate(sw*.15);c.strokeStyle='#8A8F99';c.lineWidth=2;c.beginPath();c.moveTo(0,-8);c.lineTo(0,-3);c.arc(0,-10,3,Math.PI*.5,Math.PI*2.2);c.stroke();c.beginPath();c.moveTo(-14,-2);c.lineTo(0,-3);c.lineTo(14,-2);c.stroke();c.beginPath();c.moveTo(-13,-1);c.lineTo(-17,9);c.lineTo(-9,9);c.lineTo(-9,28);c.lineTo(9,28);c.lineTo(9,9);c.lineTo(17,9);c.lineTo(13,-1);c.closePath();fs(c,e.her?'#F2A7C3':'#5FA8C8',OL,1.4);c.restore()},over(c){aSpark(c,-20,s-34,t,0,4);aFloat(c,'👗',e.dir>0?-24:24,s-34,t,2200,0,12,'#fff',12)}}};
+ACTA.makeup=(t,e)=>{const s=e.shY,q=(t%3000)/3000,k=SS(t*.012)*2.4;const rh=[10+k,s-16+k*.3];return{tilt:.05,look:1,bob:SS(t*.003)*.5,lh:[-8,s+24],rh,post(c){c.save();c.translate(-5,s+20);c.rotate(-.2);rr(c,-10,-12,20,22,4);fs(c,'#fff',OL,1.4);rr(c,-8,-10,16,18,3);fs(c,'#CFE8F5',null);c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.moveTo(-5,-8);c.lineTo(-1,-8);c.lineTo(-6,1);c.closePath();c.fill();c.restore()},over(c){c.save();c.translate(rh[0],rh[1]);c.rotate(.4);c.strokeStyle=OL;c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(0,4);c.lineTo(0,-9);c.stroke();c.strokeStyle='#C98B4B';c.lineWidth=2;c.beginPath();c.moveTo(0,4);c.lineTo(0,-9);c.stroke();ell(c,0,-11,3.2,4);fs(c,'#FF8FB6',OL,1);c.restore();aSpark(c,14,s-20,t,0,3.4,'#FFB3CE');if(q>.8)aFloat(c,'💄',e.dir>0?24:-24,s-34,t,900,0,12,'#fff',8)}}};
+ACTA.hairbrush=(t,e)=>{const s=e.shY,k=Math.abs(SS(t*.008));const rh=[e.hw+6,aLerp(s-4,s-30,k)];return{tilt:SS(t*.008)*.05,happy:1,bob:SS(t*.003)*.5,lh:[-e.hw-2,e.hipY],rh,post(c){c.save();c.translate(rh[0],rh[1]);c.rotate(.2);rr(c,-4,-6,8,12,3);fs(c,'#C98B4B',OL,1.2);c.fillStyle='#fff';for(let i=-2;i<=2;i++)c.fillRect(i*1.4-.3,-9,.8,3);c.restore()},over(c){aSpark(c,-20,s-30,t,0,4);aFloat(c,'✨',e.dir>0?24:-24,s-40,t,1400,0,11,'#fff',10)}}};
+ACTA.shave=(t,e)=>{const s=e.shY,k=Math.abs(SS(t*.01));const rh=[10-k*4,s-14+k*4];return{tilt:-.04,look:1,bob:SS(t*.003)*.5,lh:[-8,s+12],rh,post(c){c.save();c.translate(rh[0],rh[1]);c.rotate(.5);rr(c,-3,-5,6,10,2);fs(c,'#C8CDD6',OL,1.2);rr(c,-4,-8,8,4,1);fs(c,'#59595F',OL,1.1);c.restore()},over(c){c.fillStyle='#fff';ell(c,6,s-18,9,4);c.fill();ell(c,-6,s-18,9,4);c.fill();aFloat(c,'🪒',e.dir>0?-24:24,s-34,t,1500,0,11,'#fff',8)}}};
+ACTA.paint=(t,e)=>{const s=e.shY,hp=e.hipY,d=e.dir,sw=SS(t*.005);const rh=[d*(14+sw*6),s+4+SS(t*.01)*5];return{tilt:.06,look:1,bob:SS(t*.003)*.5,lh:[-d*8,s+26],rh,
+ post(c){c.save();c.translate(-d*8,s+26);c.rotate(.1);ell(c,0,0,11,8);fs(c,'#E8C99A',OL,1.3);for(const [x,y,col] of[[-5,-1,'#E0565B'],[0,-3,'#FFD23F'],[5,0,'#4F9BE0'],[2,3,'#7CC46A']]){ell(c,x,y,2,2);fs(c,col,null)}c.restore();c.save();c.translate(rh[0],rh[1]);c.rotate(d*-.6);c.strokeStyle=OL;c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(0,5);c.lineTo(0,-14);c.stroke();c.strokeStyle='#C98B4B';c.lineWidth=2;c.beginPath();c.moveTo(0,5);c.lineTo(0,-14);c.stroke();ell(c,0,-16,2.4,4);fs(c,'#E0565B',OL,1);c.restore()},over(c){aFloat(c,'🎨',-d*24,s-34,t,2400,0,13,'#fff',10);aSpark(c,d*28,s+2,t,0,3.4,'#FFB3CE')}}};
+ACTA.trim=(t,e)=>{const s=e.shY,hp=e.hipY,d=e.dir,k=Math.abs(SS(t*.012));const rh=[d*(12+k*3),hp-6];return{tilt:.14,look:1,bob:SS(t*.003)*.5,lh:[d*8,hp-2],rh,post(c){c.save();c.translate(rh[0],rh[1]);c.rotate(d*.4);c.strokeStyle=OL;c.lineWidth=3.4;c.lineCap='round';c.beginPath();c.moveTo(0,0);c.lineTo(-4-k*4,-9);c.moveTo(0,0);c.lineTo(4+k*4,-9);c.stroke();c.strokeStyle='#C8CDD6';c.lineWidth=1.6;c.beginPath();c.moveTo(0,0);c.lineTo(-4-k*4,-9);c.moveTo(0,0);c.lineTo(4+k*4,-9);c.stroke();c.restore()},over(c){for(let i=0;i<3;i++){const q=((t*.0011+i/3)%1);c.globalAlpha=1-q;ell(c,d*(16+i*3),hp-12+q*26,2.6,1.4,.5);fs(c,'#4FAE6A',null);c.globalAlpha=1}}}};
+ACTA.ornament=(t,e)=>{const s=e.shY,d=e.dir,q=(t%3600)/3600,up=q<.5;const rh=up?[d*(10+q*20),s-4-q*40]:[d*4,s+22];return{tilt:up?-.05:.1,look:1,bob:up?-1:SS(t*.003)*.5,happy:q>.8?1:0,lh:[-d*8,s+24],rh,post(c){c.save();c.translate(rh[0],rh[1]-4);ell(c,0,0,5,5);fs(c,['#E0565B','#FFD23F','#4F9BE0'][Math.floor(t/3600)%3],OL,1.2);rr(c,-1.6,-8,3.2,3,1);fs(c,'#C8CDD6',OL,.8);c.fillStyle='rgba(255,255,255,.6)';ell(c,-1.6,-1.6,1.4,1.4);c.fill();c.restore()},over(c){aSpark(c,d*30,s-30,t,0,4);if(q>.8)aFloat(c,'🎄',-d*24,s-34,t,900,0,13,'#fff',10)}}};
+ACTA.snowman=(t,e)=>{const s=e.shY,hp=e.hipY,d=e.dir,k=Math.abs(SS(t*.008));return{tilt:.12,look:1,bob:SS(t*.004)*.8,lh:[d*(12+k*4),hp-4],rh:[d*(18-k*3),hp-10],over(c){for(let i=0;i<4;i++){const q=((t*.0013+i*.25)%1);c.globalAlpha=1-q;ell(c,d*(22+i*3),hp-8+q*22,1.8,1.8);fs(c,'#fff',null);c.globalAlpha=1}aFloat(c,'⛄',-d*24,s-34,t,2400,0,13,'#fff',10)}}};
+ACTA.wax=(t,e)=>{const hp=e.hipY,s=e.shY,d=e.dir,m=SS(t*.009)*8;return{tilt:.18,look:1,bob:SS(t*.004)*.8,lh:[d*(10+m),hp+14],rh:[d*(16-m),hp+18],over(c){aFloat(c,'✨',d*26,hp+10,t,1300,0,10,'#fff',16);aFloat(c,'💪',-d*24,s-34,t,2600,0,12,'#fff',10)}}};
+ACTA.pillow=(t,e)=>{const s=e.shY,d=e.dir,q=(t%2400)/2400,sw=q<.4?SS(q/.4*PI_):0,fall=q>.55&&q<.85;const rh=[d*(10+sw*22),s-12+sw*18];return{rot:fall?-d*.12:sw*d*.05,tilt:fall?-d*.3:sw*d*.1,happy:1,bob:Math.abs(SS(t*.01))*2,lh:[-d*10,s+26],rh,post(c){c.save();c.translate(rh[0]+d*4,rh[1]-4);c.rotate(d*(.6-sw*1.2));rr(c,-9,-13,18,26,7);fs(c,e.her?'#FFD9E6':'#CFE3FF',OL,1.5);c.strokeStyle='rgba(120,100,130,.4)';c.lineWidth=1;c.beginPath();c.moveTo(-5,-7);c.lineTo(5,-7);c.stroke();c.restore()},over(c){for(let i=0;i<4;i++){const qq=((t*.0012+i*.25)%1);c.globalAlpha=1-qq;ell(c,d*(14+i*5),s-16-qq*18,1.6,2.2,.6);fs(c,'#fff',null);c.globalAlpha=1}if(fall)aFloat(c,'😆',-d*24,s-32,t,900,0,13,'#fff',8)}}};
+ACTA.marsh=(t,e)=>{const s=e.shY,d=e.dir,q=(t%4200)/4200,eat=q>.7;const rh=eat?[d*3,s-4]:[d*(18+SS(t*.004)*2),s+26];return{tilt:eat?.05:.06,happy:eat?1:0,bob:SS(t*.003)*.5,lh:[-d*8,s+28],rh,post(c){c.save();c.translate(rh[0],rh[1]);c.rotate(eat?-.3:d*-.35);c.strokeStyle=OL;c.lineWidth=3.4;c.lineCap='round';c.beginPath();c.moveTo(0,4);c.lineTo(d*14,-8);c.stroke();c.strokeStyle='#A56B35';c.lineWidth=1.6;c.beginPath();c.moveTo(0,4);c.lineTo(d*14,-8);c.stroke();rr(c,d*14-3,-14,6,7,2);fs(c,q<.5?'#fff':'#D9A15A',OL,1);c.restore()},over(c){aGlow(c,0,s-18,38,'rgba(255,150,60,A)',.16+.05*SS(t*.02));if(eat)aFloat(c,'😋',-d*24,s-30,t,1100,0,13,'#fff',10)}}};
+ACTA.lantern=(t,e)=>{const s=e.shY,d=e.dir,q=(t%3600)/3600,on=q>.5;return{tilt:.08,look:1,happy:on?1:0,bob:SS(t*.003)*.5,lh:[-d*6,s+26],rh:[d*(16+SS(t*.01)*1.5),s+10],post(c){c.save();c.translate(d*16,s+4);c.strokeStyle=OL;c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(0,6);c.lineTo(0,-4);c.stroke();c.fillStyle=on?'#FFD23F':'#fff';ell(c,0,-7,2.4,3.6);c.fill();c.restore()},over(c){if(on)aGlow(c,d*18,s-4,36,'rgba(255,190,80,A)',.3);aSpark(c,d*20,s-6,t,0,3.4)}}};
+ACTA.candle=(t,e)=>{const s=e.shY,d=e.dir;return{tilt:d*.08,look:1,happy:1,bob:SS(t*.002)*.6,lh:[-5,s+24],rh:[d*6+3,s+24],post(c){c.save();c.translate(d*7,s+17);rr(c,-3,-8,6,14,1.5);fs(c,'#FFF3D6',OL,1.1);c.fillStyle='#FFB74A';c.beginPath();c.ellipse(0,-12+SS(t*.02)*.6,2.2,3.6,0,0,6.3);c.fill();c.restore()},over(c){aGlow(c,d*8,s-8,40,'rgba(255,190,80,A)',.2+.05*SS(t*.02));aFloat(c,'♥',-d*22,s-34,t,2600,e.her?0:.5,11,'#FF6B8A',20)}}};
+ACTA.sniff=(t,e)=>{const s=e.shY,k=(1+SS(t*.004))/2;return{tilt:.1+k*.12,kx:k*3,happy:1,look:1,bob:SS(t*.004)*.8,lh:[-e.hw-2,e.hipY],rh:[e.hw+8,s+22],over(c){aFloat(c,'🌸',e.dir>0?24:-24,s-26,t,1800,0,13,'#fff',14);aFloat(c,'♥',-e.dir*20,s-36,t,2500,.5,10,'#FF6B8A',16)}}};
+ACTA.o_rock=(t,e)=>{const s=e.shY,r=SS(t*.0024);return{rot:r*.07,bob:Math.abs(r)*1.4,happy:1,lh:[-12,s+26],rh:[12,s+26]}};
+ACTA.o_tug=(t,e)=>{const hp=e.hipY,d=e.dir,m=SS(t*.012);return{tilt:.1,look:1,lh:[d*(20+m*4),hp+8],rh:[d*(26+m*4),hp+10],rot:d*m*.04,over(c){c.strokeStyle='#E0565B';c.lineWidth=3;c.lineCap='round';c.beginPath();c.moveTo(d*20,hp+9);c.lineTo(d*46+m*4,hp+11);c.stroke()}}};
+ACTA.o_hugbear=(t,e)=>{const s=e.shY,k=SS(t*.003);return{tilt:.14,happy:1,bob:k*1.2,lh:[-10,s+20],rh:[10,s+20],post(c){c.save();c.translate(0,s+24);ell(c,0,0,14,13);fs(c,'#C98B4B',OL,1.5);ell(c,-9,-10,4.4,4.4);fs(c,'#C98B4B',OL,1.3);ell(c,9,-10,4.4,4.4);fs(c,'#C98B4B',OL,1.3);ell(c,0,-3,8,6);fs(c,'#F2D1A0',null);ell(c,-3,-6,1.2,1.2);fs(c,'#222',null);ell(c,3,-6,1.2,1.2);fs(c,'#222',null);c.restore()},over(c){aFloat(c,'♥',e.dir>0?24:-24,s-34,t,2000,0,12,'#FF6B8A',18)}}};
+ACTA.o_wrap=(t,e)=>{const s=e.shY,hp=e.hipY;return{tilt:.12,happy:1,bob:SS(t*.002)*.6,lh:[-14,s+14],rh:[14,s+14],post(c){c.beginPath();c.moveTo(-22,s+6);c.quadraticCurveTo(0,s-4,22,s+6);c.lineTo(26,hp+34);c.lineTo(-26,hp+34);c.closePath();fs(c,'#E8A2B4',OL,1.7);c.save();c.clip();c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=3;for(let i=-26;i<=26;i+=12){c.beginPath();c.moveTo(i,s);c.lineTo(i,hp+34);c.stroke()}c.restore()},over(c){aSteam(c,e.dir*10,s+10,t,2)}}};
+ACTA.o_lounge=(t,e)=>ACTA.scroll(t,e);
 /* ===== life in the house =====
    Everyone stays at a home spot (alive: blinking, breathing, wagging).
    Tap a character -> it performs its next action. Actions run strictly one at a time (queue). */
@@ -2301,7 +2341,7 @@ async function doAct(a,id,L,deco,tok){a._act=id;let r=false;try{r=await doActRaw
 async function doActRaw(a,id,L,deco,tok){
  const H=PPL.her,M=PPL.him;const night=['night','evening'].includes(dayPhase());
  /* ===== dogs ===== */
- if(a.i!=null){const w=a,nm=dname(w.i);
+ if(a.i!=null){const w=a,nm=dname(w.i);if(id==='fetch'&&typeof baseActOK==='function'&&!baseActOK('fetch',deco,L))return false;
   if(id.startsWith('tr_')||id.startsWith('sh_'))return await trickAct(w,id,L,deco,tok,nm);
   if(DGAMES[id]){const mt=DGM;DGM=null;return await dogGame(w,id,L,deco,tok,nm,mt&&!mt.busyPair&&mt.mode==='stay'?mt:null)}
   if(id.startsWith('pz'))return await pzDogAct(w,id,L,deco,tok,nm);
@@ -2323,6 +2363,7 @@ async function doActRaw(a,id,L,deco,tok){
   return false}
  /* ===== people ===== */
  const p=a,o=otherP(p),hn=p.who==='her'?S.her:S.him;
+ if(!id.startsWith('pz')&&typeof baseActOK==='function'&&!baseActOK(id,deco,L))return false;
  if(id.startsWith('pz'))return await pzPersonAct(p,id,L,deco,tok,hn);
  if(typeof LIFE!=='undefined'&&LIFE[id])return await lifeAct(p,id,L,deco,tok,hn);
  switch(id){
@@ -4239,27 +4280,6 @@ const LIFE={
  pancakes:{t:'печь блинчики',ic:'🥞',w:'both',sp:'kit',pose:'back',say:['Блинчики! 🥞','Кто первый перевернёт? 🥞'],say2:['Первый блин собачкам 🐶'],ms:3400}
 };
 for(const k in LIFE)WANTL[k]=[LIFE[k].t,LIFE[k].ic];
-function lifePool(who,deco,night){return Object.keys(LIFE).filter(k=>{const d=LIFE[k];return(d.w===who||d.w==='both'||d.w==='both1')&&(!d.night||night)})}
-const LSTYLE={picnic:{sit:15,gap:46},board:{sit:15,gap:46},fix:{pose:'crouch'},duet:{gap:26},sing:{gap:20},yoga:{gap:20}};
-function lifeSpot(sp,L,deco,i,gap){const k=(deco.extra||[]).find(e=>e.id==='x_kitchen'||e.id==='x_coffeebar');const side=(i?1:-1)*(gap||20);
- if(sp==='kit'&&k)return{x:clamp(k.x+(i?26:-26),30,370),y:clamp(L.fl+(k.fy||60)+4,L.fl+40,L.VH-100)};
- if(sp==='win'){const w=windowSpot(L,deco);return{x:clamp(w.x+(i?18:-18),30,370),y:w.y}}
- if(sp==='sofa'&&deco.sofa&&L.sofa)return{x:clamp(L.sofa.x+(i?20:-20),40,360),y:L.sofa.y+48};
- return{x:clamp(L.rug.x+side,70,330),y:clamp(L.rug.y-4,L.fl+70,L.VH-110)}}
-async function lifeAct(p,id,L,deco,tok,hn){const D=LIFE[id];if(!D)return false;const night=['night','evening'].includes(dayPhase());if(D.night&&!night)return false;
- const H=PPL.her,M=PPL.him;const ps=D.w==='both'?[H,M]:[p];needFx(p,id);if(D.w==='both')needFx(null,id);const ST=LSTYLE[id]||{};
- say(p,pick(D.say),2800);
- try{
- const sofaSit=D.sp==='sofa'&&ps.every(x=>homeOf(x).sit>0);
- if(sofaSit){await Promise.all(ps.map(async x=>{if(id==='massage'&&x===H){await pStand(x,tok);x.face=1;x.pose='stand';return}if(!(x.mode==='stay'&&x.sitH>0))await pHome(x,tok)}));splitSofa()}
- else{await Promise.all(ps.map(x=>pStand(x,tok)));
-  await Promise.all(ps.map((x,i)=>{const s=lifeSpot(D.sp,L,deco,i,ST.gap);return pTo(x,s.x,s.y,tok)}));
-  ps.forEach((x,i)=>{x.face=D.sp==='win'?(ps.length>1?(i?-1:1):x.face):(ps.length>1?(i?-1:1):x.face);x.pose=ST.pose||'stand';if(ST.sit){x.sitH=ST.sit;x.pose='sit'}})}
- ps.forEach(x=>{x.act=id});
- sparkV(ps[0].x,ps[0].y-130,16);SFX.chime&&SFX.chime(1);await hold(D.ms*.5,tok);
- say(ps[ps.length-1],pick(D.say2),2600);heartsBurstV(ps[0].x,ps[0].y-150);await hold(D.ms*.5,tok);
- }finally{ps.forEach(x=>{x.act=null})}
- await Promise.all(ps.map(x=>pHome(x,tok)));return true}
 function actorKey(a){return a.who?a.who:'d'+a.i}
 function actorName(a){return a.who==='her'?S.her:a.who==='him'?S.him:dname(a.i)}
 function actorsNow(){const out=[];if(PPL.her&&!PPL.away)out.push(PPL.her);if(PPL.him&&!PPL.away)out.push(PPL.him);if(typeof WK!=='undefined')for(const w of WK.list)if(!w.hidden)out.push(w);return out}
@@ -4267,9 +4287,9 @@ function moodOf(k){S.mood=S.mood||{};if(S.mood[k]==null)S.mood[k]=80;return S.mo
 function moodTick(){S.mood=S.mood||{};const now=Date.now();const last=S.moodT||now;const h=(now-last)/3600000;if(h>0.02){for(const k in S.mood)S.mood[k]=Math.max(25,S.mood[k]-h*5);S.moodT=now}if(!S.moodT)S.moodT=now}
 function moodMoves(){const a=(moodOf('her')+moodOf('him'))/2;return a>=90?2:a>=75?1:0}
 function wantPool(a,deco){const has=id=>pzList(deco).some(i=>i.id===id);const plants=['f_tree','c_plant','t_cactus'].some(has),player=has('t_player'),pretty=pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish'].includes(PZ[i.id].act));
- if(a.who){const base=['dance','selfie','pet','window','hug'];try{const lp=lifePool(a.who,deco,['night','evening'].includes(dayPhase()));lp.forEach(k=>base.push(k,k));const nl=needLow(a.who);if(nl==='f')base.push('cook','cook','cook','grill','bake','pancakes','coffee');if(nl==='e')base.push('nap','nap','nap','tea','tea')}catch(e){}if(a.who==='her')base.push('carry','read');else base.push('fetch','carry');try{for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id]&&WANTL['x:'+e.id]&&e.id!=='x_bigbed'){base.push('x:'+e.id,'x:'+e.id)}}catch(e){}if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
+ if(a.who){const base=['pet','window','hug'];for(const k of['dance','selfie'])if(baseActOK(k,deco,APP.L))base.push(k);try{const lp=lifePool(a.who,deco,['night','evening'].includes(dayPhase()));lp.forEach(k=>base.push(k,k));const nl=needLow(a.who);if(nl==='f')base.push(...['cook','cook','cook','grill','bake','pancakes','coffee','fridge','breakfast'].filter(k=>lp.includes(k)));if(nl==='e')base.push(...['nap','nap','nap','tea','tea','plaid'].filter(k=>lp.includes(k)))}catch(e){}if(a.who==='her'){base.push('carry');if(baseActOK('read',deco,APP.L))base.push('read')}else{if(baseActOK('fetch',deco,APP.L))base.push('fetch');base.push('carry')}try{for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id]&&WANTL['x:'+e.id]&&e.id!=='x_bigbed'){base.push('x:'+e.id,'x:'+e.id)}}catch(e){}if(deco.fire)base.push('fire');if(plants&&a.who==='her')base.push('pzwater','pzwater');if(player)base.push('pzmusic');if(pretty)base.push('pzlook');return base}
  const ids=(AUTOACT[a.i]||['roll']).filter(x=>x!=='howl').concat(pzAutoIds(deco).filter(x=>x!=='pzmusic'));return ids.filter(x=>WANTL[x])}
-function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep||PPL.away)return;moodTick();needsTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();const now=Date.now();
+function wantsTick(dt){if(APP.scr!=='menu'||!APP.L||!ACT.H||PPL.sleep||PPL.away)return;moodTick();needsTick();S.wants=S.wants||{};for(const k in S.wants)if(k[0]==='d')delete S.wants[k];const deco=curDeco();try{for(const k in S.wants){const w=S.wants[k];if(w&&w.room===S.rooms.cur&&w.id&&!w.id.startsWith('x:')&&!w.id.startsWith('pz')&&!anyActOK(w.id,deco,APP.L))delete S.wants[k]}}catch(e){}const now=Date.now();
  for(const a of actorsNow()){if(!a.who)continue;const k=actorKey(a),w=S.wants[k];if(w&&w.room===S.rooms.cur)continue;if(w&&w.room!==S.rooms.cur)delete S.wants[k];if((S.wantNext||{})[k]>now)continue;const pool=wantPool(a,deco);if(!pool.length)continue;const n=Object.values(S.wants).filter(Boolean).length;if(n>=2)break;S.wantLast=S.wantLast||{};const lst=S.wantLast[k]||[];let cand=pool.filter(x=>!lst.includes(x));if(!cand.length)cand=pool;const nid=pick(cand);S.wantLast[k]=lst.concat(nid).slice(-4);S.wants[k]={id:nid,room:S.rooms.cur};S.wantNext=S.wantNext||{};save()}}
 function wantDone(a,id){const k=actorKey(a);S.wants=S.wants||{};const w=S.wants[k];S.mood=S.mood||{};moodOf(k);if(w&&w.id===id){delete S.wants[k];S.wantNext=S.wantNext||{};S.wantNext[k]=Date.now()+rnd(40000,90000);S.mood[k]=Math.min(100,S.mood[k]+25);const r=20+Math.round(Math.random()*15);S.bones+=r;save();try{const sp=scrPt(a.x,a.y-120);flyReward('bone',sp.x,sp.y,r)}catch(e){}famXP(15);heartsBurstV(a.x,a.y-(a.who?190:80));toast(`${actorName(a)} ${a.who==='her'?'счастлива':'счастлив'}! Желание исполнено: +${r} 🦴`);SFX.chime&&SFX.chime(3)}else{S.mood[k]=Math.min(100,S.mood[k]+5);save()}}
 /* ---- drawing bubbles & plumbobs (room coords) ---- */
@@ -4300,9 +4320,10 @@ const DL={beg:'Дать вкусняшку',roll:'Почесать пузико'
 function pieOpts(kind,obj){const o=[];const H=PPL.her,M=PPL.him,deco=curDeco();const want=k=>{const w=(S.wants||{})[k];return w&&w.id};
  const add=(t,ic,fn,hot,sec)=>o.push({t,ic,fn,hot,sec:sec||''});
  if(kind==='person'){const p=obj,k=actorKey(p),wi=want(k);add('Как самочувствие? Кухня','🍲',()=>ckOpen());if(wi&&WANTL[wi]){if(wi.startsWith('x:')){const ex=((deco.extra)||[]).find(e=>'x:'+e.id===wi);if(ex)add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runObj(ex),1)}else add('Исполнить желание: '+WANTL[wi][0],'✨',()=>runAct(p,wi),1)}
-  const ids=[...new Set(PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her'],['window']).concat(deco.fire?['fire']:[]))].filter(id=>id!=='kiss'||(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on)).filter(id=>id!=='read'||p.sitH).filter(id=>WANTL[id]);
+  const ids=[...new Set(PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her'],['window']).concat(deco.fire?['fire']:[]))].filter(id=>id!=='kiss'||(PPL.joint&&PPL.joint.k==='sofa'&&PPL.joint.on)).filter(id=>id!=='read'||p.sitH).filter(id=>WANTL[id]).filter(id=>baseActOK(id,deco,APP.L));
   for(const id of ids)if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Вдвоём');
   for(const id of lifePool(p.who,deco,['night','evening'].includes(dayPhase())))if(id!==wi)add(cap(WANTL[id][0]),WANTL[id][1],()=>runAct(p,id),0,'Дела');
+  try{const nt=['night','evening'].includes(dayPhase());for(const lk of lockedActs(p.who,deco,nt))add(cap(lk.t)+' — нужно: '+lk.miss,'🔒',()=>toast('Нужно: '+lk.miss+' 🛍 Купи в магазине, и они сразу начнут'),0,'Нужны вещи');for(const bid of Object.keys(BASEN)){if(!WANTL[bid])continue;const bm=baseMiss(bid,deco,APP.L);if(bm&&PACTS[p.who].concat(PACTS[p.who==='her'?'him':'her']).includes(bid))add(cap(WANTL[bid][0])+' — нужно: '+bm,'🔒',()=>toast('Нужно: '+bm+' 🛍 Купи в магазине, и они сразу начнут'),0,'Нужны вещи')}}catch(e){}
   for(const e of(deco.extra||[]))if(EXTAP[e.id]){const[l,ic]=xLabel(e);add(l,ic,()=>runObj(e),0,'В комнате');if(e.id==='x_kitchen')add('Готовить блюдо','🍲',()=>ckOpen(),0,'В комнате')}
   const seen=new Set();for(const it of pzList(deco)){const d=PZ[it.id];if(!d)continue;let t=null,id=null,ic='';if(d.act==='water'){t='Полить: '+d.n.toLowerCase();id='pzwater';ic='💧'}else if(d.act==='music'){t='Поставить пластинку';id='pzmusic';ic='🎶'}else if(d.light&&!seen.has('light')){seen.add('light');t=(it.on===false?'Включить: ':'Выключить: ')+d.n.toLowerCase();id='pzlight';ic='💡'}else if(['love','shine','fish','spin','flutter'].includes(d.act)&&!seen.has('look')){seen.add('look');t='Полюбоваться вещами';id='pzlook';ic='😍'}if(!t||seen.has(t))continue;seen.add(t);const u=it.u;if(id===wi)continue;add(t,ic,()=>{PZT=u;runAct(p,id)},0,'С вещами')}
   return o}
@@ -4864,10 +4885,10 @@ function stationsFor(deco){const out=[];for(const k in STN){const its=pzList(dec
 async function stationRun(p,s,L,deco,tok){const d=STN[s.k],it=s.it,hn=p.who==='her'?S.her:S.him,pp=pzPos(it,deco,L),isF=PZ[it.id].s==='floor',y=isF?clamp(pp.y+8,L.fl+60,L.VH-100):clamp(L.fl+80,L.fl+60,L.VH-100),side=p.x<pp.x?-1:1,dx=d.dist||34;
  const o=otherP(p);await pStand(p,tok);if(d.both&&o&&o.mode==='stay'){await pStand(o,tok)}
  say(p,pick(d.say));const go=[pTo(p,clamp(pp.x+side*dx,30,370),y,tok)];if(d.both&&o)go.push(pTo(o,clamp(pp.x-side*dx,30,370),y+4,tok));await Promise.all(go);
- p.face=pp.x>p.x?1:-1;if(d.both&&o)o.face=pp.x>o.x?1:-1;p.pose=d.pose;if(d.both&&o)o.pose=d.pose;
+ p.face=pp.x>p.x?1:-1;if(d.both&&o)o.face=pp.x>o.x?1:-1;p.pose=d.act&&d.pose!=='crouch'?'stand':d.pose;if(d.both&&o)o.pose=p.pose;if(d.act){p.act=d.act;if(d.both&&o)o.act=d.act}
  const b=pzBox(it,deco,L);if(d.open){it.open=true;SFX.tap&&SFX.tap()}if(d.fx)pzPart(b[0]+b[2]/2,b[1]+b[3]*.4,d.fx,8);if(s.k==='tv')pzPart(b[0]+b[2]/2,b[1]+b[3]*.5,'spark',4);
  await hold(2400,tok);if(d.open){it.open=false}
- if(d.then){p.pose=d.then;say(p,d.thenSay);await hold(2200,tok)}
+ if(d.then){p.act=null;if(d.act==='fridge')p.act='breakfast';p.pose=d.act?'stand':d.then;say(p,d.thenSay);await hold(2200,tok)}
  if(d.both&&o){say(o,pick(['Давай это посмотрим 😄','Мне нравится 💛','Сделай погромче 🔊']));await hold(1600,tok)}
  await Promise.all([pHome(p,tok),d.both&&o?pHome(o,tok):Promise.resolve()]);return true}
 async function soloPose(p,tok){const hn=p.who==='her'?S.her:S.him,k=pick(['phone','stretch','tea','wave']);await pStand(p,tok);const l={phone:['Сообщения от друзей 📱','Смотрю наши фото 📷'],stretch:['Ох, надо размяться 🙆','Потянуться бы! 🧘'],tea:['Сделаю чайку ☕','Чай — это счастье ☕'],wave:['Привет, ты там? 👋','Эй, я тут! 👋']}[k];say(p,pick(l));p.pose=k;await hold(k==='wave'?1800:3000,tok);p.pose='stand';await pHome(p,tok);return true}
@@ -4881,7 +4902,8 @@ function autoPeopleAct(){const L=APP.L,deco=curDeco();if(!L||!deco)return;const 
  const bed=(deco.extra||[]).find(e=>e.id==='x_bigbed');if(bed&&!PPL.sleep){opts.push({w:2.5,run:()=>runPerson(p,tok=>bedRun(p,bed,L,tok,'tidy'))});opts.push({w:2.5,run:()=>runPerson(p,tok=>bedRun(p,bed,L,tok,'read'))})}
  for(const e of(deco.extra||[]))if(typeof EXTAP!=='undefined'&&EXTAP[e.id])opts.push({w:e.id==='x_bigbed'?.6:2.5,run:()=>{ACT.q.push({obj:e,key:'x:'+e.u});runQ()}});
  for(const id of['pzwater','pzmusic','pzlook','pzlight']){const ok=id==='pzwater'?pzFind(deco,'f_tree').length+pzFind(deco,'c_plant').length+pzFind(deco,'t_cactus').length:id==='pzmusic'?pzFind(deco,'t_player').length:id==='pzlook'?pzList(deco).some(i=>PZ[i.id]&&['love','shine','fish','spin','flutter'].includes(PZ[i.id].act)):pzList(deco).some(i=>PZ[i.id]&&PZ[i.id].light&&PZ[i.id].s==='floor');if(ok)opts.push({w:1.2,run:()=>runPerson(p,tok=>doAct(p,id,L,deco,tok))})}
- opts.push({w:2.5,run:()=>{ACT.q.push(p);runQ()}});opts.push({w:1.5,run:()=>runPerson(p,tok=>soloPose(p,tok))});
+ opts.push({w:2,run:()=>{ACT.q.push(p);runQ()}});
+ try{const nt=isNight();for(const who of['her','him']){const pp=PPL[who];for(const id of lifePool(who,deco,nt)){const D=LIFE[id];opts.push({w:1.6,run:()=>runPerson(pp,tok=>doAct(pp,id,L,deco,tok))})}}}catch(e){}
  let tot=0;opts.forEach(o=>tot+=o.w);let q=Math.random()*tot;for(const o of opts){q-=o.w;if(q<=0){o.run();return}}}
 function peopleAutoTick(dt){if(S.roam===false||APP.scr!=='menu'||!APP.L||!ACT.H||!PPL.her||PPL.away||PPL.sleep||PPL.nap)return;if(PA.key!==ACT.key){PA.key=ACT.key;PA.t=0;PA.next=3500+Math.random()*2500}if(ACT.cur||ACT.q.length||$('.modal',APP.mods)){PA.t=0;return}PA.t+=dt;if(PA.t<PA.next)return;PA.t=0;PA.next=1500+Math.random()*2500;autoPeopleAct()}
 /* ===== endless levels: years/seasons counter, replaying any passed level, progress guard ===== */
@@ -6611,6 +6633,192 @@ function ckResult(st,done){const{r,ov}=st;const q=st.score>=.72?3:st.score>=.42?
  ov.querySelector('.cktxt').textContent='';ov.querySelector('.ckst').textContent='';
  ov.querySelector('.ckstage').innerHTML=`<div class="ckres"><div class="ckbig">${r.ic}</div><h2 class="lob">${r.n}</h2><div class="ckstars">${CKSTAR[q]}</div><p>${q===3?'Идеально! Саша и Дима будут в восторге.':q===2?'Получилось вкусно!':'Съедобно, но в следующий раз выйдет лучше.'}</p>${bonus?`<p class="soft">+${Math.round(bonus)} 🦴 за мастерство</p>`:''}${first&&q===3?'<p class="soft">Новый рецепт на 3 звезды: +1 💗</p>':''}<div class="eatrow"><button class="btn green" data-a2="eat">Подать сейчас 💞</button><button class="btn" data-a2="shelf">На полку</button></div></div>`;
  ov.onclick=e=>{const b=e.target.closest('[data-a2]');if(!b)return;if(b.dataset.a2==='eat'){ov.remove();ckSel=S.dishes.length-1;ckEat('both')}else{ov.remove();ckSel=null;ckPage()}}}
+/* ===== home.js — дела привязаны к предметам дома =====
+   Нет предмета в комнате → дела в меню нет (показан замок), сами они его не выберут.
+   Есть предмет → идут к нему и пользуются. */
+const hxs=(d,ids)=>(d.extra||[]).filter(e=>ids.includes(e.id)&&EXI[e.id]);
+const hps=(d,ids)=>pzList(d).filter(i=>ids.includes(i.id)&&PZ[i.id]);
+function sxSp(e,L,dy){const p=xpos(e,L),dd=EXI[e.id],w=(dd.sz&&dd.sz[0])||60;const y=dd.wall?L.fl+84:p.y+(dy==null?28:dy);return{x:clamp(p.x,30,370),y:clamp(y,L.fl+44,L.VH-72),w,e,id:e.id}}
+function pzSp(i,d,L){const q=pzPos(i,d,L),f=pzFloorFoot(i,d,L),w=PZ[i.id].w||40;return{x:clamp(q.x,30,370),y:clamp(f.y+6,L.fl+56,L.VH-92),w,it:i,id:i.id}}
+function slotSp(d,L,k,dx,dy,w){return d[k]&&L[k]?[{x:clamp(L[k].x+dx,30,370),y:clamp(L[k].y+dy,L.fl+44,L.VH-72),w:w||90,slot:k}]:[]}
+const XS=(ids,dy)=>(d,L)=>hxs(d,ids).map(e=>sxSp(e,L,dy));
+const PS=ids=>(d,L)=>hps(d,ids).map(i=>pzSp(i,d,L));
+const both=(...f)=>(d,L)=>f.reduce((a,g)=>a.concat(g(d,L)),[]);
+const STK={
+ kit:['кухня с плитой',XS(['x_kitchen'],26)],
+ cof:['кофейная стойка или кухня',XS(['x_coffeebar','x_kitchen'],26)],
+ tbl:['столик (обеденный, чайный, кафе)',both(XS(['x_dtable','x_cafetable','x_parasol','x_kotatsu','x_table'],30),PS(['f_table']))],
+ sofa:['диван',(d,L)=>{const s=slotSp(d,L,'sofa',0,48,184);if(s.length)return s;try{const h=ACT.H&&PPL.her&&ACT.H.her;if(h&&h.sit>0)return[{x:h.x,y:h.y+40,w:80,slot:'seat'}]}catch(e){}return[]}],
+ tv:['телевизор',both(XS(['x_tv'],58),PS(['f_tv']))],
+ mus:['проигрыватель или патефон',both(XS(['x_gramophone']),PS(['t_player']))],
+ piano:['пианино',XS(['x_piano'],30)],
+ guitar:['гитара',XS(['x_guitar'])],
+ mir:['зеркало',both(XS(['x_sinkmirror','x_vanity'],40),PS(['p_mirror','p_vanity']))],
+ bath:['ванна',XS(['x_bathtub'],26)],
+ bed2:['большая кровать',XS(['x_bigbed'],40)],
+ book:['книги или книжный шкаф',both(XS(['x_bookcase','x_books','x_shelf']),PS(['t_books','p_shelf']))],
+ aq:['аквариум',both(XS(['x_aquarium'],30),PS(['t_aqua']))],
+ fire:['камин или костровая чаша',(d,L)=>slotSp(d,L,'fire',40,50,100).concat(hps(d,['f_firepit']).map(i=>pzSp(i,d,L)))],
+ rug:['ковёр',(d,L)=>slotSp(d,L,'rug',0,-4,200)],
+ win:['окно',(d,L)=>{try{const w=windowSpot(L,d);return[{x:w.x,y:w.y,w:100,slot:'win'}]}catch(e){return[]}}],
+ flw:['цветы или растение',(d,L)=>slotSp(d,L,'plant',0,30,60).concat(hxs(d,['x_flowers','x_sunflowers','x_bonsai']).map(e=>sxSp(e,L)),hps(d,['f_tree','c_plant','t_cactus','t_vase']).map(i=>pzSp(i,d,L)))],
+ bons:['бонсай',XS(['x_bonsai'])],
+ lamp:['лампа',(d,L)=>slotSp(d,L,'lamp',40,30,60).concat(hps(d,['f_lamp','t_desklamp']).map(i=>pzSp(i,d,L)),hxs(d,['x_tablelamp']).map(e=>sxSp(e,L)))],
+ fridge:['холодильник',PS(['f_fridge'])],
+ wash:['стиральная машина или корзина для белья',PS(['f_washer','f_basket'])],
+ ward:['шкаф или вешалка',PS(['f_wardrobe','p_hooks','f_shoes'])],
+ desk:['письменный стол или ноутбук',PS(['f_desk','t_laptop'])],
+ easel:['мольберт',XS(['x_easel'])],
+ xtree:['ёлка',XS(['x_xtree','x_tree'],34)],
+ snow:['снеговик',XS(['x_snowman'])],
+ wax:['лыжи, санки или доска для сёрфинга',XS(['x_skis','x_surf','x_sled','x_sledtree'])],
+ blk:['корзина с пледами',XS(['x_blankets'])],
+ gift:['подарки, торт или шарики',XS(['x_gifts','x_caketable','x_balloons'])],
+ cand:['свечи',both(XS(['x_candles']),PS(['t_candle']))],
+ pho:['рамка с фото или стена воспоминаний',both(XS(['x_photo','x_bigphoto','x_memwall']),PS(['p_photo','t_frame','p_frame']))],
+ ball:['теннисный мячик',XS(['x_ball'])],
+ lant:['бумажный фонарик',both(XS(['x_lantern']),PS(['t_lantern']))]};
+function stnFind(spec,deco,L){for(const k of spec.split('|')){const e=STK[k];if(!e)continue;let l=[];try{l=e[1](deco,L)||[]}catch(x){l=[]}if(l.length)return{k,sp:l}}return null}
+function stnName(spec){return spec.split('|').map(k=>(STK[k]||[k])[0]).join(' или ')}
+function actPlan(D,deco,L){const plan=[];for(const spec of D.need||[]){const r=stnFind(spec,deco,L);if(!r)return{miss:spec};plan.push(r)}return{plan}}
+function actMiss(id,deco,L){const D=LIFE[id];if(!D)return'';const r=actPlan(D,deco||curDeco(),L||APP.L);return r.miss?stnName(r.miss):''}
+function actOK(id,deco,L){const D=LIFE[id];if(!D)return true;if(!APP.L)return false;return!!actPlan(D,deco||curDeco(),L||APP.L).plan}
+const isNight=()=>['night','evening'].includes(dayPhase());
+/* ---------- привязка существующих дел ---------- */
+const NEEDS={nap:['sofa'],cook:['kit'],tea:['tbl|sofa'],bake:['kit'],mom:['win'],yoga:['rug'],diary:['sofa'],mask:['mir|bath'],dreamtrip:['win'],flowers:['flw'],nails:['sofa'],sing:['mus|piano|guitar'],knit:['sofa'],grill:['kit'],coffee:['cof'],gym:['rug'],game:['sofa','tv'],fix:['lamp'],surprise:['gift'],poem:['sofa'],dinner2:['kit'],picnic:['rug'],board:['rug'],duet:['mus|piano|guitar'],future:['win'],photos:['sofa'],massage:['sofa'],stars:['win'],movie:['sofa','tv'],pancakes:['kit']};
+const SITA=new Set(['nap','diary','nails','knit','poem','photos','massage','game','movie','tea','cuddle','scroll','plaid','bookpick2']);
+for(const k in NEEDS){LIFE[k].need=NEEDS[k];if(SITA.has(k))LIFE[k].sit=1}
+Object.assign(LIFE.picnic,{sitF:15,gap:46});Object.assign(LIFE.board,{sitF:15,gap:46});Object.assign(LIFE.fix,{pose:'crouch'});Object.assign(LIFE.duet,{gap:26});Object.assign(LIFE.yoga,{gap:20});Object.assign(LIFE.sing,{gap:20});Object.assign(LIFE.gym,{gap:20});
+LIFE.tea.sitIf=1;
+/* ---------- новые дела ---------- */
+const NL={
+ wash:{t:'помыть посуду',ic:'🫧',w:'both1',need:['kit'],say:['Посуда сама себя не помоет 🫧','Пена до потолка! 🫧'],say2:['Блестит! ✨'],ms:3200},
+ taste:{t:'попробовать блюдо',ic:'🥄',w:'both',need:['kit'],say:['Дай попробовать! 🥄','Ну как, получилось? 😋'],say2:['Нужно чуть-чуть соли 😄','Идеально! Ты шеф 👨‍🍳'],ms:3400},
+ fridge:{t:'заглянуть в холодильник',ic:'🧊',w:'both1',need:['fridge'],say:['Что бы такого съесть? 🤔','Холодильник, не подведи! 🧊'],say2:['Нашёл кусочек торта 🍰'],ms:3400,fx:'open'},
+ cards:{t:'сыграть в карты',ic:'🃏',w:'both',need:['tbl'],say:['Раздавай карты! 🃏','Сегодня я выиграю! 😏'],say2:['Опять ничья 😄'],ms:3600},
+ breakfast:{t:'позавтракать вместе',ic:'🥐',w:'both',need:['tbl'],say:['Завтрак на двоих 🥐','Круассаны и кофе ☕'],say2:['Лучшее начало дня 💛'],ms:3400},
+ cuddle:{t:'обняться на диване',ic:'🤗',w:'both',need:['sofa'],sit:1,say:['Иди ко мне 🤗','Хочу просто посидеть рядом 💛'],say2:['Так тепло и уютно 😌'],ms:3400},
+ scroll:{t:'полистать ленту',ic:'📱',w:'both1',need:['sofa'],sit:1,say:['Что там нового? 📱','Ещё пять минут… 📱'],say2:['Смешные картинки 😂'],ms:3000},
+ plaid:{t:'укрыться пледом',ic:'🧣',w:'both',need:['sofa','blk'],sit:1,say:['Где наш плед? 🧣','Плед, чай и ты — всё есть 💛'],say2:['Не хочу вылезать ☕'],ms:3600},
+ bookpick:{t:'выбрать книгу',ic:'📚',w:'both1',need:['book'],say:['Что бы почитать? 📚','Вот эту хочу! 📖'],say2:['Отличная попалась 😊'],ms:3600},
+ laptop:{t:'поработать за ноутбуком',ic:'💻',w:'both1',need:['desk'],say:['Немного поработаю 💻','Надо записать идею ✍️'],say2:['Ура, всё готово 🎉'],ms:3400},
+ fold:{t:'сложить бельё',ic:'🧺',w:'both1',need:['wash'],say:['Стирка закончилась 🧺','Стопочка к стопочке 👕'],say2:['Красота 😌'],ms:3200},
+ dress:{t:'выбрать наряд',ic:'👗',w:'both1',need:['ward'],say:['Что бы надеть? 👗','Это или вот это? 🤔'],say2:['Беру это! ✨'],ms:3400},
+ makeup:{t:'накраситься',ic:'💄',w:'her',need:['mir'],say:['Немного красоты 💄','Тушь, помада — и в бой 😄'],say2:['Готова! ✨'],ms:3200},
+ hairbrush:{t:'расчесать волосы',ic:'💇',w:'her',need:['mir'],say:['Расчешу волосы 💇‍♀️','Сто движений щёткой ✨'],say2:['Шёлк! 😍'],ms:3000},
+ shave:{t:'побриться',ic:'🪒',w:'him',need:['mir'],say:['Приведу бороду в порядок 🪒','Только не отрезать лишнего 😅'],say2:['Идеально ровно 😎'],ms:3000},
+ paint:{t:'порисовать',ic:'🎨',w:'both1',need:['easel'],say:['Сегодня я художник 🎨','Мазок за мазком… 🖌️'],say2:['Шедевр! (почти) 😄'],ms:3600},
+ trim:{t:'подстричь бонсай',ic:'✂️',w:'both1',need:['bons'],say:['Аккуратно, это бонсай 🌳','Чик-чик ✂️'],say2:['Какая красота! 🌿'],ms:3200},
+ ornament:{t:'нарядить ёлку',ic:'🎄',w:'both',need:['xtree'],say:['Вешаем шарики! 🎄','Звезду — на самую макушку ⭐'],say2:['Сияет! ✨'],ms:3800},
+ snowman:{t:'поправить снеговика',ic:'⛄',w:'both1',need:['snow'],say:['Снеговику нужна морковка ⛄','Подправим снежок ❄️'],say2:['Красавец! 😄'],ms:3000},
+ wax:{t:'натереть воском',ic:'🛷',w:'him',need:['wax'],say:['Намажу воском — поедет как по маслу 🛷','Скольжение — это важно 💪'],say2:['Готово к катанию ✨'],ms:3000},
+ pillow:{t:'подушечный бой',ic:'🛏️',w:'both',need:['bed2'],say:['Подушечный бой! 🛏️','Сдавайся! 😆'],say2:['Ничья! 🤝'],ms:3400},
+ marsh:{t:'пожарить зефирки',ic:'🍡',w:'both',need:['fire'],say:['Зефирки у камина! 🍡','Только чтобы не подгорели 🔥'],say2:['Тягучие и сладкие 😋'],ms:3800,fx:'fire'},
+ lantern:{t:'зажечь фонарик',ic:'🏮',w:'both1',need:['lant'],say:['Зажгу фонарик 🏮','Тёплый свет 🕯️'],say2:['Так красиво ✨'],ms:3000},
+ candle:{t:'устроить вечер при свечах',ic:'🕯️',w:'both',need:['cand'],say:['Вечер при свечах 🕯️','Давай зажжём свечи 💛'],say2:['Романтика 🥰'],ms:3600},
+ feedfish:{t:'покормить рыбок',ic:'🐟',w:'both1',need:['aq'],say:['Время кормёжки 🐟','Рыбки, завтрак! 🐠'],say2:['Какие они забавные 😊'],ms:3000},
+ sniff:{t:'понюхать цветы',ic:'🌸',w:'her',need:['flw'],say:['Как вкусно пахнет 🌸','Обожаю цветы 💐'],say2:['Лучший запах на свете 😍'],ms:3000}};
+Object.assign(LIFE,NL);
+for(const k in NL){if(NL[k].sit)SITA.add(k);WANTL[k]=[NL[k].t,NL[k].ic]}
+ACTA.feedfish=ACTA.o_feed;
+Object.assign(NEEDFX,{wash:{m:2},taste:{f:8,m:2},fridge:{f:12},cards:{m:5},breakfast:{f:16,m:3},cuddle:{m:6,e:4},scroll:{e:3},plaid:{e:10,m:4},bookpick:{m:2},laptop:{m:1},fold:{m:1},dress:{m:3},makeup:{m:3},hairbrush:{m:2},shave:{m:2},paint:{m:4},trim:{m:3},ornament:{m:4},snowman:{m:3},wax:{m:1},pillow:{m:6},marsh:{f:8,m:5},lantern:{m:3},candle:{m:6},feedfish:{m:3},sniff:{m:3}});
+/* ---------- что доступно ---------- */
+function lifePool(who,deco,night){const L=APP.L;return Object.keys(LIFE).filter(k=>{const d=LIFE[k];if(!(d.w===who||d.w==='both'||d.w==='both1'))return false;if(d.night&&!night)return false;return L?actOK(k,deco,L):false})}
+function lockedActs(who,deco,night){const L=APP.L,out=[];if(!L)return out;for(const k of Object.keys(LIFE)){const d=LIFE[k];if(!(d.w===who||d.w==='both'||d.w==='both1'))continue;if(d.night&&!night)continue;const m=actMiss(k,deco,L);if(m)out.push({id:k,t:d.t,ic:d.ic,miss:m})}return out}
+/* ---------- само дело ---------- */
+function pickSpot(list,p,pref){if(pref){const q=list.find(s=>(s.it&&s.it.u===pref)||(s.e&&s.e.u===pref));if(q)return q}let b=list[0],bd=1e9;for(const s of list){const d=Math.abs(s.x-p.x)+Math.abs(s.y-p.y)*.5;if(d<bd){bd=d;b=s}}return b}
+let ACTPREF=null;
+function lifeFx(name,ms,s,on){try{if(name==='oven'){if(on){RS.oven=Math.min(ms,6000);SFX.fire&&SFX.fire()}else RS.cookies=9000}
+ else if(name==='open'&&s&&s.it){s.it.open=!!on;if(on)SFX.tap&&SFX.tap()}
+ else if(name==='fire'){if(on){RS.fireBoost=1;tween(RS,{fireBoost:0},Math.min(ms,3000))}}
+ else if(name==='tv'){if(on)RS.tv=ms+500}
+ else if(name==='dine'){if(on)RS.dinner=Math.min(ms,8000)}}catch(e){}}
+const OVENACTS=new Set(['cook','bake','grill','pancakes','dinner2']);
+async function lifeAct(p,id,L,deco,tok,hn){const D=LIFE[id];if(!D)return false;if(D.night&&!isNight())return false;
+ const pl=actPlan(D,deco,L);if(!pl.plan)return false;
+ const H=PPL.her,M=PPL.him;const ps=D.w==='both'?[H,M]:[p];
+ const pref=ACTPREF;ACTPREF=null;
+ const prim=pl.plan[0];const sp=D.sit?null:pickSpot(prim.sp,p,pref);
+ const sit=!!D.sit;if(sit&&!ps.every(x=>homeOf(x)&&homeOf(x).sit>0))return false;
+ const fxn=D.fx||(OVENACTS.has(id)?'oven':(id==='movie'||id==='game')?'tv':id==='dinner2'?'dine':'');
+ needFx(p,id);if(D.w==='both')needFx(null,id);
+ say(p,pick(D.say),2800);
+ try{
+  if(sit){await Promise.all(ps.map(async x=>{if(id==='massage'&&x===H){await pStand(x,tok);x.face=1;x.pose='stand';return}if(!(x.mode==='stay'&&x.sitH>0))await pHome(x,tok)}));splitSofa()}
+  else{await Promise.all(ps.map(x=>pStand(x,tok)));
+   const n=ps.length,gap=D.gap!=null?D.gap:(n>1?clamp(sp.w*.2,22,44):0);
+   await Promise.all(ps.map((x,i)=>{let tx,ty=sp.y+(n>1&&i?4:0);if(n>1)tx=sp.x+(i?gap:-gap);else{const side=x.x<sp.x?-1:1;tx=sp.x+side*(D.dx!=null?D.dx:clamp(sp.w*.28,18,40))}return pTo(x,clamp(tx,30,370),clamp(ty,L.fl+40,L.VH-70),tok)}));
+   ps.forEach((x,i)=>{x.face=n>1?(i?-1:1):(sp.x>x.x?1:-1);x.pose=D.pose||'stand';if(D.sitF){x.sitH=D.sitF;x.pose='sit'}})}
+  ps.forEach(x=>{x.act=id});
+  lifeFx(fxn,D.ms,sp,true);
+  sparkV(ps[0].x,ps[0].y-130,16);SFX.chime&&SFX.chime(1);await hold(D.ms*.5,tok);
+  say(ps[ps.length-1],pick(D.say2),2600);heartsBurstV(ps[0].x,ps[0].y-150);await hold(D.ms*.5,tok);
+  lifeFx(fxn,D.ms,sp,false);
+ }finally{ps.forEach(x=>{x.act=null});if(sp&&sp.it&&sp.it.open)sp.it.open=false}
+ await Promise.all(ps.map(x=>pHome(x,tok)));return true}
+/* ---------- сцены у отдельных предметов (нажатие на предмет) ---------- */
+const OBJX={
+ x_pouf:{who:'any',an:'scroll',sitF:15,say:['Пуфик — лучшее место для телефона 📱'],say2:['Вставать не хочется 😌']},
+ x_beanbag:{who:'any',an:'scroll',sitF:15,say:['Кресло-мешок — это рай 😌'],say2:['Я тут надолго 😄']},
+ x_flowers:{who:'her',an:'sniff',say:['Как пахнут цветочки 🌸'],say2:['Обожаю 💐']},
+ x_sunflowers:{who:'her',an:'sniff',say:['Солнышки! 🌻'],say2:['Они как ты — яркие 💛']},
+ x_bonsai:{who:'any',an:'trim',say:['Подстригу бонсай 🌳'],say2:['Идеальная форма ✨']},
+ x_books:{who:'any',an:'bookpick',say:['Какую книгу взять? 📚'],say2:['Вот эту! 📖']},
+ x_bookcase:{who:'any',an:'bookpick',say:['Столько книг! 📚'],say2:['Нашёл то, что искал 😊']},
+ x_shelf:{who:'any',an:'bookpick',say:['Что тут у нас на полке? 🔎'],say2:['Милые мелочи ✨']},
+ x_candles:{who:'both',an:'candle',say:['Зажжём свечи? 🕯️'],say2:['Уютно 💛']},
+ x_clock:{who:'any',an:'o_admire',say:['Сколько уже времени? ⏰'],say2:['Время летит рядом с тобой 💛']},
+ x_photo:{who:'both',an:'o_admire',say:['Помнишь этот день? 📷'],say2:['Конечно помню 💛']},
+ x_bigphoto:{who:'both',an:'o_admire',say:['Наша любимая фотография 📸'],say2:['Здесь мы такие счастливые 🥰']},
+ x_table:{who:'both',an:'tea',say:['Чаёк с вареньем? 🍵'],say2:['Лучшее чаепитие 😌']},
+ x_blankets:{who:'both',an:'o_wrap',say:['Достанем плед 🧣'],say2:['Тёплый-претёплый 😌']},
+ x_moonlamp:{who:'any',an:'o_switch',say:['Включим ночник 🌙'],say2:['Мягкий свет ✨']},
+ x_tablelamp:{who:'any',an:'o_switch',say:['Чуть больше света 💡'],say2:['Теперь уютно ✨']},
+ x_sconce:{who:'any',an:'o_switch',say:['Включу бра 💡'],say2:['Тёплый свет 🕯️']},
+ x_neon:{who:'any',an:'o_switch',say:['Включаю наш неон 💗'],say2:['С ♥ Д — навсегда 💛']},
+ x_jarlights:{who:'any',an:'o_switch',say:['Светлячки в банке ✨'],say2:['Как волшебство 🧚']},
+ x_sled:{who:'him',an:'wax',say:['Натру полозья 🛷'],say2:['Поедет как по маслу ✨']},
+ x_surf:{who:'him',an:'wax',say:['Натру доску воском 🏄'],say2:['Готова к волне 🌊']},
+ x_skis:{who:'him',an:'wax',say:['Лыжи надо смазать ⛷️'],say2:['Скользят отлично 💪']},
+ x_rocker:{who:'any',an:'o_rock',say:['Покачаюсь в кресле 🪑'],say2:['Так спокойно 😌']},
+ x_lantern:{who:'any',an:'lantern',say:['Зажгу фонарик 🏮'],say2:['Красиво светится ✨']},
+ x_easel:{who:'any',an:'paint',say:['Порисуем? 🎨'],say2:['Мне нравится! 🖼️']},
+ x_planet:{who:'both',an:'o_admire',say:['Целая планета у нас дома 🪐'],say2:['Хочу туда полететь 🚀']},
+ x_xtree:{who:'both',an:'ornament',say:['Нарядим ёлку! 🎄'],say2:['Сияет! ✨']},
+ x_stocking:{who:'both',an:'o_admire',say:['Носок для подарков 🧦'],say2:['Что там будет? 🎁']},
+ x_wreath:{who:'both',an:'o_admire',say:['Какой красивый венок 🎄'],say2:['Пахнет праздником ✨']},
+ x_candycane:{who:'both',an:'o_admire',say:['Огромная карамельная трость 🍭'],say2:['Хочу откусить 😄']},
+ x_reindeer:{who:'both',an:'o_admire',say:['Олень! 🦌'],say2:['Прямо из сказки ✨']},
+ x_nutcracker:{who:'both',an:'o_admire',say:['Щелкунчик на страже 💂'],say2:['Строгий и красивый 😄']},
+ x_gingerbread:{who:'both',an:'o_admire',say:['Пряничный домик 🏠'],say2:['Пахнет имбирём 😋']},
+ x_xstars:{who:'both',an:'o_admire',say:['Гирлянда-звёзды ⭐'],say2:['Сияют, как ты ✨']},
+ x_snowman:{who:'any',an:'snowman',say:['Поправлю снеговика ⛄'],say2:['Красавец! 😄']},
+ x_gifts:{who:'both',an:'o_box',say:['Сколько подарков! 🎁'],say2:['Распакуем вместе 💛']},
+ x_vanity:{who:'her',an:'makeup',say:['Немного красоты 💄'],say2:['Готова! ✨']},
+ x_bear:{who:'her',an:'o_hugbear',say:['Мишка, иди обниматься 🧸'],say2:['Самый мягкий 💛']}};
+function objWho(w,p){return w==='any'?(p||PPL.her).who:w}
+for(const id in OBJX){if(EXTAP[id])continue;const D=OBJX[id];
+ EXTAP[id]=async(e,L,deco,tok,a)=>{if(PPL.away||PPL.sleep||PPL.nap||!PPL.her||!PPL.him)return;
+  const sp=sxSp(e,L),ps=D.who==='both'?['her','him']:D.who==='any'?[(PPL.her.x<=PPL.him.x?(Math.abs(PPL.her.x-sp.x)<=Math.abs(PPL.him.x-sp.x)?'her':'him'):(Math.abs(PPL.him.x-sp.x)<=Math.abs(PPL.her.x-sp.x)?'him':'her'))]:[D.who];
+  const P=ps.map(w=>PPL[w]);say(P[0],pick(D.say),2600);
+  try{await Promise.all(P.map(x=>pStand(x,tok)));
+   const n=P.length,gap=clamp(sp.w*.2,22,44);
+   await Promise.all(P.map((x,i)=>{const tx=n>1?sp.x+(i?gap:-gap):sp.x+(x.x<sp.x?-1:1)*clamp(sp.w*.28,18,40);return pTo(x,clamp(tx,30,370),clamp(sp.y+(n>1&&i?4:0),L.fl+40,L.VH-70),tok)}));
+   P.forEach((x,i)=>{x.face=n>1?(i?-1:1):(sp.x>x.x?1:-1);x.pose='stand';if(D.sitF){x.sitH=D.sitF;x.pose='sit'}x.act=D.an});
+   sparkV(sp.x,sp.y-90,10);SFX.chime&&SFX.chime(2);await hold(3000,tok);say(P[P.length-1],pick(D.say2),2400);heartsBurstV(P[0].x,P[0].y-150);await hold(2000,tok)}
+  finally{P.forEach(x=>{x.act=null})}
+  await Promise.all(P.map(x=>pHome(x,tok)))}}
+Object.assign(XL,{x_pouf:['Посидеть на пуфике','🛋'],x_beanbag:['Посидеть в кресле-мешке','🛋'],x_flowers:['Понюхать цветы','🌸'],x_sunflowers:['Понюхать подсолнухи','🌻'],x_bonsai:['Подстричь бонсай','✂️'],x_books:['Выбрать книгу','📚'],x_bookcase:['Выбрать книгу','📚'],x_shelf:['Посмотреть на полке','🔎'],x_candles:['Зажечь свечи','🕯️'],x_clock:['Посмотреть на часы','⏰'],x_photo:['Вспомнить фото','📷'],x_bigphoto:['Вспомнить фото','📸'],x_table:['Выпить чаю','🍵'],x_blankets:['Укрыться пледом','🧣'],x_moonlamp:['Включить ночник','🌙'],x_tablelamp:['Включить лампу','💡'],x_sconce:['Включить бра','💡'],x_neon:['Включить неон','💗'],x_jarlights:['Посмотреть на светлячков','✨'],x_sled:['Натереть полозья','🛷'],x_surf:['Натереть доску','🏄'],x_skis:['Смазать лыжи','⛷️'],x_rocker:['Покачаться в кресле','🪑'],x_lantern:['Зажечь фонарик','🏮'],x_easel:['Порисовать','🎨'],x_planet:['Полюбоваться планетой','🪐'],x_xtree:['Нарядить ёлку','🎄'],x_stocking:['Заглянуть в носок','🧦'],x_wreath:['Полюбоваться венком','🎄'],x_candycane:['Полюбоваться тростью','🍭'],x_reindeer:['Обнять оленя','🦌'],x_nutcracker:['Поздороваться со Щелкунчиком','💂'],x_gingerbread:['Понюхать пряники','🏠'],x_xstars:['Полюбоваться гирляндой','⭐'],x_snowman:['Поправить снеговика','⛄'],x_gifts:['Разобрать подарки','🎁'],x_vanity:['Привести себя в порядок','💄'],x_bear:['Обнять мишку','🧸']});
+for(const id in OBJX){WANTL['x:'+id]=[XL[id][0].toLowerCase(),XL[id][1]]}
+
+/* простые действия (без LIFE), которым тоже нужен предмет */
+const BASEN={dance:['mus|piano|guitar'],selfie:['pho|mir'],read:['book'],fetch:['ball'],fire:['fire']};
+function baseActOK(id,deco,L){const n=BASEN[id];if(!n)return true;deco=deco||curDeco();L=L||APP.L;if(!L)return false;return n.every(sp=>!!stnFind(sp,deco,L))}
+function baseMiss(id,deco,L){const n=BASEN[id];if(!n)return'';deco=deco||curDeco();L=L||APP.L;for(const sp of n)if(!stnFind(sp,deco,L))return stnName(sp);return''}
+function anyActOK(id,deco,L){return LIFE[id]?actOK(id,deco,L):baseActOK(id,deco,L)}
+
+const STNACT={fridge:'fridge',wardrobe:'dress',washer:'fold',basket:'fold',vanity:'makeup',photo:'o_admire',pouf:'scroll',lamp:'o_switch',hooks:'dress',shoes:'wax',desk:'laptop',books:'bookpick',tv:'movie',firepit:'o_fire',nightstand:'o_switch',bench:'tea',armchair:'scroll'};
+for(const k in STNACT)if(STN[k])STN[k].act=STNACT[k];
 /* ===== app ===== */
 const APP={move:{on:false,sel:null},W:0,H:0,DPR:1,scr:'menu',view:{x:0,y:0,s:1},rc:null,roomDirty:true,L:null,last:0,giftBusy:false};
 const DS={slot:'sofa',room:'living'};
@@ -6978,7 +7186,7 @@ async function init(){APP.root=$('#app');APP.cv=$('#cv');APP.ctx=APP.cv.getConte
  showMenu();requestAnimationFrame(frame);setTimeout(cloudInit,60);
  if(!S.welcomed){S.welcomed=true;save();ask(`<div class="center"><img class="bigdog" src="${dogImg(0,80)}" alt=""><h2 class="lob">Привет, ${esc(S.her)}! 💛</h2><p>Эту игру сделали специально для тебя. Тео, Марса, Граф и их друзья уже ждут!</p><p class="soft small">Проходи уровни (с каждым разом сложнее), открывай купоны-сюрпризы и обустраивай уютный дом. Собачек в комнате можно гладить 🐾</p></div>`,[{t:'Ура! 🐶',c:'green',v:1}]).then(()=>checkGifts())}}
 init();
-}</script><script>(function(){var V='28.11 12:58';window.APPV=V;var busy=0;
+}</script><script>(function(){var V='28.11 13:47';window.APPV=V;var busy=0;
 function inGame(){try{return APP.scr==='game'||!!APP.cafeOpen||!!APP.farmOpen||!!document.getElementById('cafe')||!!document.querySelector('.farm')}catch(e){return false}}
 function go(t){try{save()}catch(e){}try{localStorage.setItem('teo_updated',t)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(t))}
 window.__applyUpd=function(){var t=window.__upd;if(!t)return false;window.__upd=0;go(t);return true};
